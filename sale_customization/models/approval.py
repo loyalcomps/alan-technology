@@ -38,11 +38,47 @@ class SaleOrder(models.Model):
             else:
                 order.is_sales_manager = False
 
+    @api.constrains('amount_total')
+    def _check_order_amount(self):
+        company = self.env.company
+        if self.amount_total > company.max_order_amount:
+            raise UserError(
+                f"The total amount of this sale order exceeds the configured limit of {company.max_order_amount}. Approval required.")
 
     def action_confirm(self):
         if self.state == 'approve':
-            return super(SaleOrder, self).action_confirm()
+            result = super(SaleOrder, self).action_confirm()
+            for order_line in self.order_line:
+                for picking in self.picking_ids:
+                    for move in picking.move_ids_without_package:
+                        if order_line.product_id == move.product_id:
+                            move.description = order_line.name
+            return result
         else:
             raise UserError("You cannot confirm the Sale Order unless the state is 'Approved'.")
     def action_approve(self):
         self.state = 'approve'
+
+
+
+class StockMove(models.Model):
+    _inherit = "stock.move"
+
+    description = fields.Char('Description')
+
+class AccountMoveLine(models.Model):
+    _inherit = "account.move.line"
+
+    description = fields.Char('Description')
+
+class SaleOrderLine(models.Model):
+    _inherit = "sale.order.line"
+
+    def _prepare_invoice_line(self, **optional_values):
+        res = super()._prepare_invoice_line(**optional_values)
+        self.ensure_one()
+        if self.product_id:
+            res.update({
+                'description': self.name,
+            })
+        return res

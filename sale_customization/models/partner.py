@@ -10,6 +10,21 @@ class SalespersonInactive(models.Model):
         ('inactive', 'Inactive'),
     ], default='active', string="Customer State")
     last_invoice_date = fields.Date(string='Last Invoice Date', compute="_compute_last_invoice_date")
+    credit_limit = fields.Float(string="Credit Limit")
+    is_sales_manager = fields.Boolean(
+        string="Is Sales Manager",
+        compute='_compute_is_sales_manager',
+        store=False
+    )
+
+    @api.depends()
+    def _compute_is_sales_manager(self):
+        sales_manager_group = self.env.ref('sale_customization.group_sales_manager')
+        for order in self:
+            if sales_manager_group:
+                order.is_sales_manager = sales_manager_group in self.env.user.groups_id
+            else:
+                order.is_sales_manager = False
 
     @api.depends('invoice_ids', 'child_ids.invoice_ids')
     def _compute_last_invoice_date(self):
