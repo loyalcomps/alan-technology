@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record model="ir.ui.view" id="view_picking_form_kg_inv">
+        <field name="name">stock.picking</field>
+        <field name="model">stock.picking</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='extra']/group/group[@name='other_infos']" position="after">
+                <group>
+                    <field name="kg_type" readonly="1"/>
+                    <field name="priority" readonly="1"/>
+                    <field name="kg_po_ref" readonly="1"/>
+                    <field name="kg_sale_order_id" readonly="1" attrs="{'invisible': [('kg_type', '!=', 'sale')]}"/>
+                    <field name="kg_invoice_status" readonly="1" attrs="{'invisible': [('kg_type', '!=', 'sale')]}"/>
+<!--                    <field name="kg_invoice_id" readonly="0" attrs="{'invisible': [('kg_type', '!=', 'sale')]}"/>-->
+                    <field name="kg_invoice_id" invisible="1"/>
+                    <field name="related_so"/>
+                    <field name="kg_actual_invoice_id" readonly="1"
+                           attrs="{'invisible': [('kg_type', '!=', 'sale')]}"/>
+                </group>
+            </xpath>
+<!--            <xpath expr="//page[@name='extra']//field[@name='company_id']" position="after">-->
+<!--                <button name="create_dummy_invoice" string="Pro-Forma Invoice" type="object"-->
+<!--                        attrs="{'invisible': ['|',('kg_sale_order_id', '=', False),('kg_invoice_status', '!=', 'no_inoice'),('state', 'in', ('assigned','done'))]}"/>-->
+<!--            </xpath>-->
+            <page name="operations" position="attributes">
+                <attribute name="string">Initial Demand</attribute>
+            </page>
+        </field>
+    </record>
+
+    <record id="stock.stock_picking_type_action" model="ir.actions.act_window">
+        <field name="name">Inventory</field>
+        <field name="res_model">stock.picking.type</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">kanban,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new operation type
+            </p>
+            <p>
+                The operation type system allows you to assign each stock
+                operation a specific type which will alter its views accordingly.
+                On the operation type you could e.g. specify if packing is needed by default,
+                if it should show the customer.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="stock.menu_stock_inventory_control" name="Inventory Control" parent="stock.menu_stock_root"
+              sequence="4"/>
+
+    <record model="ir.ui.menu" id="stock.menu_warehouse_report">
+        <field name="name">Reports</field>
+    </record>
+
+    <menuitem
+            action="stock.stock_picking_type_action"
+            id="stock.stock_picking_type_menu"
+            parent="stock.menu_stock_root" sequence="0"
+            name="Dashboard"/>
+
+</odoo>
+

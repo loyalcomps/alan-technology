@@ -1,0 +1,12 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+
+access_search_menu,access_search_menu,model_search_menu,base.group_user,1,1,1,1
+access_project_issue,access_project_issue,model_project_issue,base.group_user,1,1,1,1
+access_project_issue_report,access_project_issue_report,model_project_issue_report,base.group_user,1,1,1,1
+
+
+access_kg_service_user,access_project_task,project.model_project_task,group_service_user,1,1,1,0
+access_kg_service_engineer,access_project_taskengineer,project.model_project_task,group_service_engineer,1,1,1,0
+access_kg_service_manager,access_project_taskmanager,project.model_project_task,group_service_request_manager,1,1,1,1
+
+access_project_asset,access_project_asset,model_project_asset,,1,1,1,0

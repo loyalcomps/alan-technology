@@ -52,39 +52,6 @@ class AccountRegisterPayments(models.TransientModel):
             })
         return res
 
-    def _create_payment_vals_from_wizard(self, batch_result):
-        res = super(AccountRegisterPayments,
-                    self)._create_payment_vals_from_wizard(
-            batch_result)
-        if self.effective_date:
-            res.update({
-                'bank_reference': self.bank_reference,
-                'cheque_reference': self.cheque_reference,
-                'effective_date': self.effective_date,
-            })
-        return res
-
-    def _create_payment_vals_from_batch(self, batch_result):
-        res = super(AccountRegisterPayments,
-                    self)._create_payment_vals_from_batch(
-            batch_result)
-        if self.effective_date:
-            res.update({
-                'bank_reference': self.bank_reference,
-                'cheque_reference': self.cheque_reference,
-                'effective_date': self.effective_date,
-            })
-        return res
-
-    def _create_payments(self):
-        payments = super(AccountRegisterPayments, self)._create_payments()
-
-        for payment in payments:
-            payment.write({
-                'bank_reference': self.bank_reference,
-                'cheque_reference': self.cheque_reference
-            })
-        return payments
 
 
 class AccountPayment(models.Model):
@@ -125,9 +92,9 @@ class AccountPayment(models.Model):
         # Since this method can be called via a client_action_multi, we
         # need to make sure the received records are what we expect
         selfs = self.filtered(lambda r:
-                              r.payment_method_id.code
-                              in ['check_printing', 'pdc']
-                              and r.state != 'reconciled')
+                             r.payment_method_id.code
+                             in ['check_printing', 'pdc']
+                             and r.state != 'reconciled')
         if len(selfs) == 0:
             raise UserError(_(
                 "Payments to print as a checks must have 'Check' "
@@ -184,7 +151,6 @@ class AccountPayment(models.Model):
 
     def unmark_as_sent(self):
         self.write({'is_move_sent': False})
-
 
 class AccountPaymentMethod(models.Model):
     _inherit = "account.payment.method"

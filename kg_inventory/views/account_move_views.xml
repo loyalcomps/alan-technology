@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record model="ir.ui.view" id="view_account_move_kg_stock">
+        <field name="name">view.account.move.kg.stock</field>
+        <field name="model">account.move</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <field name="team_id" position="after">
+                <field name="kg_so_id"/>
+                <field name="kg_inv_type"/>
+                <field name="kg_do_id"/>
+            </field>
+             <xpath expr="/form/sheet/notebook/page/field[@name='line_ids']/tree/field[@name='date_maturity']" position="after">
+                   <field name="kg_dup"/>
+             </xpath>
+            <xpath expr="/form/sheet/notebook/page/field[@name='line_ids']" position="before">
+                <button name="kg_duplicate" type="object" string="Duplicate"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

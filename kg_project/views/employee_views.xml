@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record model="ir.ui.view" id="employee_form_inherit_from_project">
+        <field name="name">employee.form.inherit.from.project</field>
+        <field name="model">hr.employee</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <group name="active_group" position="after">
+                <group string="Hourly Rate">
+                    <field name="kg_hourly_rate"/>
+                </group>
+            </group>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="kg_size_tree">
+            <field name="name">kg.size</field>
+            <field name="model">kg.size</field>
+            <field name="arch" type="xml">
+                <tree string="Size">
+
+                    <field name="name"/>
+
+                </tree>
+            </field>
+        </record>
+
+
+        <record model="ir.ui.view" id="kg_size_form">
+            <field name="name">kg.size</field>
+            <field name="model">kg.size</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" required="1"/>
+                            </group>
+                            <group>
+
+                            </group>
+                        </group>
+                        <field name="desc" placeholder="Description...."/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_kg_size">
+            <field name="name">Size</field>
+            <field name="res_model">kg.size</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem action="action_kg_size"
+                  id="action_kg_size_id" parent="crm.crm_menu_config"
+                  sequence="13"/>
+    </data>
+</odoo>

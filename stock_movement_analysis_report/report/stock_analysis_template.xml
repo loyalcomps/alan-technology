@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="stock_report">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <br/>
+                        <center>
+                            <t t-if="data['form'].get('product_category_id')">
+                                <strong>
+                                    <h3 align="center">
+                                        <p t-esc="data['form']['product_category_id'][1]"/>
+                                    </h3>
+                                </strong>
+                                <h5>Category Analysis</h5>
+                            </t>
+                            <t t-if="data['form'].get('product_id')">
+                                <strong>
+                                    <p t-esc="data['form']['product_id'][1]"/>
+                                    <h5>Item Movement Analysis</h5>
+                                </strong>
+                            </t>
+                            <t t-if="data['form'].get('brand_id')">
+                                <strong>
+                                    <p t-esc="data['form']['brand_id'][1]"/>
+                                    <h5>Movement Analysis</h5>
+                                </strong>
+                            </t>
+                            <t t-esc="datetime.datetime.strptime(data['form']['date_from'], '%Y-%m-%d').strftime('%d/%m/%Y')"/>
+                            To
+                            <t t-esc="datetime.datetime.strptime(data['form']['date_to'], '%Y-%m-%d').strftime('%d/%m/%Y')"/>
+                        </center>
+                        <br/>
+                        <t t-if="data['form'].get('type') != 'item' ">
+                            <table class="table table-condensed">
+                                <thead>
+                                    <tr style="border-top:1px solid black">
+                                        <th style="width:40%;border-right:1px solid black;border-left:1px solid black">
+                                            Particulars
+                                        </th>
+                                        <th/>
+                                        <th class="text-center">Inwards</th>
+                                        <th style="border-right:1px solid black"/>
+                                        <th/>
+                                        <th class="text-center">Outwards</th>
+                                        <th style="border-right:1px solid black"/>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right:1px solid black;border-left:1px solid black"/>
+                                        <td>Quantity</td>
+                                        <td>Eff.Rate</td>
+                                        <td style="border-right:1px solid black">Value</td>
+                                        <td>Quantity</td>
+                                        <td>Eff.Rate</td>
+                                        <td style="border-right:1px solid black">Value</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="data['res']" t-as="product">
+                                        <t t-if="product.get('in_qty')  &gt; 0 or product.get('out_qty')  &gt; 0 ">
+                                            <td style="border-right:1px solid black; border-left:1px solid black">
+                                                <t t-esc="product['pname']"/>
+                                            </td>
+                                            <td class="text-center" style="border-left:1px solid black">
+                                                <span t-esc="'%.2f'%(product['in_qty'])"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <span t-esc="'%.2f'%(product['in_cost'])"/>
+                                            </td>
+                                            <td class="text-center" style="border-right:1px solid black">
+                                                <span t-esc="'%.2f'%(product['in_amount'])"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <span t-esc="'%.2f'%(product['out_qty'])"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <span t-esc="'%.2f'%(product['out_cost'])"/>
+                                            </td>
+                                            <td class="text-center" style="border-right:1px solid black">
+                                                <span t-esc="'%.2f'%(product['out_amount'])"/>
+                                            </td>
+                                        </t>
+                                    </tr>
+                                    <tr t-foreach="data['result']" t-as="product1"
+                                        style="border-bottom:1px solid black;">
+                                        <t t-if="product1.get('in_qty_total') &gt;
+                                                                         0 or product1.get('in_amount_total') &gt; 0 or
+                                                                        product1.get('out_qty_total') &gt; 0 or product1.get('out_amount_total')
+                                                                        &gt; 0">
+                                            <td style="border-right:1px solid black; border-left:1px solid black;">
+                                                <strong>Grand total</strong>
+                                            </td>
+                                            <td class="text-center" style="border-left:1px solid black">
+                                                <span t-esc="'%.2f'%(product1['in_qty_total'])"/>
+                                            </td>
+                                            <td class="text-center">
+                                            </td>
+                                            <td class="text-center" style="border-right:1px solid black">
+                                                <span t-esc="'%.2f'%(product1['in_amount_total'])"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <span t-esc="'%.2f'%(product1['out_qty_total'])"/>
+                                            </td>
+                                            <td class="text-center">
+                                            </td>
+                                            <td class="text-center" style="border-right:1px solid black">
+                                                <span t-esc="'%.2f'%(product1['out_amount_total'])"/>
+                                            </td>
+                                        </t>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </t>
+                        <t t-if="data['form'].get('type') == 'item' ">
+                            <table class="table table-condensed">
+                                <thead>
+                                    <tr style="border-top:1px solid black">
+                                        <th style="width:40%;">Particulars</th>
+                                        <th/>
+                                        <th/>
+                                        <th>Movement Value</th>
+                                        <th/>
+                                    </tr>
+                                    <tr>
+                                        <td/>
+                                        <td>Quantity</td>
+                                        <td>Basic Rate</td>
+                                        <td>Effective Rate</td>
+                                        <td>Value</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <strong>Movement Inwards</strong>
+                                        </td>
+                                        <td/>
+                                        <td/>
+                                        <td/>
+                                        <td/>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding-left:10px;">Supplier:</td>
+                                        <td/>
+                                        <td/>
+                                        <td/>
+                                        <td/>
+                                    </tr>
+                                    <tr t-foreach="data['res']" t-as="product" style="border-top:1px solid black">
+                                        <td t-if="product.get('supplier')" style="padding-left:13px;">
+                                            <t t-esc="product['supplier']"/>
+                                        </td>
+                                        <td t-if="product.get('supplier')" class="text-center">
+                                            <span t-esc="'%.2f'%(product['in_qty'])"/>
+                                        </td>
+                                        <td t-if="product.get('supplier')" class="text-center">
+                                            <span t-esc="'%.2f'%(product['in_cost'])"/>
+                                        </td>
+                                        <td t-if="product.get('supplier')" class="text-center">
+                                            <span t-esc="'%.2f'%(product['in_cost'])"/>
+                                        </td>
+                                        <td t-if="product.get('supplier')" class="text-right">
+                                            <span t-esc="'%.2f'%(product['in_amount'])"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Movement Outwards</strong>
+                                        </td>
+                                        <td/>
+                                        <td/>
+                                        <td/>
+                                        <td/>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding-left:10px;">Buyers:</td>
+                                        <td/>
+                                        <td/>
+                                        <td/>
+                                        <td/>
+                                    </tr>
+                                    <tr t-foreach="data['res']" t-as="product" style="border-top:1px solid black">
+                                        <td t-if="product.get('buyer')" style="padding-left:13px;">
+                                            <t t-esc="product['buyer']"/>
+                                        </td>
+                                        <td t-if="product.get('buyer')" class="text-center">
+                                            <span t-esc="'%.2f'%(product['out_qty'])"/>
+                                        </td>
+                                        <td t-if="product.get('buyer')" class="text-center">
+                                            <span t-esc="'%.2f'%(product['out_cost'])"/>
+                                        </td>
+                                        <td t-if="product.get('buyer')" class="text-center">
+                                            <span t-esc="'%.2f'%(product['out_cost'])"/>
+                                        </td>
+                                        <td t-if="product.get('buyer')" class="text-right">
+                                            <span t-esc="'%.2f'%(product['out_amount'])"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </t>
+                    </div>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

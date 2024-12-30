@@ -27,7 +27,6 @@ from odoo import api, fields, models
 # ---------------------------------------------------------
 class AccountTypes(models.Model):
     _name = "account.account.type"
-    _description = "Account Types"
 
     name = fields.Char(string='Account Type', required=True, translate=True)
     type = fields.Selection([

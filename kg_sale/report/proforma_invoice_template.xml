@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="proforma_invoice_report">
+        <t t-name="kg_sale.proforma_invoice_report">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <div class="page" style="height:100%;font-size:18px;">
+                            <div class="row">
+                                <center>
+                                    <h2>
+                                        <strong>PROFORMA INVOICE</strong>
+                                    </h2>
+                                </center>
+                            </div>
+                        </div>
+                        <br/>
+                        <table class="table table-borderless">
+                            <tr width="100%">
+                                <td style="padding: 0px;" width="20%">
+                                    <strong>Bill To Address:</strong>
+                                </td>
+                                <td style="padding: 0px;padding-left: 350px;" width="50%">
+                                    Proforma Invoice Number:
+                                    <strong>
+                                        <span t-field="o.pro_seq"/>
+                                    </strong>
+                                </td>
+                            </tr>
+                            <tr style="padding: 0px;">
+                                <td style="padding: 0px;text-transform: uppercase">
+                                    <t t-if="o.partner_id">
+                                        <b>
+                                            <span t-field="o.partner_id"/>
+                                        </b>
+                                        ,
+                                    </t>
+                                </td>
+                                <td style="padding: 0px;padding-left: 350px;">
+                                    Date:
+                                    <span t-field="o.date_order" t-options='{"widget": "datetime", "date_only": True}'/>
+                                </td>
+                            </tr>
+                            <tr style="padding: 0px;">
+                                <td style="padding: 0px;text-transform: uppercase">
+                                    <t t-if="o.partner_id.street">
+                                        <span t-field="o.partner_id.street"/>
+                                        ,
+                                    </t>
+                                    <t t-if="o.partner_id.street2">
+                                        <span t-field="o.partner_id.street2"/>
+                                        ,
+                                    </t>
+                                </td>
+                                <td style="padding: 0px;padding-left: 350px;">
+                                    LPO No :
+                                    <span t-field="o.kg_lpo_term_id"/>
+                                </td>
+                            </tr>
+                            <tr style="padding: 0px;">
+                                <td style="padding: 0px;">
+                                    <t t-if="o.partner_id.city">
+                                        <span t-field="o.partner_id.city"/>,
+                                    </t>
+                                    <t t-if="o.partner_id.zip">
+                                        Po Box:
+                                        <span t-field="o.partner_id.zip"/>,
+                                    </t>
+                                </td>
+                                <td style="padding: 0px;padding-left: 350px;">
+                                    Sales Person:
+                                    <span t-field="o.user_id"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0px;">
+                                    <t t-if="o.partner_id.state_id">
+                                        <span t-field="o.partner_id.state_id"/>,
+                                    </t>
+                                    <t t-if="o.partner_id.country_id">
+                                        <span t-field="o.partner_id.country_id"/>,
+                                    </t>
+                                </td>
+                                <td style="padding: 0px;padding-left: 350px;">
+                                    Terms:
+                                    <span t-field="o.payment_term_id"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0px;">
+                                    TR NO:
+                                    <span t-field="o.partner_id.vat"/>
+                                </td>
+                                <td style="padding: 0px;padding-left: 350px;">
+                                    Expiration:
+                                    <span t-field="o.validity_date"/>
+                                </td>
+                            </tr>
+                            <br/>
+                            <tr>
+                                <td style="padding: 0px;">
+                                </td>
+                                <td style="padding: 0px;padding-left: 350px;">
+                                    TR NO:
+                                    <span t-field="o.partner_id.kg_tr_no"/>
+                                </td>
+                            </tr>
+                        </table>
+                        <br/>
+                        <table class="table table-condensed"
+                               style=" width:100%;border:1px solid black; border-collapse: collapse;border-right:1px solid black;border-left:1px solid black;border-top:1px solid black;border-bottom:1px solid black">
+                            <thead>
+                                <tr>
+                                    <th style="border:1px solid black;padding:2px;width:5%;" class="text-center">
+                                        SI
+                                    </th>
+                                    <th style="border:1px solid black;padding:2px;width:60%;" class="text-center">
+                                        Description
+                                    </th>
+                                    <th style="border:1px solid black;padding:2px;width:2%;" class="text-center">Qty
+                                    </th>
+                                    <th style="border:1px solid black;padding:2px;width:2%;" class="text-center">Unit
+                                    </th>
+                                    <th style="border:1px solid black;padding:2px;width:6%;" class="text-center">VAT
+                                    </th>
+                                    <th style="border:1px solid black;padding:2px;width:6%;" class="text-center">Unit
+                                        Price
+                                    </th>
+                                    <th style="border:1px solid black;padding:2px;" class="text-center">Amount
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="line_count" t-value="0"/>
+                                <t t-foreach="o.order_line" t-as="line">
+                                    <t t-set="line_count" t-value="line_count + 1"/>
+                                    <t t-if="line_count % 10 == 1 and line_count > 1">
+                                        &lt;/tbody&gt;
+                                        &lt;/table&gt;
+                                        <div style="dislay: block;page-break-after: always;"/>
+                                        &lt;table class="table"&gt;
+                                        &lt;tbody&gt;
+                                    </t>
+                                    <t t-if="not line.display_type">
+                                        <tr>
+                                            <td style="padding:5px;border-right:1px solid black;border-bottom:1px solid black;border-top:1px solid black;text-align:center;border-left:1px solid black;">
+                                                <span t-esc="line.sl_no"/>
+                                            </td>
+                                            <td style="padding:5px;border-right:1px solid black;border-bottom:1px solid black;border-top:1px solid black;border-left:1px solid black;">
+                                                <span t-field="line.name"/>
+                                            </td>
+                                            <td style="padding:5px;border-right:1px solid black;border-bottom:1px solid black;border-top:1px solid black;border-left:1px solid black;">
+                                                <span t-field="line.product_uom_qty"/>
+                                            </td>
+                                            <td style="padding:5px;border-right:1px solid black;border-bottom:1px solid black;border-top:1px solid black;border-left:1px solid black;text-align:center">
+                                                <span t-esc="line.product_uom.name"/>
+                                            </td>
+                                            <td style="padding:5px;border-right:1px solid black;border-bottom:1px solid black;border-top:1px solid black;border-left:1px solid black;text-align:center">
+                                                <span t-field="line.tax_id.amount"/>
+                                            </td>
+                                            <td style="padding:5px;border-right:1px solid black;border-bottom:1px solid black;border-top:1px solid black;border-left:1px solid black;text-align:center">
+                                                <span t-field="line.price_unit"/>
+                                            </td>
+                                            <td style="padding:5px;border-right:1px solid black;border-left:1px solid black;border-bottom:1px solid black;border-top:1px solid black;text-align:center">
+                                                <t t-if="line.tax_id.amount">
+                                                    <span t-esc="line.tax_id.amount * line.price_unit"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <span t-field="line.price_unit"/>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </t>
+
+                            </tbody>
+                            <tr>
+                                <td colspan="6"
+                                    style="border-left:1px solid black;border-right:1px solid black;border-bottom:1px solid black;padding-left:675px;">
+                                    Net (AED):
+                                </td>
+                                <td style="padding:5px;border-left:1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-align:center">
+                                    <t t-if="line.tax_id.amount">
+                                        <span t-esc="line.tax_id.amount * line.price_unit"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span t-field="line.price_unit"/>
+                                    </t>
+                                </td>
+                            </tr>
+
+
+                        </table>
+                        <t t-if="o.kg_aed_text">
+                            <div style="text-align:left;">
+                                Amount in words
+                                <span style="padding-left:2px;font-size:16px"/>
+                                :
+                                <span style="padding-left:2px;font-size:16px"/>
+                                <span t-field="o.currency_id"/>
+                                <span t-esc="o.kg_aed_text" style="text-transform: lowercase"/>
+                            </div>
+                        </t>
+                        <br/>
+                        <t t-if="o.bank_id">
+                            <table style="border:0px solid white" width="30%">
+                                <tr>
+                                    <td style="text-align:left;">
+                                        <b>Bank Details</b>
+                                        <br/>
+                                        <br/>
+                                    </td>
+                                </tr>
+                                <t t-set="name" t-value="request.env.company.name"/>
+                                <t t-set="bank_name" t-value=""/>
+                                <t t-set="acc_number" t-value=""/>
+                                <t t-set="ifsc_code" t-value=""/>
+                                <t t-foreach="request.env.company.bank_ids" t-as="bank">
+                                    <t t-if="bank.bank_id==o.bank_id">
+                                        <t t-set="bank_name" t-value="o.bank_id.name"/>
+                                        <t t-set="acc_number" t-value="bank.acc_number"/>
+                                        <t t-set="ifsc_code" t-value="bank.bank_id.bic"/>
+                                    </t>
+                                </t>
+                                <tr>
+                                    <td style="text-align:left;">
+                                        Name :
+                                        <span t-esc="name"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:left;">
+                                        Bank Name :
+                                        <span t-esc="bank_name"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:left;">
+                                        Account Number:
+                                        <span t-esc="acc_number"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:left;">
+                                        IFSC Code:
+                                        <span t-esc="ifsc_code"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </t>
+                        <br/>
+                        <div class="row">
+                            <div class="col-xs-12 pull-right">
+                                <div style="text-align:left;font-size:16px">
+                                    <u>
+                                        <strong>Terms And Conditions</strong>
+                                    </u>
+                                    <br/>
+                                    1. Goods once sold will not be replaced or exchanged
+                                    <br/>
+                                    2. This Signature confirms buyer's receipt and acceptance to above
+                                    <br/>
+                                    transactions even if official purchase order is not issued by the buyer.
+                                    <br/>
+                                    3. All payments must be made to M/s.ALAN TECHNOLOGY L.L.C. An interest
+                                    <br/>
+                                    @15% per annum will be charged for delayed payment.
+                                    <br/>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <div class="row">
+
+                            <div class="col-xs-12 pull-right">
+                                <div>
+                                    <strong>For ALAN Technology LLC</strong>
+                                    <span style="padding-left:200px;"/>
+                                    For
+                                    <strong>
+                                        <span t-field="o.partner_id"/>
+                                    </strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="oe_structure"/>
+                        <!--                        <div class="footer">-->
+                        <!--                            <div class="row">-->
+                        <!--                                <div class="col-xs-12" align="center">-->
+                        <!--                                    <t t-foreach="o.company_id.report_footer" t-as="images">-->
+                        <!--                                        <t t-if="images.name == 'footer1'">-->
+                        <!--                                            <div class="col-xs-6" align="left">-->
+                        <!--                                                <img t-if="images.img"-->
+                        <!--                                                     t-att-src="'data:image/png;base64,%s' % images.img"-->
+                        <!--                                                     style="width:1500px; height:100px;"/>-->
+                        <!--                                            </div>-->
+                        <!--                                        </t>-->
+                        <!--                                    </t>-->
+                        <!--                                </div>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
+                        <div class="footer">
+                            <div class="row" style="border-top:1px solid black;">
+                                <div class="col col-md-auto" align="center">
+                                    <div class="col-xs-4" align="center" style="font-size:20px">
+                                        <br/>
+                                        <strong style="font-size:16px">IT Solutions provider since 1990</strong>
+                                        <br/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </t>
+    </template>
+
+
+    <report
+            id="proforma_invoice_report_actions"
+            model="sale.order"
+            name="kg_sale.proforma_invoice_report"
+            file="kg_sale.proforma_invoice_report"
+            string="Proforma Invoice"
+            report_type="qweb-pdf"
+            multi="False"/>
+
+</odoo>

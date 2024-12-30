@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_picking_template" inherit_id="stock.report_picking">
+        <xpath expr="//div[@name='div_origin']/strong" position="replace">
+            <strong>Order (Origin)</strong>
+        </xpath>
+        <xpath expr="//div[@name='div_origin']/p" position="replace">
+            <p t-field="o.origin" style="border-top:1px solid black"/>
+        </xpath>
+        <xpath expr="//div[@name='div_state']/strong" position="replace">
+            <strong>State</strong>
+        </xpath>
+        <xpath expr="//div[@name='div_state']/p" position="replace">
+            <p t-field="o.state" style="border-top:1px solid black"/>
+        </xpath>
+        <xpath expr="//div[@name='div_state']" position="after">
+            <div class="col-auto" name="div_create_date">
+                <strong>Commitment Date</strong>
+                <p t-field="o.date" style="border-top:1px solid black"/>
+            </div>
+        </xpath>
+        <xpath expr="//div[@name='div_sched_date']/strong" position="replace">
+            <strong>Scheduled Date</strong>
+        </xpath>
+        <xpath expr="//div[@name='div_sched_date']/p" position="replace">
+            <p t-field="o.scheduled_date" style="border-top:1px solid black"/>
+        </xpath>
+    </template>
+</odoo>

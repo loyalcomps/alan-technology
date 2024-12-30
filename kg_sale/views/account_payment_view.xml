@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+   <record model="ir.ui.view" id="view_account_payment_forminherited_kg_so">
+      <field name="name">account.payment</field>
+      <field name="model">account.payment</field>
+      <field name="type">form</field>
+      <field name="inherit_id" ref="account.view_account_payment_form"/>
+      <field name="arch" type="xml">
+			<field name="partner_bank_id" position="after">
+				<field name="kg_pdc"/>
+				<field name="kg_cleared"/>
+                <field name="kg_other_name"/>
+
+            </field>
+            <xpath expr="//field[@name='date']" position="before">
+
+              <field name="kg_amount_words"/>
+            </xpath>
+
+
+      </field>
+   </record>
+
+
+   
+    
+  
+</odoo>

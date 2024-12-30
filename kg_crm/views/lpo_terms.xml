@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="kg_lpo_terms_tree">
+            <field name="name">kg.lpo.terms</field>
+            <field name="model">kg.lpo.terms</field>
+            <field name="arch" type="xml">
+                <tree string="LPO Terms">
+
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record model="ir.ui.view" id="kg_lpo_terms_form">
+            <field name="name">kg.lpo.terms</field>
+            <field name="model">kg.lpo.terms</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" required="1"/>
+                            </group>
+                            <group>
+
+                            </group>
+                        </group>
+                        <field name="note" placeholder="Description...."/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_kg_lpo_terms">
+            <field name="name">LPO Terms</field>
+            <field name="res_model">kg.lpo.terms</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem action="action_kg_lpo_terms"
+                  id="action_kg_lpo_terms_id" parent="crm.crm_menu_config"
+                  sequence="12"/>
+    </data>
+</odoo>

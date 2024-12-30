@@ -1,0 +1,27 @@
+.o_column_sortable {
+        wwebkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;}
+.o_list_table  .o_column_sortable {
+        wwebkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;}
+.table-condensed > thead > tr > th, .table-condensed > tbody > tr > th, .table-condensed > tfoot > tr > th, .table-condensed > thead > tr > td, .table-condensed > tbody > tr > td, .table-condensed > tfoot > tr > td {
+    padding: 5px;
+}
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+  --bs-table-accent-bg: var(--bs-table-striped-bg);
+  color: var(--bs-table-striped-color);
+}
+
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    padding: 8px;
+    line-height: 1.42857143;
+    vertical-align: top;
+    border-top: 1px solid #dddddd;
+}
+th {
+    text-align: left;
+}

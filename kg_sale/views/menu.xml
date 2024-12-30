@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <menuitem name="Contacts"
+                  id="kg_res_partner_menu_contacts_sale"
+                  action="contacts.action_contacts"
+
+                  parent="sale.menu_sale_config" groups="base.group_no_one"/>
+            <menuitem id="contacts.menu_partner_category_form"
+                action="base.action_partner_category_form"
+                name="Contact Tags"
+                sequence="1" parent="kg_res_partner_menu_contacts_sale" groups="base.group_no_one"/>
+
+             <menuitem id="contacts.menu_partner_title_contact"
+                action="base.action_partner_title_contact"
+                name="Contact Titles" parent="kg_res_partner_menu_contacts_sale" groups="base.group_no_one" sequence="2"/>
+
+
+        <menuitem id="kg_menu_localisation" name="Localization"
+
+                  parent="sale.menu_sale_config" groups="base.group_no_one"/>
+        <menuitem id="kg_menu_country_partner"
+                  action="base.action_country" parent="kg_menu_localisation"
+                  sequence="2"/>
+
+        <menuitem id="kg_menu_country_group"
+                  action="base.action_country_group"
+                  name="Country Group" parent="kg_menu_localisation"
+                  sequence="3"/>
+<!--        <menuitem id="crm_team_view_kanban_dashboard1" action="crm.action_crm_tag_tree_view_salesteams_oppor11" sequence="1" parent="sale.sale_menu_root" name="Dashboard"/>-->
+        <menuitem id="crm_team_view_kanban_dashboard1" action="sales_team.crm_team_action_sales" sequence="1" parent="sale.sale_menu_root" name="Dashboard"/>
+
+
+        <menuitem id="kg_menu_country_state_partner"
+                  action="base.action_country_state"
+                  parent="kg_menu_localisation"
+                  sequence="2"/>
+        <menuitem id="menu_product_in_config_stock" name="Products" parent="sale.menu_sale_config" sequence="6"/>
+         <menuitem id="menu_product_pricelist_main1"
+                name="Pricelists"
+               parent="sale.menu_sale_config"
+                groups="product.group_product_pricelist"
+                sequence="30"/>
+         <menuitem id="sale.menu_product_pricelist_main"
+                name="Pricelists"
+                action="product.product_pricelist_action2" parent="menu_product_pricelist_main1"
+                groups="product.group_product_pricelist"
+                sequence="30"/>
+
+
+        <menuitem id="kg_menu_config_bank_accounts"
+                  name="Bank Accounts"
+                  parent="sale.menu_sale_config" groups="base.group_no_one"
+        />
+        <menuitem id="kg_menu_action_res_bank_form"
+                  action="base.action_res_bank_form"
+                  parent="kg_menu_config_bank_accounts"
+                  sequence="1"/>
+
+        <menuitem id="kg_menu_action_res_partner_bank_form"
+                  action="base.action_res_partner_bank_account_form"
+                  parent="kg_menu_config_bank_accounts"
+                  sequence="2"/>
+    </data>
+
+
+</odoo>

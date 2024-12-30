@@ -16,7 +16,7 @@ class SalespersonInactive(models.Model):
         compute='_compute_is_sales_manager',
         store=False
     )
-
+    property_payment_term_id = fields.Many2one('account.payment.term',string='Payment Terms', domain="[('state', '=', 'approve')]")
     @api.depends()
     def _compute_is_sales_manager(self):
         sales_manager_group = self.env.ref('sale_customization.group_sales_manager')
@@ -60,3 +60,60 @@ class SalespersonInactive(models.Model):
                       contact.customer_state = 'active'
         else:
             print("No contacts found with a last_invoice_date.")
+class ResCompany(models.Model):
+    _inherit = 'res.company'
+
+    max_order_amount = fields.Float(string="Maximum Order Amount")
+
+class AccountPaymentTerm(models.Model):
+    _inherit = 'account.payment.term'
+
+    min_days= fields.Integer(string='Minimum Days Approval')
+    max_days= fields.Integer(string='Maximmum Days Approval')
+    state = fields.Selection([
+        ('toapprove', 'To approve'),
+        ('approve', 'Approve'),
+        ('reject', 'Reject'),
+    ], default='toapprove', string="Status")
+    is_approval = fields.Boolean(
+        string="Is approval",
+        compute='_compute_is_directors',
+        store=False
+    )
+    is_sales_manager = fields.Boolean(
+        string="Is Sales Manager",
+        compute='_compute_is_sales_manager',
+        store=False
+    )
+    is_standard = fields.Boolean(string="Standard Payment Term")
+
+    def action_approve(self):
+        self.state='approve'
+
+    def action_reject(self):
+        self.state='reject'
+
+    def action_draft(self):
+        self.state='toapprove'
+
+    @api.depends()
+    def _compute_is_sales_manager(self):
+        sales_manager_group = self.env.ref('sale_customization.group_sales_manager')
+        for order in self:
+            if sales_manager_group:
+                order.is_sales_manager = sales_manager_group in self.env.user.groups_id
+            else:
+                order.is_sales_manager = False
+
+    @api.depends()
+    def _compute_is_directors(self):
+        sales_manager_group = self.env.ref('sale_customization.group_directors')
+        for order in self:
+            if sales_manager_group:
+                order.is_approval = sales_manager_group in self.env.user.groups_id
+            else:
+                order.is_approval = False
+
+
+
+

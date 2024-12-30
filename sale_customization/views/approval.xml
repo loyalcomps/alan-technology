@@ -6,39 +6,46 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="is_sales_manager" invisible="1"/>
+                    <field name="customer_state" invisible="1"/>
+                </xpath>
                 <xpath expr="//header/field[@name='state']" position="replace">
                     <field name="state" widget="statusbar" statusbar_visible="draft,sent,approve,sale"/>
                 </xpath>
-                <xpath expr="//header/button[@name='action_quotation_send']" position="after">
+                <xpath expr="//header/button[@name='action_quotation_send']" position="before">
+
                     <button name="action_approve" string="Approve"
-                            attrs="{'invisible': [('state', 'in', ['draft', 'sale', 'approve'])]}" type="object"
+                            attrs="{'invisible': ['|',('show_approve','=',False),('state', 'not in', ['draft', 'sent'])]}"
+                            type="object"
                             class="btn-primary" groups="sale_customization.group_sales_manager"/>
-                    <field name="is_sales_manager"/>
-                </xpath>
-                <xpath expr="//button[@name='action_confirm']" position="attributes">
-                        <attribute name="attrs">{'invisible': [('state', '=', 'sale')]}</attribute>
-                </xpath>
-            </field>
-        </record>
-        <record id="sale_order_payment_term_field" model="ir.ui.view">
-            <field name="name">sale.order.payment.term</field>
-            <field name="model">sale.order</field>
-            <field name="inherit_id" ref="sale.view_order_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='partner_id']" position="after">
+
+
+                    <field name="show_approve" invisible="1"/>
                     <field name="is_sales_manager" invisible="1"/>
                 </xpath>
+
+
+                <xpath expr="//button[@name='action_confirm']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('state', 'not in', ['sent','approve'])]}</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="customer_state" invisible="0"/>
+                    <field name="show_approve" invisible="0"/>
+                </xpath>
             </field>
         </record>
+
         <record id="stock_picking_form_view_invoice_button" model="ir.ui.view">
             <field name="name">stock.picking.form.invoice.button</field>
             <field name="model">stock.picking</field>
             <field name="inherit_id" ref="stock.view_picking_form"/>
             <field name="arch" type="xml">
-            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_id']"
-                           position="after">
-                <field name="description"/>
-            </xpath>
+                <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_id']"
+                       position="after">
+                    <field name="description"/>
+                </xpath>
 
             </field>
         </record>
@@ -47,14 +54,14 @@
             <field name="model">account.move</field>
             <field name="inherit_id" ref="account.view_move_form"/>
             <field name="arch" type="xml">
-            <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='product_id']"
-                           position="after">
-                <field name="description"/>
-            </xpath>
-            <xpath expr="//field[@name='line_ids']/tree/field[@name='name']"
-                           position="after">
-                <field name="description"/>
-            </xpath>
+                <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='product_id']"
+                       position="after">
+                    <field name="description"/>
+                </xpath>
+                <xpath expr="//field[@name='line_ids']/tree/field[@name='name']"
+                       position="after">
+                    <field name="description"/>
+                </xpath>
             </field>
         </record>
     </data>

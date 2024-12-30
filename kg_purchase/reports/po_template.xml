@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="po_template_report">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <div class="oe_structure"/>
+                <div class="col-xs-12">
+                    <div class="row">
+                        <center>
+                            <h1>
+                                <strong>PURCHASE ORDER</strong>
+                                <br/>
+                                <br/>
+                                <br/>
+                            </h1>
+                        </center>
+                    </div>
+                </div>
+
+                <table class="table table-borderless table-condensed table-hover'
+                           style='width:100%;'">
+                    <tr width="100%" align="left">
+                        <td rowspan="7" width="40%">
+                            <strong style="padding-bottom: 10px">To:</strong>
+                            <br/>
+                            <t t-if="o.partner_id">
+                                <strong>
+                                    <span style="padding-bottom: 10px" t-field="o.partner_id"/>
+                                </strong>
+                                ,
+                                <br/>
+                            </t>
+                            <t t-if="o.partner_id.street">
+                                <span style="padding-bottom: 10px" t-field="o.partner_id.street"/>
+                                ,
+                                <br/>
+                            </t>
+                            <t t-if="o.partner_id.street2">
+                                <span style="padding-bottom: 10px" t-field="o.partner_id.street2"/>
+                                ,
+                                <br/>
+                            </t>
+                            <t t-if="o.partner_id.city">
+                                <span style="padding-bottom: 10px" t-field="o.partner_id.city"/>
+                                ,
+                                <br/>
+                            </t>
+                            <t t-if="o.partner_id.zip">
+                                Po Box:
+                                <span style="padding-bottom: 10px" t-field="o.partner_id.zip"/>
+                                ,
+                                <br/>
+                            </t>
+                            <t t-if="o.partner_id.state_id">
+                                <span style="padding-bottom: 10px" t-field="o.partner_id.state_id"/>
+                                ,
+                            </t>
+                            <t t-if="o.partner_id.country_id">
+                                <span style="padding-bottom: 10px" t-field="o.partner_id.country_id"/>
+                                ,
+                                <br/>
+                            </t>
+                            <t t-if="o.partner_id.phone">
+                                <span style="padding-bottom: 10px" t-field="o.partner_id.phone"/>
+                            </t>
+                            <t t-if="o.partner_id.kg_tr_no">
+                                TR NO:
+                                <span t-field="o.partner_id.kg_tr_no"/>
+                            </t>
+                        </td>
+                    </tr>
+                    <tr width="100%" align="left">
+                        <td style="padding-bottom: 15px;padding-left: 350px;">
+                            <t t-if="o.name">
+                                NO:
+                                <span t-field="o.name"/>
+                            </t>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-bottom: 15px;padding-left: 350px;">
+                            <t t-if="o.date_order">
+                                Date:
+                                <span t-field="o.date_order" t-options='{"widget": "date","format": "dd-MM-yyyy"}'/>
+                            </t>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0px;padding-left: 350px;">
+                            TR NO:
+                            <span t-field="o.company_id.partner_id.kg_tr_no"/>
+                        </td>
+                    </tr>
+                    <br/>
+                </table>
+                <p style="font-size:18px;">
+                    <b>Please supply the following materials:</b>
+                </p>
+                <table class="table table-condensed"
+                       style=" width:100%;border:1px solid black; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th style="width:1%;border:1px solid black;padding:10px;" class="text-center" rowspan="2">
+                                Sl
+                            </th>
+                            <th style="width:50%;border:1px solid black;padding:10px;" class="text-center" rowspan="2">
+                                Description
+                            </th>
+                            <th style="width:3%;border:1px solid black;padding:10px;" class="text-center" rowspan="2">
+                                QTY
+                            </th>
+                            <th style="width:10%;border:1px solid black;padding:10px;" class="text-center" rowspan="2">
+                                VAT
+                            </th>
+                            <th style="width:1%;border:1px solid black;padding:10px;" class="text-center" rowspan="2">
+                                Rate (
+                                <span t-field="o.currency_id"/>
+                                )
+                            </th>
+                            <th style="width:3%;border:1px solid black;padding:10px;" class="text-center" rowspan="2">
+                                Total
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="i" t-value="1"/>
+                        <tr t-foreach="o.order_line" t-as="line">
+                            <td class="text-center"
+                                style="padding:10px;border-right:1px solid black;border-bottom:1px solid black;width:1%">
+                                <span t-esc="i"/>
+                                <t t-set="i" t-value="i+1"/>
+                            </td>
+                            <td class="text-center"
+                                style="padding:10px;border-right:1px solid black;border-bottom:1px solid black;">
+                                <span t-field="line.name"/>
+                            </td>
+                            <td class="text-center"
+                                style="padding:10px;border-right:1px solid black;border-bottom:1px solid black;width:3%">
+                                <span t-field="line.product_qty"/>
+                            </td>
+                            <td class="text-center"
+                                style="padding:10px;border-right:1px solid black;border-bottom:1px solid black;width:10%;text-align:center;">
+                                <t t-esc="'{0:,.0f}'.format(line.taxes_id.amount)"/>
+                                %
+                            </td>
+                            <td class="text-right"
+                                style="padding:10px;border-right:1px solid black;border-bottom:1px solid black;width:1%;text-align:right;">
+                                <span t-esc="'%.2f'%(line.price_unit)"/>
+                            </td>
+                            <t t-set="price_subtotal" t-value="0"/>
+                            <t t-set="price_subtotal" t-value="line.price_unit*line.product_qty"/>
+                            <td class="text-right"
+                                style="padding:10px;border-left:1px solid black;border-right:1px solid black;border-bottom:1px solid black;width:10%;text-align:right;">
+                                <span t-esc="'%.2f'%(price_subtotal)"/>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                    <tfoot>
+                        <t t-if="o.amount_tax">
+                            <tr>
+                                <td colspan="4" style="border-top:1px solid black"/>
+                                <td style="border-right:1px solid black;border-top:1px solid black;padding:10px;">
+                                    <strong>Total VAT:</strong>
+                                </td>
+                                <td class="text-right"
+                                    style="border-top:1px solid black;padding:10px;text-align:right;">
+                                    <span class="text-right">
+                                        <strong>
+                                            <t t-esc="'{0:,.2f}'.format(o.amount_tax)"/>
+                                        </strong>
+                                    </span>
+                                </td>
+                            </tr>
+                        </t>
+                        <tr style="border-top: 1px solid #ddd">
+                            <td colspan="4" style="border-top: 1px solid #ddd"/>
+                            <td style="border-right:1px solid black;border-top: 1px solid #ddd;padding:10px;width:15%;">
+                                <strong>Net Amount:</strong>
+                            </td>
+                            <td class="text-right" style="border-top: 1px solid #ddd;padding:10px;text-align:right;">
+                                <span class="text-right">
+                                    <strong>
+                                        <t t-esc="'{0:,.2f}'.format(o.amount_total)"/>
+                                    </strong>
+                                </span>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <br/>
+                <div class="row">
+                    <div class="col-xs-12 pull-right" style="font-size:18px">
+                        <div style="text-align:left;">
+                            Amount in words:
+                            <span t-esc="o.currency_id.amount_to_text(o.amount_total)"
+                                  style="text-transform: uppercase"/>
+                            ONLY
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="font-size:18px;">
+                    <br/>
+                    <tbody>
+                        <tr>
+                            Delivery:
+                            <span t-field="o.date_order"
+                                  t-field-options="{&quot;format&quot;:&quot;dd/MM/yyyy&quot;}"/>
+                            <br/>
+                            <br/>
+                            Payment:
+                            <span t-field="o.payment_term_id"/>
+                            <br/>
+                            <br/>
+                            <strong>For ALAN Technology LLC</strong>
+                            <br/>
+                            <table>
+                                <tr>
+                                    <td style="width:40%;padding-top:5px;">
+                                        <t t-if="o.sudo().create_uid.kg_sign_signature">
+                                            <span>
+                                                <img t-att-src="image_data_uri(o.sudo().create_uid.kg_sign_signature)"
+                                                     style="max-height: 3cm; max-width: 6cm;"/>
+                                            </span>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-esc="o.sudo().create_uid.name"/>
+                                        </t>
+                                        <br/>
+                                        <strong>Authorized Signatory</strong>
+                                        <br/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-top:2px;">
+                                        <br/>
+                                        <t t-if="o.company_id.sudo().company_seal">
+                                            <span>
+                                                <img t-att-src="image_data_uri(o.sudo().company_id.company_seal)"
+                                                     style="max-height: 2cm; max-width: 7cm;"/>
+                                            </span>
+                                        </t>
+                                        <br/>
+                                        <strong>Company Seal</strong>
+                                    </td>
+                                </tr>
+                            </table>
+                        </tr>
+                    </tbody>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <report
+            id="report_po_template_action"
+            model="purchase.order"
+            name="kg_purchase.po_template_report"
+            file="kg_purchase.po_template_report"
+            string="PO Template Alan"
+            report_type="qweb-pdf"
+            multi="False"/>
+
+</odoo>
+
+

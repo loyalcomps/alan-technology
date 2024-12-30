@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_item_movement_analysis_report" model="ir.actions.report">
+        <field name="name">Item Movement Analysis</field>
+        <field name="model">item.movement.analysis</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">item_movement_analysis_report.item_report</field>
+        <field name="report_file">item_movement_analysis_report.item_report</field>
+    </record>
+</odoo>

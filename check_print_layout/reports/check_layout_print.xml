@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="paperformat_check_layout" model="report.paperformat">
+        <field name="name">Check layout</field>
+        <field name="default" eval="True"/>
+        <field name="format">custom</field>
+        <field name="page_height">94</field>
+        <field name="page_width">204</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">0</field>
+        <field name="margin_bottom">0</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_check_layout_new" model="ir.actions.report">
+        <field name="name">Check</field>
+        <field name="model">account.payment</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">check_print_layout.check_layout_content_report</field>
+        <field name="report_file">check_print_layout.check_layout_content_report</field>
+        <field name="paperformat_id" ref="check_print_layout.paperformat_check_layout"/>
+        <field name="binding_model_id" ref="account.model_account_payment"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="check_layout_content_report">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <div class="page" t-attf-style="font-size: {{o.layout_id.font_size}}px;">
+                    <!--                    <div  t-attf-style="padding-top: {{o.layout_id.ac_payee_padding_top}}mm;margin-left: {{o.layout_id.ac_payee_margin_left}}mm;position: absolute;-webkit-transform: rotate({{o.layout_id.rotation_text}}deg);">-->
+
+                    <!--                        A/C Payee-->
+
+                    <!--                    </div>-->
+
+                    <div t-attf-style="position: absolute;padding-top: {{o.layout_id.date_top_padding}}mm;margin-left: {{o.layout_id.date_left_margin}}mm;">
+
+                        <span t-field="o.date" t-field-options="{&quot;format&quot;:&quot;dd/mm/yyyy&quot;}"/>
+
+
+                    </div>
+
+                    <div t-attf-style="position: absolute;padding-top: {{o.layout_id.ben_top_padding}}mm;margin-left: {{o.layout_id.ben_left_margin}}mm;">
+
+                        <span t-field="o.partner_id"/>
+
+                    </div>
+
+                    <div t-attf-style="position: absolute;padding-top: {{o.layout_id.amt_top_padding}}mm;margin-left: {{o.layout_id.amt_left_margin}}mm;">
+
+                        <span t-field="o.amount"/>
+
+                    </div>
+
+                    <div t-attf-style="position: absolute;max-width: {{o.layout_id.amt_words_max_width}}mm;line-height: {{o.layout_id.amt_words_line_height}}mm;padding-top: {{o.layout_id.amt_words_top_padding}}mm;margin-left: {{o.layout_id.amt_words_left_margin}}mm;">
+
+                        <span t-field="o.check_amount_in_words"/>
+
+                    </div>
+
+                </div>
+
+
+            </t>
+        </t>
+    </template>
+</odoo>

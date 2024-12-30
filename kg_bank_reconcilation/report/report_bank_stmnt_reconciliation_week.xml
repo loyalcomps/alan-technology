@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_bank_stmnt_reconciliation_week">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <div class="page article o_report_layout_standard">
+<!--                    <style>-->
+<!--                        .table-borderless td,-->
+<!--                        .table-borderless th {-->
+<!--                        border: 0;-->
+<!--                        }-->
+<!--                    </style>-->
+
+                    <!--                    <div class="header">-->
+                    <div class="oe_structure "/>
+                    <div class="row">
+                        <center style="font-size:18">
+                            <td width="75%" align="left">
+                                <b>
+                                    <span t-esc="doc.company_id.name"/>
+                                </b>
+                            </td>
+                            <br/>
+                            <td width="75%" align="left">
+                                <t t-if='doc.company_id.zip'>
+                                    PO BOX
+                                    <span t-esc="doc.company_id.zip"/>
+                                </t>
+                            </td>
+                            <br/>
+                            <td width="75%" align="left">
+                                <t t-if='doc.company_id.street'>
+                                    <span t-esc="doc.company_id.street"/>
+                                </t>
+                            </td>
+                            <br/>
+                            <td width="75%" align="left">
+                                <t t-if='doc.company_id.street2'>
+                                    <span t-esc="doc.company_id.street2"/>
+                                </t>
+                            </td>
+                            <br/>
+                            <td width="75%" align="left">
+                                <t t-if='doc.company_id.city'>
+                                    <span t-esc="doc.company_id.city"/>
+                                </t>
+                            </td>
+                            <br/>
+                            <td width="75%" align="left">
+                                <t t-if='doc.company_id.state_id.name'>
+                                    <span t-esc="doc.company_id.state_id.name"/>
+                                </t>
+                            </td>
+                            <br/>
+                            <td width="75%" align="left">
+                                <t t-if='doc.company_id.country_id.name'>
+                                    <span t-esc="doc.company_id.country_id.name"/>
+                                </t>
+                            </td>
+                            <br/>
+                            <td width="75%" align="left">
+                                <t t-if='doc.company_id.vat'>
+                                    TRN:
+                                    <span t-field='doc.company_id.vat'/>
+                                </t>
+                            </td>
+                            <br/>
+                            <td width="75%" align="left">
+                                <b>
+                                    EMIRATES NBD
+                                </b>
+                            </td>
+                            <br/>
+                            Reconciliation Statement
+                            <br/>
+                            <span style="font-size:15px;">
+                                <span t-esc="doc.date_from"
+                                      t-options='{"widget": "date","format": "dd/MM/yyyy"}'/>
+                            </span>
+                            <span style="font-size:15px;">
+                                to
+                            </span>
+                            <span style="font-size:15px;">
+                                <span t-esc="doc.date_to"
+                                      t-options='{"widget": "date","format": "dd/MM/yyyy"}'/>
+                            </span>
+                        </center>
+                    </div>
+                    <div class="header">
+                        <div class="row">
+                            <td align="right">
+                                <div class="row mb-1" align="right">
+                                    <span>
+                                        Page
+                                        <span class="page"/>
+                                    </span>
+                                </div>
+                            </td>
+                        </div>
+                    </div>
+
+                    <table class="table table-condensed" style="border-right:1px solid black;border-left:1px solid black;border-top:1px solid black;border-bottom:1px solid black">
+            <thead>
+               <tr>
+                   <th class="text-center" style="border-right:1px solid black">Sl#</th>
+
+
+                  <th class="text-center" style="border-right:1px solid black">Date</th>
+                  <th class="text-center" style="border-right:1px solid black">Reference</th>
+                  <th class="text-center" style="border-right:1px solid black">Partner</th>
+                   <th class="text-center" style="border-right:1px solid black">Debit</th>
+                   <th class="text-center" style="border-right:1px solid black">Credit</th>
+               </tr>
+            </thead>
+            <tbody>
+<!--               <t t-set="count" t-value="0" />-->
+
+               <tr t-foreach="doc.statement_lines_week()" t-as="line">
+                   <t t-if ="line['type']==1">
+                       <td class="text-left" colspan="7" style="border-right:1px solid black;border-bottom:1px solid black;background-color:#dfe2e3;height:40px;">
+                           <b><span t-esc="line['name']" /></b>
+                        </td>
+                   </t>
+                    <t t-if ="line['type']==2">
+                        <td class="text-center" style="border-right:1px solid black;border-bottom:1px solid black">
+                       <span t-esc="line['count']" />
+                       </td>
+                     <td class="text-left" width="15%" style="border-right:1px solid black;border-bottom:1px solid black">
+                        <span t-esc="line['date']" t-options='{"widget": "date","format": "dd-MM-yyyy"}'/>
+                     </td>
+                     <td class="text-left" style="border-right:1px solid black;border-bottom:1px solid black">
+                        <span t-esc="line['name']" />
+                     </td>
+                   <td class="text-left" style="border-right:1px solid black;border-bottom:1px solid black">
+                        <span t-esc="line['partner_id']" />
+                     </td>
+                   <td class="text-left" style="border-right:1px solid black;border-bottom:1px solid black">
+                        <span t-esc="line['debit']" />
+                     </td>
+                    <td class="text-left" style="border-right:1px solid black;border-bottom:1px solid black">
+                       <span t-esc="line['credit']" />
+                     </td>
+                   </t>
+                   <t t-if ="line['type']==3">
+                       <td class="text-center" colspan="4" style="border-right:1px solid black;border-bottom:1px solid black">
+                           <b><span t-esc="line['name']" /></b>
+                        </td>
+                       <td class="text-left"  style="border-right:1px solid black;border-bottom:1px solid black">
+                           <b><span t-esc="line['debit']" /></b>
+                        </td>
+                       <td class="text-left"  style="border-right:1px solid black;border-bottom:1px solid black">
+                           <b><span t-esc="line['credit']" /></b>
+                        </td>
+                   </t>
+             </tr>
+            </tbody>
+         </table>
+
+
+
+
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

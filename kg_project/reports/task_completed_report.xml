@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="task_completed_report">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <div class="header">
+                    <div class="col-xs-12" style="line-height:15pt;">
+                        <div class="col-xs-7" style="float: left">
+                            <t>
+                                <img t-attf-src="data:image/*;base64,{{o.company_id.logo}}" height="80px"
+                                     width="200px"/>
+                            </t>
+                        </div>
+                        <div class="col-xs-5" style="float: right">
+                            <div>
+                                <table style="width:100%;border-top:white;border-left:white;border-right:white;border-bottom:#ddd;">
+                                    <tbody>
+                                        <tr>
+                                            <td style="width: 450px;font-size: 14px;line-height: 18px;color: #5b5b5b;text-align: left;">
+                                                <span style="font-weight:bold;" t-field="o.company_id.name"/>
+                                                <br/>
+                                                <span t-field="o.company_id.street"/>
+                                                <span t-field="o.company_id.street2"/>
+                                                <br/>
+                                                <span t-field="o.company_id.city"/>,
+                                                <span t-field="o.company_id.country_id"/>
+                                                <br/>
+                                                Phone:
+                                                <span t-field="o.company_id.phone"/>
+                                                <br/>
+                                                Email:
+                                                <span t-field="o.company_id.email"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <center>
+                            <h4>
+                                <b>SERVICE REQUEST COMPLETED</b>
+                            </h4>
+                        </center>
+                        <table class="table table-borderless" style="border-collapse: collapse;width:100%">
+                            <tr>
+                                <td style="border-top: 1px solid #ddd">
+                                    <b>SR Number</b>
+                                </td>
+                                <td style="border-top: 1px solid #ddd;font-size: 14px">
+                                    <span t-field="o.ticket_number"/>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="border-top: 1px solid #ddd">
+                                    <b>Service Description</b>
+                                </td>
+                                <td style="border-top: 1px solid #ddd;font-size: 14px">
+                                    <span t-field="o.name"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border-top: 1px solid #ddd">
+                                    <b>Service Requested Date</b>
+                                </td>
+                                <td style="border-top: 1px solid #ddd;font-size: 14px">
+                                    <span t-field="o.service_requested_date"/>
+                                </td>
+                            </tr>
+
+                        </table>
+                        <br/>
+                        <br/>
+
+                        <table class="table table-borderless" style="border-collapse: collapse;width:100%">
+
+                            <tr>
+                                <td style="border-top: 1px solid #ddd">
+                                    <b>Customer</b>
+                                </td>
+                                <td style="border-top: 1px solid #ddd;font-size: 14px">
+                                    <span t-field="o.partner_id"/>
+                                </td>
+                                <td style="border-top: 1px solid #ddd">
+                                    <b>Division</b>
+                                </td>
+                                <td style="border-top: 1px solid #ddd;font-size: 14px">
+                                    <span t-field="o.kg_sector"/>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="border-top: 1px solid #ddd">
+                                    <b>Contact Person</b>
+                                </td>
+                                <td style="border-top: 1px solid #ddd;font-size: 14px">
+                                    <span t-if="o.partner_id" t-field="o.partner_id.child_ids[0].name"/>
+                                </td>
+                                <td style="border-top: 1px solid #ddd">
+                                    <b>Service Type</b>
+                                </td>
+                                <td style="border-top: 1px solid #ddd;font-size: 14px">
+                                    <span t-field="o.kg_servicecall_categories"/>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="border-top: 1px solid #ddd">
+                                    <b>Contact Number</b>
+                                </td>
+                                <td style="border-top: 1px solid #ddd;font-size: 14px">
+                                    <span t-field="o.partner_id.mobile"/>
+                                </td>
+                                <td style="border-top: 1px solid #ddd">
+                                    <b>Support Type</b>
+                                </td>
+                                <td style="border-top: 1px solid #ddd;font-size: 14px">
+                                    <span t-field="o.kg_type_of_service"/>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="border-top: 1px solid #ddd">
+                                    <b>Email ID</b>
+                                </td>
+                                <td style="border-top: 1px solid #ddd;font-size: 14px">
+                                    <span t-field="o.partner_id.email"/>
+                                </td>
+                                <td style="border-top: 1px solid #ddd">
+                                    <b>Cost Type</b>
+                                </td>
+                                <td style="border-top: 1px solid #ddd;font-size: 14px">
+                                    <span t-field="o.kg_type"/>
+                                </td>
+                            </tr>
+
+                        </table>
+                        <br/>
+                        <h5 style="font-size: 14px;">Please be informed that the above Service Request is been
+                            registered and is assigned to one
+                            of our Service
+                            Engineers as per following schedule
+                        </h5>
+                        <br/>
+                        <table class="table table-condensed"
+                               style="font-size: 13px; width:100%;border:1px solid black;">
+                            <thead>
+                                <tr style="background:#CCE2E5">
+                                    <th style="width:5%;border:1px solid black;" rowspan="2">S.No</th>
+                                    <th style="width:10%;border:1px solid black;" class="text-center" rowspan="2">
+                                        Date
+                                    </th>
+                                    <th style="border:1px solid black;" class="text-center" rowspan="2">
+                                        Service Description
+                                    </th>
+                                    <th style="border:1px solid black;" class="text-center" rowspan="2">
+                                        Service Engineer
+                                    </th>
+                                    <th style="border:1px solid black;" class="text-center" rowspan="2">
+                                        Start Date &amp; Time
+                                    </th>
+                                    <th style="border:1px solid black;" class="text-center" rowspan="2">
+                                        End Date &amp; Time
+                                    </th>
+                                    <th style="border:1px solid black;" class="text-center" rowspan="2">
+                                        Duration
+                                    </th>
+                                    <th style="border:1px solid black;" class="text-center" rowspan="2">
+                                        Status
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="i" t-value="1"/>
+                                <t t-set="qnty" t-value="0"/>
+                                <tr t-foreach="o.timesheet_ids" t-as="line">
+                                    <t t-set="qnty" t-value="qnty+line.unit_amount"/>
+                                    <td style="border:1px solid black;text-align:center;">
+                                        <span t-esc="i"/>
+                                        <t t-set="i" t-value="i+1"/>
+                                    </td>
+                                    <td style="border:1px solid black;">
+                                        <span t-field="line.date"/>
+                                    </td>
+                                    <td style="border:1px solid black;">
+                                        <span t-field="line.name"/>
+                                    </td>
+                                    <td style="border:1px solid black;text-align:center;">
+                                        <span t-field="o.engineer_id"/>
+                                    </td>
+                                    <td style="border:1px solid black;text-align:center;">
+                                        <span t-field="line.date_from"/>
+                                    </td>
+                                    <td style="border:1px solid black;text-align:right;">
+                                        <span t-field="line.date_to"/>
+                                    </td>
+                                    <td style="border:1px solid black;text-align:right;">
+                                        <span t-esc="'{0:,.2f}'.format(float(line.unit_amount))"/>
+                                    </td>
+                                    <td style="border:1px solid black;text-align:center;background:#CCE2E5;color: #C00707; ">
+                                        <span t-field="line.kg_status"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-borderless" style="font-size: 12px;">
+                                    <td colspan="2">
+                                        <strong>Total Worked Hrs :
+                                            <br/>
+                                            Total Cost :
+                                        </strong>
+                                        <br/>
+                                    </td>
+                                    <td colspan="6">
+                                        <strong>
+                                            <span t-esc="'{0:,.2f}'.format(float(o.effective_hours))"/>
+                                            Hrs
+                                            <br/>
+                                            <span t-esc="'{0:,.2f}'.format(float(o.total_cost))"/>
+                                            <span t-field="o.company_id.currency_id"/>
+                                            <br/>
+                                        </strong>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <br/>
+                        <h5>Trust the above Service Request is completed to your satisfaction. Looking forward to
+                            providing our best
+                            services at all times
+                        </h5>
+                    </div>
+                    <div class="footer">
+                        <div class="text-center" style="border-top: 1px solid black;">
+                            <center>
+                                <p>IT Solutions Provider Since 1990...</p>
+                            </center>
+                        </div>
+                        <div class="text-center" style="border-top: 1px solid black;">
+                            <p>
+                                <span>Email us at</span>
+                                <span style="color: #000080;">support@alantechnology.ae</span>
+                                for all your IT Support services
+                            </p>
+
+                            <ul class="list-inline">
+                                <li>Page:</li>
+                                <li>
+                                    <span class="page"/>
+                                </li>
+                                <li>/</li>
+                                <li>
+                                    <span class="topage"/>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    <report
+            id="report_task_completed_action"
+            model="project.task"
+            name="kg_project.task_completed_report"
+            file="kg_project.task_completed_report"
+            string="Service Task Completed"
+            report_type="qweb-pdf"
+            multi="False"/>
+
+</odoo>

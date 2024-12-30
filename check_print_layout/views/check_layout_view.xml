@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="check_layout_tree_view" model="ir.ui.view">
+        <field name="name">check.layout.view.tree</field>
+        <field name="model">check.layout</field>
+        <field name="arch" type="xml">
+            <tree string="Check Layout">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="check_layout_form_view" model="ir.ui.view">
+        <field name="name">check.layout.view.form</field>
+        <field name="model">check.layout</field>
+        <field name="arch" type="xml">
+            <form string="Check Layout">
+
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="Layout"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="font_size"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <!--                        <group string="A/C Payee Text">-->
+                        <!--                            <field name="ac_payee_padding_top"/>-->
+                        <!--                            <field name="ac_payee_margin_left"/>-->
+
+                        <!--                            <field name="rotation_text"/>-->
+
+                        <!--                        </group>-->
+
+                        <group string="Date">
+                            <field name="date_top_padding"/>
+                            <field name="date_left_margin"/>
+
+                        </group>
+                        <group string="Amount in Word">
+                            <field name="amt_words_top_padding"/>
+                            <field name="amt_words_left_margin"/>
+                            <field name="amt_words_line_height"/>
+                            <field name="amt_words_max_width"/>
+
+                        </group>
+                    </group>
+
+
+                    <group>
+                        <group string="Beneficiary">
+                            <field name="ben_top_padding"/>
+                            <field name="ben_left_margin"/>
+
+                        </group>
+
+                        <group string="Amount in Digit">
+                            <field name="amt_top_padding"/>
+                            <field name="amt_left_margin"/>
+
+                        </group>
+                    </group>
+
+
+                    <group>
+
+
+                    </group>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="check_layout_action" model="ir.actions.act_window">
+        <field name="name">Check Layout</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">check.layout</field>
+        <field name="view_mode">tree,form</field>
+
+    </record>
+
+    <menuitem id="check_layout_menu" name="Check Layout" parent="account.menu_finance_entries_management"
+              action="check_layout_action"
+              sequence="62"/>
+
+</odoo>

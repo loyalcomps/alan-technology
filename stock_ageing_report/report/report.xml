@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_stock_ageing_report" model="ir.actions.report">
+        <field name="name">Stock Ageing</field>
+        <field name="model">stock.ageing</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">stock_ageing_report.stock_ageing_report</field>
+        <field name="report_file">stock_ageing_report.stock_ageing_report</field>
+    </record>
+</odoo>

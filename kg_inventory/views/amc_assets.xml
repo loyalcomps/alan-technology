@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!--  AMC ASSETS TREE VIEW-->
+    <record id="amc_assets_tree_view" model="ir.ui.view">
+        <field name="model">amc.assets</field>
+        <field name="name">AMC Assets tree view</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="customer_id"/>
+                <field name="description"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- AMC ASSETS FORM VIEW   -->
+    <record id="amc_assets_form_view_id" model="ir.ui.view">
+        <field name="name">AMC Assets form view</field>
+        <field name="model">amc.assets</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="customer_id"/>
+                        <field name="description"/>
+                    </group>
+                    <notebook>
+                        <page string="Assets Line">
+                            <field name="assets_line">
+                                <tree create="True" editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="serial_no"/>
+                                    <field name="qty"/>
+                                    <field name="username" password="True"
+                                           attrs="{'invisible':[('show_psw','=',True)] }"/>
+
+                                    <field name="username_show" force_save="1" readonly="0"
+                                           groups="kg_inventory.amc_assets_group"
+                                           attrs="{'invisible':[('show_psw','=',False)] }"/>
+
+                                    <field name="password" attrs="{'invisible':[('show_psw','=',True)] }"
+                                           password="True"/>
+                                    <field name="shw_password" string="Show Password"
+                                           groups="kg_inventory.amc_assets_group" force_save="1" readonly="0"
+                                           attrs="{'invisible':[('show_psw','=',False)] }"/>
+
+                                    <field name="last_update_on"/>
+                                    <field name="show_psw" nolabel="1" widget="boolean_toggle"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Menu action -->
+    <record id="action_amc_assets" model="ir.actions.act_window">
+        <field name="name">AMC Assets</field>
+        <field name="res_model">amc.assets</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
+    <!-- Menu -->
+    <menuitem id="menu_amc_assets_id"
+              name="AMC Assets"
+              sequence="145"
+              action="action_amc_assets"
+              parent="stock.menu_stock_config_settings"/>
+</odoo>

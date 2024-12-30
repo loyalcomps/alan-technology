@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    <record model="ir.ui.view" id="kg_brand_master_tree">
+        <field name="name">kg.product.brand</field>
+        <field name="model">kg.product.brand</field>
+        <field name="arch" type="xml">
+            <tree string="Brand">
+            
+           			<field name="name"/>
+          			<field name="code"/>                    
+            </tree>
+       </field>
+    </record>
+
+ 
+
+  <record model="ir.ui.view" id="kg_brand_master_form">
+        <field name="name">kg.product.brand</field>
+        <field name="model">kg.product.brand</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                  <group>
+                      <group>
+                             <field name="name" required="1"/>
+          			<field name="code"/> 
+                      </group>
+                      <group>
+                               
+                      </group>
+                  </group>
+                <field name="note" placeholder="Description...."/> 
+       		    </sheet>
+    		</form>
+  </field>
+ </record>
+<record model="ir.actions.act_window" id="action_kg_brand_master">
+        <field name="name">Brand</field>
+        <field name="res_model">kg.product.brand</field>
+        <field name="view_mode">tree,form</field>
+
+    </record>
+    
+    <menuitem action="action_kg_brand_master"
+            id="action_kg_brand_master_id" parent="stock.menu_stock_config_settings"
+            sequence="12"/>
+ </data>
+</odoo>

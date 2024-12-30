@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+     <record id="amc_assets_group" model="res.groups">
+        <field name="name">AMC Assets</field>
+        <field name="category_id" ref="base.module_category_inventory_inventory"/>
+    </record>
+</odoo>

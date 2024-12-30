@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!--    <template id="remove_customer_reference" inherit_id="sale_stock.report_delivery_document_inherit_sale_stock">-->
+<!--        <xpath expr="//div[@class='row justify-content-end']" position="replace"/>-->
+<!--    </template>-->
+    <template id="report_delivery_document_template_delivery_slip" inherit_id="stock.report_delivery_document">
+        <xpath expr="//div[@name='div_origin']/strong" position="replace">
+            <strong>Order (Origin)</strong>
+        </xpath>
+        <xpath expr="//div[@name='div_origin']/p" position="replace">
+            <p t-field="o.origin" style="border-top:1px solid black"/>
+        </xpath>
+        <xpath expr="//div[@name='div_sched_date']/strong" position="replace">
+            <strong>Date</strong>
+        </xpath>
+        <xpath expr="//div[@name='div_sched_date']/t/p" position="replace">
+            <p t-field="o.date_done" style="border-top:1px solid black"/>
+        </xpath>
+        <xpath expr="//div[@name='div_sched_date']/t[2]/p" position="replace">
+            <p t-field="o.scheduled_date" style="border-top:1px solid black"/>
+        </xpath>
+<!--        <xpath expr="//div[@class='row mt32 mb32']" position="after">-->
+<!--            <br/>-->
+<!--            <br/>-->
+<!--            <br/>-->
+<!--        </xpath>-->
+        <xpath expr="//div[@class='page']" position="before">
+            <br/>
+        </xpath>
+        <xpath expr="//th[@name='th_sm_ordered']/strong" position="replace">
+            <strong>Ordered Quantity</strong>
+        </xpath>
+        <xpath expr="//th[@name='th_sm_quantity']/strong" position="replace">
+            <strong>Delivered Quantity</strong>
+        </xpath>
+        <xpath expr="//th[@name='th_sml_qty_ordered']/strong" position="replace">
+            <strong>Ordered Quantity</strong>
+        </xpath>
+        <xpath expr="//th[@name='th_sml_quantity']/strong" position="replace">
+            <strong>Delivered Quantity</strong>
+        </xpath>
+    </template>
+</odoo>

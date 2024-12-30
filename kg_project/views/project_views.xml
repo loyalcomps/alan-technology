@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="act_hr_timesheet_line_by_project" model="ir.actions.act_window">
+        <field name="name">Activities</field>
+        <field name="res_model">account.analytic.line</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('project_id', '!=', False)]</field>
+        <field name="context">{"default_project_id": active_id, "search_default_project_id": [active_id]}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click to record activities.
+            </p>
+            <p>
+                You can register and track your workings hours by project every
+                day. Every time spent on a project will become a cost and can be re-invoiced to
+                customers if required.
+            </p>
+        </field>
+    </record>
+    <record id="open_view_project_all_config_group_stage" model="ir.actions.act_window">
+        <field name="name">Services</field>
+        <field name="res_model">project.project</field>
+        <field name="domain">[]</field>
+        <field name="view_mode">tree,kanban,form,calendar,activity</field>
+        <!--            <field name="search_view_id" ref="view_project_project_filter"/>-->
+        <!--            <field name="context">{}</field>-->
+        <!--            <field name="help" type="html">-->
+        <!--                <p class="o_view_nocontent_smiling_face">-->
+        <!--                   No projects found. Let's create one!-->
+        <!--                </p>-->
+        <!--                <p>-->
+        <!--                    Projects contain tasks on the same topic, and each has its own dashboard.-->
+        <!--                </p>-->
+        <!--            </field>-->
+    </record>
+
+    <record id="action_view_issue" model="ir.actions.act_window">
+        <field name="res_model">project.issue</field>
+        <field name="name">Issues</field>
+        <field name="view_mode">kanban,tree,form,calendar,graph,pivot</field>
+        <field name="context">{
+            'search_default_project_id': [active_id],
+            'default_project_id': active_id,
+            }
+        </field>
+        <field name="help" type="html">
+            <p>
+                The Odoo issues tracker allows you to efficiently manage things
+                like internal requests, software development bugs, customer
+                complaints, project troubles, material breakdowns, etc.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_view_tasks" model="ir.actions.act_window">
+        <field name="res_model">project.task</field>
+        <field name="view_mode">tree,form,calendar,graph</field>
+        <field name="domain">[('display_project_id', '=', active_id)]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <record model="ir.ui.view" id="edit_project_inherited_from_private">
+        <field name="name">edit.project.inherited.from.private</field>
+        <field name="model">project.project</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="project.project_project_view_form_simplified"/>
+        <field name="arch" type="xml">
+            <field name="name" position="attributes">
+                <attribute name="string">Service</attribute>
+            </field>
+            <field name="name" position="after">
+                <field name="user_id" string="Coordinator"/>
+            </field>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_project_inherit">
+        <field name="name">project.project</field>
+        <field name="model">project.project</field>
+        <field name="type">tree</field>
+        <field name="inherit_id" ref="project.view_project"/>
+        <field name="arch" type="xml">
+            <xpath expr='//field[@name="user_id"]' position="attributes">
+                <attribute name="domain">[('share','=', False)]</attribute>
+            </xpath>
+            <field name="user_id" position="replace"/>
+            <field name="display_name" position="before">
+                <field name="ticket_number" string="SR Number"/>
+                <field name="service_requested_date" string="Date"/>
+                <field name="partner_id" string="Customer"/>
+                <field name="user_id" string="Sales Person"/>
+            </field>
+            <field name="display_name" position="after">
+                <field name="kg_state" string="Status"/>
+            </field>
+            <field name="display_name" position="attributes">
+                <attribute name="string">Service Description</attribute>
+            </field>
+
+
+
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="edit_project_inherited_from_pjctenh">
+        <field name="name">project.project</field>
+        <field name="model">project.project</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+            <xpath expr="/form/sheet" position="before">
+                <header>
+                    <button name="start" type="object" string="Start"
+                            attrs="{'invisible':[('kg_state','!=','draft')]}"/>
+                    <button name="done" type="object" string="Done"
+                            attrs="{'invisible':[('kg_state','!=','in_complete')]}"/>
+                    <field name="kg_state" widget="statusbar" statusbar_visible="draft,in_complete,completed"/>
+                </header>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" name="attachment_tree_view" type="object" icon="fa-files-o">
+                    <field string="Documents" name="doc_count" widget="statinfo"/>
+                </button>
+                <button class="oe_stat_button" name="project_asset_action" type="object" groups="project.group_project_manager">
+                            <div class="ps-4">
+                                <span>Asset</span>
+                            </div>
+                </button>
+                <button class="oe_stat_button" name="%(act_hr_timesheet_line_by_project)d" type="action"
+                        icon="fa-calendar" string="Timesheets"
+                        attrs="{'invisible': [('allow_timesheets', '=', False)]}"/>
+                <button class="oe_stat_button" type="action" attrs="{'invisible':[('use_issues','=', False)]}"
+                        name="%(action_view_issue)d" icon="fa-exclamation-triangle">
+                    <field string="Issues" name="issue_count" widget="statinfo"
+                           options="{'label_field': 'label_issues'}"/>
+                </button>
+
+
+                <button name="%(action_view_tasks)d" class="oe_stat_button" type="action"
+                        icon="fa-tasks" attrs="{'invisible': [('use_tasks', '=', False)]}">
+                    <field string="Tasks" name="task_count" widget="statinfo"/>
+                </button>
+            </xpath>
+            <xpath expr="//sheet/div[hasclass('oe_title')]" position="after">
+                <group>
+                    <field name="use_tasks"/>
+                    <field name="use_issues"/>
+                </group>
+            </xpath>
+            <field name="name" position="attributes">
+                <attribute name="placeholder">Service Name</attribute>
+            </field>
+            <field name="tag_ids" position="after">
+                <field name="ticket_number" readonly="1"/>
+            </field>
+
+            <xpath expr="//page[@name='settings']/group/group/field[@name='privacy_visibility']" position="before">
+                <field name="user_id" string='Coordinator'/>
+                <field name="sub_task_project_id" string='Sub-task Project'
+                       attrs="{'invisible': [('allow_timesheets', '=', False)]}"/>
+            </xpath>
+            <field name="privacy_visibility" position="after">
+                <field name="kg_sector" required="1"/>
+                <field name="kg_servicecall_categories"
+                       attrs="{'invisible': [('kg_sector','=','elv_division')],'required': [('kg_sector','!=','elv_division')]}"/>
+                <field name="kg_type_of_service"
+                       attrs="{'invisible': [('kg_sector','=','elv_division')],'required': [('kg_sector','!=','elv_division')]}"/>
+                <field name="kg_type"/>
+                <field name="service_requested_date"
+                       attrs="{'invisible': [('kg_sector','=','elv_division')],'required': [('kg_sector','!=','elv_division')]}"/>
+                <field name="proposed_service_charge" attrs="{'invisible': [('kg_type','=','free')]}"/>
+                <field name="kg_required" invisible="1"/>
+                <field name="kg_actual_start_date"/>
+                <field name="kg_actual_end_date"/>
+                <field name="serial_no"/>
+                <field name="sale_order_id"/>
+                <field name="kg_salesman_id"/>
+                <field name="total_cost"/>
+            </field>
+            <xpath expr="//group[@name='group_tasks_managment']" position="before">
+                <group name="group_configuration" string="Configuration" col="1"
+                       class="row mt16 o_settings_container">
+                    <div>
+                        <div class="o_setting_box mt-4" id="project_sequence_setting">
+                            <group>
+                                <field name="sequence"/>
+                            </group>
+                        </div>
+                    </div>
+                </group>
+                <group name="group_time_scheduling" string="Time Scheduling" col="1"
+                       class="row mt16 o_settings_container">
+                    <div>
+                        <div class="o_setting_box mt-4" id="project_time_scheduling_setting">
+                            <group>
+                                <field name="resource_calendar_id"/>
+                            </group>
+                        </div>
+                    </div>
+                </group>
+            </xpath>
+            <field name="user_id" position="replace">
+                <field name="user_id" string="Coordinator" attrs="{'readonly':[('active','=',False)]}"/>
+            </field>
+            <xpath expr="//page[@name='settings']" position="after">
+                <page name="Emails">
+                    <group name="group_alias">
+                        <label for="alias_name" string="Email Alias"/>
+                        <div name="alias_def">
+                            <div class="oe_edit_only oe_inline" name="edit_alias" style="display: inline;">
+                                <field name="alias_name" class="oe_inline"/>
+                                @alantechnology.ae
+                            </div>
+                        </div>
+                        <field name="alias_model" string="Incoming Emails create"/>
+                        <field name="alias_contact" string="Accept Emails From"/>
+                    </group>
+                </page>
+                <page name="Service Stages">
+                    <field name="type_ids">
+                        <tree editable="bottom"/>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="kg_project_project_view_form_simplified">
+        <field name="name">kg.project.project.view.form.simplified</field>
+        <field name="model">project.project</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="project.project_project_view_form_simplified"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="string">Services</attribute>
+            </xpath>
+            <field name="name" position="after">
+                <field name="ticket_number" readonly="1"/>
+                <field name="kg_sector" required="1"/>
+                <field name="kg_servicecall_categories"
+                       attrs="{'invisible': [('kg_sector','=','elv_division')],'required': [('kg_sector','!=','elv_division')]}"/>
+                <field name="kg_type_of_service"
+                       attrs="{'invisible': [('kg_sector','=','elv_division')],'required': [('kg_sector','!=','elv_division')]}"/>
+                <field name="kg_type"/>
+                <field name="service_requested_date"
+                       attrs="{'invisible': [('kg_sector','=','elv_division')],'required': [('kg_sector','!=','elv_division')]}"/>
+                <field name="privacy_visibility" widget="radio"/>
+                <field name="proposed_service_charge" attrs="{'invisible': [('kg_type','=','free')]}"/>
+                <field name="kg_required" invisible="1"/>
+                <field name="kg_actual_start_date"/>
+                <field name="kg_actual_end_date"/>
+                <field name="sale_order_id"/>
+                <field name="kg_salesman_id"/>
+                <field name="total_cost"/>
+            </field>
+        </field>
+    </record>
+    <record id="project.open_view_project_all" model="ir.actions.act_window">
+        <field name="name">Services</field>
+        <field name="res_model">project.project</field>
+        <field name="domain">[]</field>
+        <field name="view_mode">kanban,form</field>
+        <field name="search_view_id" ref="project.view_project_project_filter"/>
+        <field name="target">main</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click to create a new Service.
+            </p>
+        </field>
+    </record>
+
+    <record id="project.open_view_project_all_config_group_stage" model="ir.actions.act_window">
+        <field name="name">Services</field>
+        <field name="res_model">project.project</field>
+        <field name="domain">[]</field>
+        <field name="view_mode">tree,kanban,form,calendar,activity</field>
+        <field name="search_view_id" ref="project.view_project_project_filter"/>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No projects found. Let's create one!
+            </p>
+            <p>
+                Projects contain tasks on the same topic, and each has its own dashboard.
+            </p>
+        </field>
+    </record>
+
+
+    <record id="project.open_create_project" model="ir.actions.act_window">
+        <field name="name">Create a Service</field>
+        <field name="res_model">project.project</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="project.project_project_view_form_simplified"/>
+        <field name="target">new</field>
+    </record>
+
+    <record id="action_view_task_pie" model="ir.actions.act_window">
+        <field name="name">Tasks Pie</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">graph</field>
+        <field name="context">{'search_default_my_tasks': 1}</field>
+        <field name="context">{'graph_mode':'pie'}</field>
+    </record>
+
+    <record id="action_project_issue_report" model="ir.actions.act_window">
+        <field name="res_model">project.issue</field>
+        <field name="view_mode">graph,pivot</field>
+    </record>
+
+    <menuitem action="action_view_task_pie"
+              id="project.menu_projects"
+              name="Dashboard"
+              parent="project.menu_main_pm"
+              sequence="1"/>
+
+    <menuitem name="Services"
+              id="project.menu_main_pm"
+              groups="project.group_project_manager,project.group_project_user"
+              web_icon="project,static/description/icon.png"
+              sequence="50"/>
+
+    <menuitem action="action_view_task_pie"
+              id="project.menu_projects_group_stage"
+              name="Dashboard"
+              parent="project.menu_main_pm"
+              sequence="1"
+              groups="project.group_project_stages"/>
+
+    <menuitem action="project.open_view_project_all_config_group_stage"
+              id="project.menu_projects_config_group_stage"
+              name="Services"
+              parent="project.menu_project_config"
+              sequence="5"
+              groups="project.group_project_stages"/>
+
+    <menuitem action="project.project_project_stage_configure"
+              id="project.menu_project_config_project_stage"
+              name="Service Stages"
+              parent="project.menu_project_config"
+              sequence="9"
+              groups="project.group_project_stages"/>
+
+    <menuitem action="project.open_view_project_all_config"
+              id="project.menu_projects_config"
+              name="Services"
+              parent="project.menu_project_config"
+              sequence="10"/>
+
+
+</odoo>
+

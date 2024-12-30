@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="check_print_enbd">
+
+        <t t-name="kg_sale.check_print_enbd">
+            <t t-call="web.html_container">
+
+                <t t-foreach="docs" t-as="o">
+                    <div class="page">
+                        <div style="position: fixed;font-size: 20px; top: 23; right: 0; left: 157; margin: 1px 1px 1px 1px; padding : 1px;  width: 150px;  height: 30px;      background-color: white;  border: 0px solid black;  z-index: 1;">
+                            <b>
+                                <span t-field="o.date"
+                                      t-field-options="{&quot;format&quot;: &quot;dd - MMM - yyyy&quot;}"/>
+                            </b>
+                        </div>
+
+
+                        <div t-if="o.payment_type=='outbound' ">
+
+                            <div style="position: fixed;font-size: 20px; top: 80; right: 20; left: 180; margin: 1px 1px 1px 1px; padding : 1px;  width: 550px;  height: 30px;      background-color: white;  border: 0px solid black;  z-index: 1;">
+
+                                <b>
+                                    <b>
+
+                                        <t t-if="not o.kg_other_name">
+
+                                            <span t-field="o.partner_id"/>
+                                        </t>
+                                        <t t-if="o.kg_other_name">
+
+                                            <span t-field="o.kg_other_name"/>
+                                        </t>
+
+
+                                    </b>
+                                </b>
+                            </div>
+                        </div>
+                        <div t-if="o.payment_type=='inbound' ">
+
+                            <div style="position: fixed;font-size: 20px; top: 80; right: 20; left: 180; margin: 1px 1px 1px 1px; padding : 1px;  width: 550px;  height: 30px;      background-color: white;  border: 0px solid black;  z-index: 1;">
+
+                                <b>
+                                    <b>
+                                        <t t-if="not o.kg_other_name">
+
+                                            <span t-field="o.partner_id"/>
+                                        </t>
+                                        <t t-if="o.kg_other_name">
+
+                                            <span t-field="o.kg_other_name"/>
+                                        </t>
+                                    </b>
+                                </b>
+                            </div>
+                        </div>
+
+                        <t t-if="o.kg_amount_words">
+                            <div style=" position: absolute;font-size: 20px; top: 125; right: 0; left: 8 ; text-indent:50px;  width: 320px; 0px;line-height: 250%;">
+                                <b>
+                                    <span t-esc="o.kg_amount_words"/>
+                                    Only
+                                </b>
+                            </div>
+                        </t>
+
+                        <t t-if="not o.kg_amount_words">
+                            <div style=" position: absolute;font-size: 20px; top: 125; right: 0; left: 8 ; text-indent:50px;  width: 320px; 0px;line-height: 250%;">
+                                <b>
+                                    <span t-esc="o.amount"
+                                          t-esc-options="{&quot;widget&quot;: &quot;num2words&quot;,&quot;case&quot;:&quot;capital&quot;}"/>
+                                    Only
+                                </b>
+                            </div>
+                        </t>
+
+
+                        <div style="position: absolute;font-size: 20px; top: 142; right: 0; left: 415; margin: 1px 1px 1px 1px; padding : 1px;  width: 150px;  height: 30px;      background-color: white;  border: 0px solid black;  z-index: 1;">
+                            <b>
+                                **
+                                <span t-esc="o.amount" t-esc-options='{"widget": "num2words","case":"capital"}'/>
+                                <span t-field="o.currency_id"/>
+                            </b>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+
+    </template>
+</odoo>

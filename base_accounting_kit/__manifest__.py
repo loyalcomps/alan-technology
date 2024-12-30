@@ -21,11 +21,14 @@
 #############################################################################
 
 {
-    'name': 'Odoo 16 Full Accounting Kit for Community',
-    'version': '16.0.2.0.14',
+    'name': 'Odoo 16 Full Accounting Kit',
+    'version': '16.0.2.0.2',
     'category': 'Accounting',
     'live_test_url': 'https://www.youtube.com/watch?v=peAp2Tx_XIs',
-    'summary': """Odoo 17 Accounting, Odoo 17 Accounting Reports, Odoo17 Accounting, Odoo Accounting, Odoo17 Financial Reports, Odoo17 Asset, Odoo17 Profit and Loss, PDC, Followups, Odoo17, Accounting, Odoo Apps, Reports""",
+    'summary': """ Asset and Budget Management,
+                 Accounting Reports, PDC, Lock dates,
+                 Credit Limit, Follow Ups,
+                 Day-Bank-Cash book reports.""",
     'description': """
                     odoo16, Odoo16, 16,AccountingKit, Fullaccounting, Odoo accounting, Odooaccounting, all in one accounting,
                     allinoneaccounting, accounting,
@@ -103,21 +106,20 @@
         'views/recurring_payments_view.xml',
         'wizard/account_lock_date.xml',
         'views/account_payment_view.xml',
-        'data/account_pdc_data.xml',
-        'views/report_payment_receipt_document_inherit.xml',
+        'data/account_pdc_data.xml'
     ],
     'assets': {
         'web.assets_backend': [
             'base_accounting_kit/static/src/scss/style.scss',
             'base_accounting_kit/static/src/scss/account_asset.scss',
-            'base_accounting_kit/static/lib/bootstrap-toggle-master/css/bootstrap-toggle.min.css',
+            # 'base_accounting_kit/static/lib/bootstrap-toggle-master/css/bootstrap-toggle.min.css',
             'base_accounting_kit/static/src/js/account_dashboard.js',
             'base_accounting_kit/static/src/js/account_asset.js',
             'base_accounting_kit/static/lib/Chart.bundle.js',
             'base_accounting_kit/static/lib/Chart.bundle.min.js',
             'base_accounting_kit/static/lib/Chart.min.js',
             'base_accounting_kit/static/lib/Chart.js',
-            'base_accounting_kit/static/lib/bootstrap-toggle-master/js/bootstrap-toggle.min.js',
+            # 'base_accounting_kit/static/lib/bootstrap-toggle-master/js/bootstrap-toggle.min.js',
             'base_accounting_kit/static/src/xml/template.xml',
         ],
     },

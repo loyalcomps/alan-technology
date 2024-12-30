@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- import reconcile form view   -->
+    <record id="import_reconcile_tree_view" model="ir.ui.view">
+        <field name="model">import.reconcile</field>
+        <field name="name">import reconcile Form view</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="validate_entry" type="object" string="Validate"
+                           />
+
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="conciled"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Account Move Entry">
+                            <field name="account_move_ids">
+                                <tree editable="bottom">
+                                    <field name="invoice_id"
+                                           domain="[('move_type','in',('out_invoice','in_invoice'))]"/>
+                                    <field name="acc_date"/>
+                                    <field name="imp_partner_id"/>
+                                    <field name="imp_account_id"/>
+                                    <field name="allocation"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                    <notebook>
+                        <page string="Payments Entry">
+                            <field name="payment_ids">
+                                <tree editable="bottom">
+<!--                                    <field name="invoice_id" domain="[('move_type','=','entry')]"/>-->
+                                    <field name="payment"/>
+                                    <field name="acc_date"/>
+                                    <field name="imp_partner_id"/>
+                                    <field name="imp_account_id"/>
+                                    <field name="allocation"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- action for import reconcile -->
+    <record id="import_reconcile_action" model="ir.actions.act_window">
+        <field name="name">Import Reconcile</field>
+        <field name="res_model">import.reconcile</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- menu for import reconcile   -->
+    <menuitem id="import_reconcile_id" name="Import Reconcile" parent="account.menu_finance"
+              />
+
+    <menuitem id="import_reconcile_id1" name="Reconcile Entries" parent="import_reconcile_id"
+              action="import_reconcile_action"/>
+
+    <record id="reconcile_tree" model="ir.ui.view">
+            <field name="name">payment.journal.form</field>
+            <field name="model">payment.journal</field>
+            <field name="arch" type="xml">
+                <tree string="Quick PO">
+                    <field name="journal_ref"/>
+                    <field name="paymet_ref" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="link_reconcile_action" model="ir.actions.act_window">
+        <field name="name">Link Reconcile</field>
+        <field name="res_model">payment.journal</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- menu for import reconcile   -->
+    <menuitem id="link_reconcile_id" name="Link Reconcile" parent="import_reconcile_id"
+              action="link_reconcile_action"/>
+</odoo>

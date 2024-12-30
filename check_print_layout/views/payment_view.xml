@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Accounts -->
+        <record id="inherit_account_payment_form_check_layout" model="ir.ui.view">
+            <field name="name">account.payment.check.layout.inherit.form</field>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="account.view_account_payment_form"/>
+            <field name="arch" type="xml">
+                <field name="ref" position="after">
+                    <field name="layout_id"  attrs="{'invisible': ['|', ('payment_method_code', '!=', 'check_printing'), ('check_number', '=', False)]}"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>

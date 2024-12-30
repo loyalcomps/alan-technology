@@ -1,7 +1,10 @@
+from typing import final
+
+from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, AccessError
-from odoo.tools.misc import formatLang
+
 
 
 class SaleOrder(models.Model):
@@ -28,15 +31,51 @@ class SaleOrder(models.Model):
         compute='_compute_is_sales_manager',
         store=False
     )
+    show_approve = fields.Boolean(compute='_compute_is_sales_manager')
+
+    payment_term_id = fields.Many2one('account.payment.term',string='Payment Terms', domain="[('state', '=', 'approve')]")
+    customer_state = fields.Selection([
+        ('inactive', 'Inactive'),
+        ('final', 'Final'),
+    ],compute='_compute_customer_status',string="Customer Status",store=True)
+
+    @api.depends('partner_id', 'partner_id.customer_state')
+    def _compute_customer_status(self):
+        for i in  self:
+            if i.partner_id.customer_state == 'active':
+                i.customer_state = 'final'
+            if i.partner_id.customer_state == 'inactive':
+                i.customer_state = 'inactive'
 
     @api.depends()
     def _compute_is_sales_manager(self):
-        sales_manager_group = self.env.ref('sale_customization.group_sales_manager')
+        """
+        Computes if the current user is a Sales Manager and whether the approval button should be shown.
+        """
+        company = self.env.company
+        today = fields.Date.today()
+
+        # Get the Sales Manager group once
+        sales_manager_group = self.env.ref('sale_customization.group_sales_manager', raise_if_not_found=False)
+
         for order in self:
-            if sales_manager_group:
-                order.is_sales_manager = sales_manager_group in self.env.user.groups_id
-            else:
-                order.is_sales_manager = False
+            # Check if the user belongs to the Sales Manager group
+            order.is_sales_manager = sales_manager_group and sales_manager_group in self.env.user.groups_id
+            print("------------TODAYYYdate",today)
+
+            print("------------------", order.date_order.date() + relativedelta(days=order.payment_term_id.min_days))
+
+            # Check conditions to show approval
+            order.show_approve = (
+                    order.amount_total > company.max_order_amount or
+                    (order.payment_term_id.min_days and
+                     order.date_order and
+                     today >=
+                     order.date_order.date() + relativedelta(days=order.payment_term_id.min_days))
+            )
+
+
+
 
     @api.constrains('amount_total')
     def _check_order_amount(self):
@@ -45,9 +84,15 @@ class SaleOrder(models.Model):
             raise UserError(
                 f"The total amount of this sale order exceeds the configured limit of {company.max_order_amount}. Approval required.")
 
+
     def action_confirm(self):
+
+
+        print("============================state",self.state)
         if self.state == 'approve':
             result = super(SaleOrder, self).action_confirm()
+            print("state approve")
+
             for order_line in self.order_line:
                 for picking in self.picking_ids:
                     for move in picking.move_ids_without_package:
@@ -55,7 +100,13 @@ class SaleOrder(models.Model):
                             move.description = order_line.name
             return result
         else:
-            raise UserError("You cannot confirm the Sale Order unless the state is 'Approved'.")
+            print("not approveeeeeeeeeeeeeeeeeeeeee")
+            if self.show_approve:
+                raise UserError("You cannot confirm the Sale Order unless the state is 'Approved'.")
+
+            return  super(SaleOrder, self).action_confirm()
+
+
     def action_approve(self):
         self.state = 'approve'
 
