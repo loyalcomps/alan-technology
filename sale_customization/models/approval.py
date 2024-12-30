@@ -39,6 +39,8 @@ class SaleOrder(models.Model):
         ('final', 'Final'),
     ],compute='_compute_customer_status',string="Customer Status",store=True)
 
+    cancelled_reason=fields.Text()
+
     @api.depends('partner_id', 'partner_id.customer_state')
     def _compute_customer_status(self):
         for i in  self:
@@ -46,6 +48,9 @@ class SaleOrder(models.Model):
                 i.customer_state = 'final'
             if i.partner_id.customer_state == 'inactive':
                 i.customer_state = 'inactive'
+
+    def action_custom_cancel(self):
+        print("k")
 
     @api.depends()
     def _compute_is_sales_manager(self):
