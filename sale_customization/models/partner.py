@@ -8,7 +8,7 @@ class SalespersonInactive(models.Model):
     customer_state = fields.Selection([
         ('active', 'Active'),
         ('inactive', 'Inactive'),
-    ], default='active', string="Customer State")
+    ], default='inactive', string="Customer State")
     last_invoice_date = fields.Date(string='Last Invoice Date', compute="_compute_last_invoice_date")
     credit_limit = fields.Float(string="Credit Limit")
     is_sales_manager = fields.Boolean(
@@ -49,21 +49,26 @@ class SalespersonInactive(models.Model):
     def set_customers_inactive(self):
         today = fields.Date.today()
         contacts = self.env['res.partner'].search([('last_invoice_date', '=', True)])
-        if contacts:
-            for contact in contacts:
-                last_invoice_date = contact.last_invoice_date
-                if last_invoice_date:
-                   days_difference = (today - last_invoice_date).days
-                   if days_difference >= 90:
-                      contact.customer_state = 'inactive'
-                   else:
-                      contact.customer_state = 'active'
-        else:
-            print("No contacts found with a last_invoice_date.")
+        no_contacts = self.env['res.partner'].search([('last_invoice_date', '=', False)])
+        company = self.env.company
+        if company.max_inactive_days:
+            if contacts:
+                for contact in contacts:
+                    last_invoice_date = contact.last_invoice_date
+                    if last_invoice_date:
+                       days_difference = (today - last_invoice_date).days
+                       if days_difference >= company.max_inactive_days:
+                          contact.customer_state = 'inactive'
+                       else:
+                          contact.customer_state = 'active'
+            if no_contacts:
+                for j in no_contacts:
+                    j.customer_state = 'inactive'
 class ResCompany(models.Model):
     _inherit = 'res.company'
 
     max_order_amount = fields.Float(string="Maximum Order Amount")
+    max_inactive_days = fields.Integer(string='Maximum Inactive Days')
 
 class AccountPaymentTerm(models.Model):
     _inherit = 'account.payment.term'

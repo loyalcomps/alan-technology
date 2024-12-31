@@ -1,0 +1,24 @@
+<odoo>
+
+    <record id="cancel_custom_wizard_form" model="ir.ui.view">
+        <field name="name">sale.cancel.custom.form</field>
+        <field name="model">sale.cancel.custom</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="cancel_reason"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button type="object"
+                            confirm="Are you sure you want to Cancel Sale Order ?."
+                            string="Confirm" name="action_cancel_confirm" class="btn btn-primary"
+                            data-hotkey="q"/>
+                    <button special="cancel" string="Cancel" class="btn btn-secondary" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

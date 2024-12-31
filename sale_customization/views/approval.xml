@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <data>
+        <record id="so_form_view_customizes_tree_file" model="ir.ui.view">
+            <field name="name">sale.order.tree.view.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='state']" position="after">
+                       <field name="custom_status"
+                    decoration-success="custom_status == 'po_confirm'"
+                    decoration-warning="custom_status == 'sale'"
+                    decoration-info="custom_status == 'po_created'"
+                    decoration-muted = "custom_status == 'quotation'"
+                    decoration-danger = "custom_status == 'partial_purchase'"
+                    widget="badge"/>
+                </xpath>
+
+            </field>
+        </record>
         <record id="so_form_view_customizes_file" model="ir.ui.view">
             <field name="name">sale.order.form.view.inherit</field>
             <field name="model">sale.order</field>
@@ -13,6 +30,8 @@
                            readonly="1"
                            attrs="{'invisible': [('cancelled_reason', '=', False)]}"
                     />
+                    <field name="custom_status"/>
+
                 </xpath>
                 <xpath expr="//header/field[@name='state']" position="replace">
                     <field name="state" widget="statusbar" statusbar_visible="draft,sent,approve,sale"/>

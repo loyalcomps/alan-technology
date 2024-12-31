@@ -4,7 +4,10 @@ from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, AccessError
+import logging
 
+_logger = logging.getLogger(__name__)
+from collections import defaultdict
 
 
 class SaleOrder(models.Model):
@@ -33,24 +36,79 @@ class SaleOrder(models.Model):
     )
     show_approve = fields.Boolean(compute='_compute_is_sales_manager')
 
-    payment_term_id = fields.Many2one('account.payment.term',string='Payment Terms', domain="[('state', '=', 'approve')]")
+    payment_term_id = fields.Many2one('account.payment.term', string='Payment Terms',
+                                      domain="[('state', '=', 'approve')]")
     customer_state = fields.Selection([
         ('inactive', 'Inactive'),
         ('final', 'Final'),
-    ],compute='_compute_customer_status',string="Customer Status",store=True)
+    ], compute='_compute_customer_status', string="Customer Status", store=True)
 
-    cancelled_reason=fields.Text()
+    cancelled_reason = fields.Text()
+    custom_status = fields.Selection([
+        ('quotation', 'Quotation'),
+        ('sale', 'Sale Order'),
+        ('partial_purchase', 'Partially PO Created'),
+        ('po_created', 'PO Created'),
+        ('po_confirm', 'PO Confirm'),
+    ], compute='_compute_custom_status', string="Custom Status")
+
+    @api.depends('state')
+    def _compute_custom_status(self):
+        for order in self:
+            order.custom_status = 'quotation'
+            try:
+                purchase_orders = self.env['purchase.order'].search([('kg_sale_order_id', 'in', order.ids)])
+                if not purchase_orders:
+                    if order.state == 'draft':
+                        order.custom_status = 'quotation'
+                    elif order.state == 'sale':
+                        order.custom_status = 'sale'
+                else:
+                    for line in order.order_line:
+                        sale_product_id = line.product_id
+                        sale_qty = line.product_uom_qty
+                        for purchase in purchase_orders:
+                            for record in purchase.order_line:
+                                purchase_product_id = record.product_id
+                                purchase_qty = record.product_qty
+                                if sale_product_id == purchase_product_id:
+                                    if sale_qty == purchase_qty:
+                                        if purchase.state == 'draft':
+                                            order.custom_status = 'po_created'
+                                        elif purchase.state == 'purchase':
+                                            order.custom_status = 'po_confirm'
+                                    else:
+                                        order.custom_status = 'partial_purchase'
+            except Exception as e:
+                _logger.error("Error computing custom_status for sale.order ID: %s. Error: %s", order.id, str(e))
 
     @api.depends('partner_id', 'partner_id.customer_state')
     def _compute_customer_status(self):
-        for i in  self:
+        for i in self:
             if i.partner_id.customer_state == 'active':
                 i.customer_state = 'final'
             if i.partner_id.customer_state == 'inactive':
                 i.customer_state = 'inactive'
 
     def action_custom_cancel(self):
-        print("k")
+        for i in self:
+            purchase_orders = self.env['purchase.order'].search([('kg_sale_order_id', 'in', i.ids)])
+            if not purchase_orders:
+                self.state = 'cancel'
+            for j in purchase_orders:
+                if j.state in ['purchase', 'done','cancel']:
+                    raise UserError("You cannot cancel sale order.")
+                if j.state == 'draft' and not i.cancelled_reason:
+                    return {
+                        'name': _('Cancel'),
+                        'type': 'ir.actions.act_window',
+                        'res_model': 'sale.cancel.custom',
+                        'view_mode': 'form',
+                        'target': 'new',
+                        'context': {
+                            'default_sale_id': self.id,
+                        },
+                    }
 
     @api.depends()
     def _compute_is_sales_manager(self):
@@ -66,7 +124,7 @@ class SaleOrder(models.Model):
         for order in self:
             # Check if the user belongs to the Sales Manager group
             order.is_sales_manager = sales_manager_group and sales_manager_group in self.env.user.groups_id
-            print("------------TODAYYYdate",today)
+            print("------------TODAYYYdate", today)
 
             print("------------------", order.date_order.date() + relativedelta(days=order.payment_term_id.min_days))
 
@@ -79,9 +137,6 @@ class SaleOrder(models.Model):
                      order.date_order.date() + relativedelta(days=order.payment_term_id.min_days))
             )
 
-
-
-
     @api.constrains('amount_total')
     def _check_order_amount(self):
         company = self.env.company
@@ -89,15 +144,9 @@ class SaleOrder(models.Model):
             raise UserError(
                 f"The total amount of this sale order exceeds the configured limit of {company.max_order_amount}. Approval required.")
 
-
     def action_confirm(self):
-
-
-        print("============================state",self.state)
-        if self.state == 'approve':
+        if self.state in ['draft', 'approve', 'sent']:
             result = super(SaleOrder, self).action_confirm()
-            print("state approve")
-
             for order_line in self.order_line:
                 for picking in self.picking_ids:
                     for move in picking.move_ids_without_package:
@@ -105,16 +154,12 @@ class SaleOrder(models.Model):
                             move.description = order_line.name
             return result
         else:
-            print("not approveeeeeeeeeeeeeeeeeeeeee")
             if self.show_approve:
                 raise UserError("You cannot confirm the Sale Order unless the state is 'Approved'.")
-
-            return  super(SaleOrder, self).action_confirm()
-
+            return super(SaleOrder, self).action_confirm()
 
     def action_approve(self):
         self.state = 'approve'
-
 
 
 class StockMove(models.Model):
@@ -122,10 +167,12 @@ class StockMove(models.Model):
 
     description = fields.Char('Description')
 
+
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 
     description = fields.Char('Description')
+
 
 class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"

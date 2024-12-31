@@ -11,11 +11,13 @@
 
     "author": "KG",
     "installable": True,
-    "depends": ['base', 'sale_management','kg_sale'
+    "depends": ['base', 'sale_management','kg_sale','account'
                 ],
     "data": [
+        'security/ir.model.access.csv',
         'security/security.xml',
         'data/cron_jobs.xml',
+        'wizards/cancel_wizard.xml',
         'views/approval.xml',
         'views/partner.xml'
         #      'views/validity.xml',
