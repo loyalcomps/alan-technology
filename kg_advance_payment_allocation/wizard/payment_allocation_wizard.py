@@ -25,6 +25,11 @@ class PaymentAllocation(models.TransientModel):
     @api.onchange('show_parent_child')
     def onchange_show_parent_child(self):
         payment_type = self.payment_type
+        move=self.env['account.move'].search([('partner_id', '=', self.partner_id.id),('state', 'in', ['posted']), ('move_type', 'in', ['entry'])])
+        print("--------MOVEEEEEEEEEEEEEEE",move)
+        pay_term_lines = move.line_ids \
+            .filtered(lambda line: line.account_id.account_type in ('asset_receivable', 'liability_payable'))
+        print("--------------pay_term_lines-----",pay_term_lines)
         for data in self:
             if data.show_parent_child:
                 inv_vals = [(5, 0, 0)]
@@ -48,6 +53,40 @@ class PaymentAllocation(models.TransientModel):
                                             'date_due': inv.invoice_date_due,
                                             'inv_unallocated_amount': inv.amount_residual,
                                             }
+                            inv_vals.append((0, 0, vals))
+                        journal_entry = self.env['account.move.line'].search([
+                            ('account_id', 'in', pay_term_lines.account_id.ids),
+                            ('move_id', '!=', self.payment_id.move_id.id),
+
+                            ('parent_state', '=', 'posted'), ('balance', '<', 0.0),
+                            ('partner_id', '=', p.id),
+                            ('reconciled', '=', False),
+                            '|', ('amount_residual', '!=', 0.0), ('amount_residual_currency', '!=', 0.0),
+                        ])
+                        print("journal_entry", journal_entry)
+
+                        for line in journal_entry:
+                            if line.currency_id == move.currency_id:
+                                # Same foreign currency.
+                                amount = abs(line.amount_residual_currency)
+                            else:
+                                # Different foreign currencies.
+                                amount = line.company_currency_id._convert(
+                                    abs(line.amount_residual),
+                                    move.currency_id,
+                                    move.company_id,
+                                    line.date,
+                                )
+
+                            if line.credit == 0:
+                                val = line.id
+                                vals = {'inv_amount': amount,
+                                        'name': line.move_id.name,
+                                        'inv_date': line.move_id.date,
+                                        'move_line_id': val,
+                                        'date_due': line.date,
+                                        'inv_unallocated_amount': line.amount_residual,
+                                        }
                             inv_vals.append((0, 0, vals))
                     data.invoice_allocation_ids = inv_vals
 
@@ -87,6 +126,40 @@ class PaymentAllocation(models.TransientModel):
                                             'date_due': inv.invoice_date_due,
                                             'inv_unallocated_amount': inv.amount_residual,
                                             }
+                            inv_vals.append((0, 0, vals))
+                        journal_entry = self.env['account.move.line'].search([
+                            ('account_id', 'in', pay_term_lines.account_id.ids),
+                            ('move_id', '!=', self.payment_id.move_id.id),
+
+                            ('parent_state', '=', 'posted'), ('balance', '>', 0.0),
+                            ('partner_id', '=', p.id),
+                            ('reconciled', '=', False),
+                            '|', ('amount_residual', '!=', 0.0), ('amount_residual_currency', '!=', 0.0),
+                        ])
+                        print("journal_entry", journal_entry)
+
+                        for line in journal_entry:
+                            if line.currency_id == move.currency_id:
+                                # Same foreign currency.
+                                amount = abs(line.amount_residual_currency)
+                            else:
+                                # Different foreign currencies.
+                                amount = line.company_currency_id._convert(
+                                    abs(line.amount_residual),
+                                    move.currency_id,
+                                    move.company_id,
+                                    line.date,
+                                )
+
+                            if line.credit == 0:
+                                val = line.id
+                                vals = {'inv_amount': amount,
+                                        'name': line.move_id.name,
+                                        'inv_date': line.move_id.date,
+                                        'move_line_id': val,
+                                        'date_due': line.date,
+                                        'inv_unallocated_amount': line.amount_residual,
+                                        }
                             inv_vals.append((0, 0, vals))
                     data.invoice_allocation_ids = inv_vals
                     print("---------------INVOIVE ALLOCATION IDS",data.invoice_allocation_ids)
@@ -133,7 +206,43 @@ class PaymentAllocation(models.TransientModel):
                                             'inv_unallocated_amount': inv.amount_residual,
                                             }
                             inv_vals.append((0, 0, vals))
+                        journal_entry = self.env['account.move.line'].search([
+                            ('account_id', 'in', pay_term_lines.account_id.ids),
+                            ('move_id', '!=', self.payment_id.move_id.id),
+
+                            ('parent_state', '=', 'posted'), ('balance', '<', 0.0),
+                            ('partner_id', '=', p.id),
+                            ('reconciled', '=', False),
+                            '|', ('amount_residual', '!=', 0.0), ('amount_residual_currency', '!=', 0.0),
+                        ])
+                        print("journal_entry", journal_entry)
+
+                        for line in journal_entry:
+                            if line.currency_id == move.currency_id:
+                                # Same foreign currency.
+                                amount = abs(line.amount_residual_currency)
+                            else:
+                                # Different foreign currencies.
+                                amount = line.company_currency_id._convert(
+                                    abs(line.amount_residual),
+                                    move.currency_id,
+                                    move.company_id,
+                                    line.date,
+                                )
+
+                            if line.credit == 0:
+                                val = line.id
+                                vals = {'inv_amount': amount,
+                                        'name': line.move_id.name,
+                                        'inv_date': line.move_id.date,
+                                        'move_line_id': val,
+                                        'date_due': line.date,
+                                        'inv_unallocated_amount': line.amount_residual,
+                                        }
+                            inv_vals.append((0, 0, vals))
+
                     data.invoice_allocation_ids = inv_vals
+
 
                     cred_invoice = self.env['account.move'].search([('partner_id', '=', p.id), (
                         'amount_residual', '>', 0.0), ('state', 'in', ['posted']),
@@ -154,6 +263,7 @@ class PaymentAllocation(models.TransientModel):
                         pay_vals.append((0, 0, vals))
                     data.payment_allocation_ids = pay_vals
                 else:
+                  
                     for p in partner:
                         invoice = self.env['account.move'].search([('partner_id', '=', p.id), (
                             'amount_residual', '>', 0.0), ('state', 'in', ['posted']),
@@ -171,6 +281,42 @@ class PaymentAllocation(models.TransientModel):
                                             'inv_unallocated_amount': inv.amount_residual,
                                             }
                             inv_vals.append((0, 0, vals))
+                        journal_entry = self.env['account.move.line'].search([
+                            ('account_id', 'in', pay_term_lines.account_id.ids),
+                            ('move_id','!=',self.payment_id.move_id.id),
+
+                            ('parent_state', '=', 'posted'), ('balance', '>', 0.0),
+                            ('partner_id', '=', p.id),
+                            ('reconciled', '=', False),
+                            '|', ('amount_residual', '!=', 0.0), ('amount_residual_currency', '!=', 0.0),
+                        ])
+
+
+                        for line in journal_entry:
+                            if line.currency_id == move.currency_id:
+                                # Same foreign currency.
+                                amount = abs(line.amount_residual_currency)
+                            else:
+                                # Different foreign currencies.
+                                amount = line.company_currency_id._convert(
+                                    abs(line.amount_residual),
+                                    move.currency_id,
+                                    move.company_id,
+                                    line.date,
+                                )
+
+                            if line.credit == 0:
+                                val = line.id
+                                vals = {'inv_amount': amount,
+                                        'name': line.move_id.name,
+                                        'inv_date': line.move_id.date,
+                                        'move_line_id': val,
+                                        'date_due': line.date,
+                                        'inv_unallocated_amount': line.amount_residual,
+                                        }
+                            inv_vals.append((0, 0, vals))
+
+
                         data.invoice_allocation_ids = inv_vals
 
                         cred_invoice = self.env['account.move'].search([('partner_id', '=', p.id), (

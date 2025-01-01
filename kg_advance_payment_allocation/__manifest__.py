@@ -2,7 +2,7 @@
 
 {
     'name': 'Advance Payment Allocation ',
-    'version': '15.0.1.0.0',
+    'version': '16.0.2.1.0',
     'license': 'LGPL-3',
     'category': 'Accounting',
     "sequence": 1,
