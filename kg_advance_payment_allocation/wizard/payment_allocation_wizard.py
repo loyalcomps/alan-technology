@@ -89,6 +89,7 @@ class PaymentAllocation(models.TransientModel):
                                             }
                             inv_vals.append((0, 0, vals))
                     data.invoice_allocation_ids = inv_vals
+                    print("---------------INVOIVE ALLOCATION IDS",data.invoice_allocation_ids)
 
                     cred_invoice = self.env['account.move'].search([('partner_id', '=', p.id), (
                         'amount_residual', '>', 0.0), ('state', 'in', ['posted']),
@@ -190,6 +191,7 @@ class PaymentAllocation(models.TransientModel):
                                     }
                             pay_vals.append((0, 0, vals))
                         data.payment_allocation_ids = pay_vals
+
 
     def get_matching_dict(self, debit_move_dict, credit_move_dict):
         matching_list = []

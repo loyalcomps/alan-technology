@@ -12,7 +12,7 @@
                     <field name="is_sales_manager" invisble="1"/>
                     <field name="credit_limit" attrs="{'readonly':[('is_sales_manager','!=',True)]}"/>
                 </xpath>
-                <xpath expr="/form/sheet/notebook/page[@name='sales_purchases']/group/group[1]/field[@name='property_payment_term_id']"
+                <xpath expr="/form/sheet/notebook/page[@name='custom_sales']/group/group[1]/field[@name='property_payment_term_id']"
                        position="attributes">
                     <attribute name="attrs">{'readonly': [('is_sales_manager', '=',False)]}</attribute>
                 </xpath>

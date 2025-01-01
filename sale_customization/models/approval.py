@@ -145,18 +145,40 @@ class SaleOrder(models.Model):
                 f"The total amount of this sale order exceeds the configured limit of {company.max_order_amount}. Approval required.")
 
     def action_confirm(self):
-        if self.state in ['draft', 'approve', 'sent']:
-            result = super(SaleOrder, self).action_confirm()
-            for order_line in self.order_line:
-                for picking in self.picking_ids:
-                    for move in picking.move_ids_without_package:
-                        if order_line.product_id == move.product_id:
-                            move.description = order_line.name
-            return result
-        else:
-            if self.show_approve:
-                raise UserError("You cannot confirm the Sale Order unless the state is 'Approved'.")
+        """Confirm sale order and update move descriptions from order lines.
+
+        Returns:
+            Result from super call after confirming sale order
+
+        Raises:
+            UserError: If order requires approval but hasn't been approved yet
+        """
+        if self.show_approve and self.state not in ['approve']:
+            raise UserError("You cannot confirm the Sale Order unless the state is 'Approved'.")
+
+        if self.state not in ['draft', 'approve', 'sent']:
             return super(SaleOrder, self).action_confirm()
+
+        result = super(SaleOrder, self).action_confirm()
+
+        # Create mapping of product_id to order line name for efficient lookup
+        product_descriptions = {
+            line.product_id: line.name
+            for line in self.order_line
+        }
+
+        # Update move descriptions in a single pass
+        for picking in self.picking_ids:
+            for move in picking.move_ids_without_package:
+                if move.product_id in product_descriptions:
+                    move.description = product_descriptions[move.product_id]
+            for move in picking.move_line_ids_without_package:
+
+                if move.product_id in product_descriptions:
+                    move.description = product_descriptions[move.product_id]
+
+        return result
+
 
     def action_approve(self):
         self.state = 'approve'
@@ -165,13 +187,17 @@ class SaleOrder(models.Model):
 class StockMove(models.Model):
     _inherit = "stock.move"
 
-    description = fields.Char('Description')
+    description = fields.Char('Description',store=True)
+class StockMoveLine(models.Model):
+    _inherit = "stock.move.line"
+
+    description = fields.Char('Description',store=True,related='move_id.description')
 
 
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 
-    description = fields.Char('Description')
+    description = fields.Char('Description',store=True)
 
 
 class SaleOrderLine(models.Model):

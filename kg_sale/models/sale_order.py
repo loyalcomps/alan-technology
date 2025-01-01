@@ -291,6 +291,7 @@ class SaleOrder(models.Model):
         # kg_remarks = self.kg_remarks
         # if kg_remarks:
         if self.kg_need_approval == 'need_approval':
+            print("-------------------needdddddddddddddddd")
             raise UserError(_('need approval from finance manager'))
         self.action_check_payment_due()
         customer_id = self.partner_id.id
@@ -671,7 +672,7 @@ class SaleOrder(models.Model):
         ('need_approval', 'Need Approval From Accounts Department'),
         ('no_need_approval', 'No Approval Needed'),
         ('approved', 'Accounts Department Approved'),
-    ], string='Status', compute='_compute_kg_approval_status', store=True)
+    ], string='Status', compute='_compute_kg_approval_status')
 
     @api.depends('partner_id', 'amount_total')
     def _compute_kg_approval_status(self):
@@ -680,7 +681,10 @@ class SaleOrder(models.Model):
             partner_id = obj.partner_id and obj.partner_id.id
             if partner_id:
                 credit_limit = obj.partner_id.credit_limit
+                print("amount_total", amount_total)
+                print("credit_limit", credit_limit)
                 if amount_total > credit_limit:
+
                     obj.kg_need_approval = 'need_approval'
                 else:
                     obj.kg_need_approval = 'no_need_approval'
