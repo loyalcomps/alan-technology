@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_employee_payment_order_info_readonly,employee.payment.order.info.readonly,model_employee_payment_order_info,account.group_account_readonly,1,0,0,0
+access_employee_payment_order_info,employee.payment.order.info,model_employee_payment_order_info,account.group_account_invoice,1,1,1,1
