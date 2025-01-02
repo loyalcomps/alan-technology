@@ -71,6 +71,7 @@ class PaymentAllocation(models.TransientModel):
                         # for line in journal_entry:
                         for line in journal_entry.filtered(
                                     lambda l: l.debit == 0 and l.move_id.journal_id.type not in ['bank', 'cash']):
+                            amount = 0
                             if line.currency_id == move.currency_id:
                                 # Same foreign currency.
                                 amount = abs(line.amount_residual_currency)
@@ -145,6 +146,7 @@ class PaymentAllocation(models.TransientModel):
                         # for line in journal_entry:
                         for line in journal_entry.filtered(
                                     lambda l: l.credit == 0 and l.move_id.journal_id.type not in ['bank', 'cash']):
+                            amount = 0
                             if line.currency_id == move.currency_id:
                                 # Same foreign currency.
                                 amount = abs(line.amount_residual_currency)
@@ -229,6 +231,7 @@ class PaymentAllocation(models.TransientModel):
 
                         for line in journal_entry.filtered(
                                     lambda l: l.debit == 0 and l.move_id.journal_id.type not in ['bank', 'cash']):
+                            amount = 0
 
                             if line.currency_id == move.currency_id:
                                 # Same foreign currency.
@@ -308,6 +311,7 @@ class PaymentAllocation(models.TransientModel):
 
 
                         for line in journal_entry.filtered(lambda l:l.credit==0 and l.move_id.journal_id.type not in ['bank','cash']):
+                            amount=0
 
 
                             if line.currency_id == move.currency_id:
@@ -425,8 +429,7 @@ class PaymentAllocation(models.TransientModel):
         for rec in self.payment_allocation_ids:
             payment_amount += rec.amount
         for rec in self.invoice_allocation_ids:
-            if (rec.inv_allocate_amount) > (rec.inv_unallocated_amount):
-                print("-------------",rec.inv_allocate_amount, rec.inv_unallocated_amount)
+            if rec.inv_allocate_amount >rec.inv_unallocated_amount:
                 raise ValidationError(_('Allocate amount exceeds invoice amount'))
             if rec.inv_allocate_amount > payment_amount:
                 raise ValidationError(_('Allocate amount exceeds payment amount'))
