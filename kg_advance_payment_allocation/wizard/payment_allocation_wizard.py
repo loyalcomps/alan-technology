@@ -205,7 +205,6 @@ class PaymentAllocation(models.TransientModel):
 
                             val = 0
                             for line in inv.line_ids:
-                                print("-----------invoiceeeeeeeeeee ACCOUNT NAME", line.move_id.name)
 
                                 if line.credit == 0:
                                     val = line.id

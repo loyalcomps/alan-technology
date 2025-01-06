@@ -636,8 +636,8 @@ class SaleOrder(models.Model):
 
     @api.constrains('partner_id')
     def credit_payment_terms_validation(self):
-        partner = self.env['res.partner'].sudo().search([('name', '=', self.partner_id.name)])
-        if not partner.use_partner_credit_limit:
+        partner = self.partner_id
+        if partner and not partner.use_partner_credit_limit:
             if not partner.property_payment_term_id:
                 raise UserError(_('credit limit or payment term not found for the partner'))
 
@@ -676,7 +676,9 @@ class SaleOrder(models.Model):
 
     @api.depends('partner_id', 'amount_total')
     def _compute_kg_approval_status(self):
+
         for obj in self:
+            obj.kg_need_approval='no_need_approval'
             amount_total = obj.amount_total
             partner_id = obj.partner_id and obj.partner_id.id
             if partner_id:

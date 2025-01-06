@@ -1,4 +1,5 @@
 from typing import final
+import threading
 
 from dateutil.relativedelta import relativedelta
 
@@ -35,6 +36,8 @@ class SaleOrder(models.Model):
         store=False
     )
     show_approve = fields.Boolean(compute='_compute_is_sales_manager')
+    approval_description=fields.Text(compute='_compute_is_sales_manager')
+    first_confirm = fields.Boolean(default=False,store=True)
 
     payment_term_id = fields.Many2one('account.payment.term', string='Payment Terms',
                                       domain="[('state', '=', 'approve')]")
@@ -92,26 +95,33 @@ class SaleOrder(models.Model):
 
     def action_custom_cancel(self):
         for i in self:
-            purchase_orders = self.env['purchase.order'].search([('kg_sale_order_id', 'in', i.ids)])
-            if not purchase_orders:
-                self.state = 'cancel'
-            for j in purchase_orders:
-                if j.state in ['purchase', 'done','cancel']:
-                    raise UserError("You cannot cancel sale order.")
-                if j.state == 'draft' and not i.cancelled_reason:
-                    return {
-                        'name': _('Cancel'),
-                        'type': 'ir.actions.act_window',
-                        'res_model': 'sale.cancel.custom',
-                        'view_mode': 'form',
-                        'target': 'new',
-                        'context': {
-                            'default_sale_id': self.id,
-                        },
-                    }
+            purchase_orders = self.env['purchase.order'].search([('kg_sale_order_id', 'in', i.ids),('state','in',['purchase','done'])])
+            if purchase_orders:
+                raise UserError("You cannot cancel sale order.")
+            else:
+                return {
+                    'name': _('Cancel'),
+                    'type': 'ir.actions.act_window',
+                    'res_model': 'sale.cancel.custom',
+                    'view_mode': 'form',
+                    'target': 'new',
+                    'context': {
+                        'default_sale_id': self.id,
+                    },
+                }
+
+
+            # if not purchase_orders:
+            #     self.state = 'cancel'
+            # for j in purchase_orders:
+            #     if j.state in ['purchase', 'done','cancel']:
+
+
+
 
     @api.depends()
     def _compute_is_sales_manager(self):
+
         """
         Computes if the current user is a Sales Manager and whether the approval button should be shown.
         """
@@ -122,11 +132,10 @@ class SaleOrder(models.Model):
         sales_manager_group = self.env.ref('sale_customization.group_sales_manager', raise_if_not_found=False)
 
         for order in self:
+            order.approval_description=''
             # Check if the user belongs to the Sales Manager group
             order.is_sales_manager = sales_manager_group and sales_manager_group in self.env.user.groups_id
-            print("------------TODAYYYdate", today)
 
-            print("------------------", order.date_order.date() + relativedelta(days=order.payment_term_id.min_days))
 
             # Check conditions to show approval
             order.show_approve = (
@@ -137,13 +146,39 @@ class SaleOrder(models.Model):
                      order.date_order.date() + relativedelta(days=order.payment_term_id.min_days))
             )
 
-    @api.constrains('amount_total')
-    def _check_order_amount(self):
-        company = self.env.company
-        if self.amount_total > company.max_order_amount:
-            raise UserError(
-                f"The total amount of this sale order exceeds the configured limit of {company.max_order_amount}. Approval required.")
+            if (order.amount_total > company.max_order_amount and
+                    (order.payment_term_id.min_days and
+                     order.date_order and
+                     today >=
+                     order.date_order.date() + relativedelta(days=order.payment_term_id.min_days))):
+                order.approval_description= ' Order Amount Exceeded and Minimum Days for Payment Exceeded !!!!!!'
+            elif order.amount_total > company.max_order_amount:
+                order.approval_description = 'Order Amount Exceeded !!!!!!'
+            elif (order.payment_term_id.min_days and
+                     order.date_order and
+                     today >=
+                     order.date_order.date() + relativedelta(days=order.payment_term_id.min_days)):
+                order.approval_description = ' Minimum Days for Payment Exceeded !!!!!!'
+            else:
+                order.approval_description = ''
 
+
+
+
+
+    # @api.constrains('amount_total')
+    # def _check_order_amount(self):
+    #     company = self.env.company
+    #     if self.amount_total > company.max_order_amount:
+    #         raise UserError(
+    #             f"The total amount of this sale order exceeds the configured limit of {company.max_order_amount}. Approval required.")
+
+    # def update_first_confirm(self):
+    #     self.env.cr.execute("""
+    #                        UPDATE sale_order
+    #                        SET first_confirm = TRUE
+    #                        WHERE id = %s
+    #                    """, (self.id,))
     def action_confirm(self):
         """Confirm sale order and update move descriptions from order lines.
 
@@ -153,8 +188,29 @@ class SaleOrder(models.Model):
         Raises:
             UserError: If order requires approval but hasn't been approved yet
         """
+        # self.sudo().update_first_confirm()
+
+
         if self.show_approve and self.state not in ['approve']:
-            raise UserError("You cannot confirm the Sale Order unless the state is 'Approved'.")
+            return {
+                'name': _('Approval Required'),
+                'type': 'ir.actions.act_window',
+                'res_model': 'sale.cancel.custom',
+                'view_mode': 'form',
+                'target': 'new',
+                'context': {
+                    'default_sale_id': self.id,
+                    'default_check_approve': True,
+                    'default_description': self.approval_description,
+
+                },
+            }
+
+
+
+
+
+
 
         if self.state not in ['draft', 'approve', 'sent']:
             return super(SaleOrder, self).action_confirm()

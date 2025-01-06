@@ -32,6 +32,8 @@
                     />
                     <field name="custom_status"/>
 
+                      <field name="approval_description" invisible="1"/>
+
                 </xpath>
                 <xpath expr="//header/field[@name='state']" position="replace">
                     <field name="state" widget="statusbar" statusbar_visible="draft,sent,approve,sale"/>
@@ -49,13 +51,15 @@
                 <xpath expr="//header/button[@name='action_quotation_send']" position="before">
 
                     <button name="action_approve" string="Approve"
-                            attrs="{'invisible': ['|',('show_approve','=',False),('state', 'not in', ['draft', 'sent'])]}"
+                            attrs="{'invisible': ['|',('first_confirm','=',False),('state', 'not in', ['draft', 'sent'])]}"
                             type="object"
                             class="btn-primary" groups="sale_customization.group_sales_manager"/>
 
 
-                    <field name="show_approve" invisible="1"/>
+
                     <field name="is_sales_manager" invisible="1"/>
+
+
                 </xpath>
 
 
@@ -65,8 +69,9 @@
 
 
                 <xpath expr="//field[@name='partner_id']" position="after">
-                    <field name="customer_state" invisible="0"/>
-                    <field name="show_approve" invisible="0"/>
+                    <field name="customer_state" invisible="1"/>
+                    <field name="show_approve" invisible="1"/>
+                     <field name="first_confirm" force_save="1" invisible="1"/>
                 </xpath>
             </field>
         </record>
