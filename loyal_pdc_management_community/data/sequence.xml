@@ -10,15 +10,16 @@
         </record>
 
         <!-- Payment methods -->
-        <record id="account_payment_method_pdc_in" model="account.payment.method">
-            <field name="name">Post Dated Cheque</field>
-            <field name="code">pdc</field>
-            <field name="payment_type">inbound</field>
-        </record>
-        <record id="account_payment_method_pdc_out" model="account.payment.method">
-            <field name="name">Post Dated Cheque</field>
-            <field name="code">pdc</field>
-            <field name="payment_type">outbound</field>
-        </record>
+<!--        Commented as it was already there in base_accounting_kit module-->
+<!--        <record id="account_payment_method_pdc_in" model="account.payment.method">-->
+<!--            <field name="name">Post Dated Cheque</field>-->
+<!--            <field name="code">pdc</field>-->
+<!--            <field name="payment_type">inbound</field>-->
+<!--        </record>-->
+<!--        <record id="account_payment_method_pdc_out" model="account.payment.method">-->
+<!--            <field name="name">Post Dated Cheque</field>-->
+<!--            <field name="code">pdc</field>-->
+<!--            <field name="payment_type">outbound</field>-->
+<!--        </record>-->
     </data>
 </odoo>

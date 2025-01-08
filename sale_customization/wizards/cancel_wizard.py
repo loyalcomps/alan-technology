@@ -12,20 +12,12 @@ class SaleCancelCustom(models.TransientModel):
 
     @api.model
     def send_so_approval_notifications(self,sale_id):
-
-        current_date = datetime.now().date()
-
-        print("--------sale_order_obj----",sale_id)
-
-
-
         email_subject = "Sale Order Approval Notification"
 
         group_xml_ids = [
             'sale_customization.group_sales_manager',
 
         ]
-
         # Search for the corresponding group records
         groups = self.env['ir.model.data'].search([
             ('module', 'in', [xml_id.split('.')[0] for xml_id in group_xml_ids]),
@@ -34,7 +26,7 @@ class SaleCancelCustom(models.TransientModel):
 
         # Find users who belong to these groups
         user_records = self.env['res.users'].search([('groups_id', 'in', groups)])
-       
+
         partner_ids = [(4, user.partner_id.id) for user in user_records]
 
         notification_ids = []

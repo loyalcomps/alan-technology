@@ -83,7 +83,7 @@ class PdcPayment(models.Model):
     payment_method_line_id = fields.Many2one('account.payment.method.line', string='Payment Method',
                                              readonly=False, store=True, copy=False,
                                              compute='_compute_payment_method_line_id',
-                                             domain="[('code', '=', 'pdc')]")
+                                             domain="[('code', 'in',['pdc')]")
     is_reconciled = fields.Boolean(string="Is Reconciled", store=True,
                                    compute='_compute_reconciliation_status',
                                    help="Technical field indicating if the payment is already reconciled.")
