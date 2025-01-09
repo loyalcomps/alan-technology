@@ -49,20 +49,19 @@ class SalespersonInactive(models.Model):
     def set_customers_inactive(self):
         today = fields.Date.today()
         contacts = self.env['res.partner'].search([('last_invoice_date', '=', True)])
-        no_contacts = self.env['res.partner'].search([('last_invoice_date', '=', False)])
         company = self.env.company
         if company.max_inactive_days:
             if contacts:
                 for contact in contacts:
                     last_invoice_date = contact.last_invoice_date
                     if last_invoice_date:
-                       days_difference = (today - last_invoice_date).days
-                       if days_difference >= company.max_inactive_days:
-                          contact.customer_state = 'inactive'
-                       else:
-                          contact.customer_state = 'active'
-            if no_contacts:
-                for j in no_contacts:
+                        days_difference = (today - last_invoice_date).days
+                        if days_difference <= company.max_inactive_days:
+                            contact.customer_state = 'active'
+                        else:
+                            contact.customer_state = 'inactive'
+            else:
+                for j in self:
                     j.customer_state = 'inactive'
 class ResCompany(models.Model):
     _inherit = 'res.company'
