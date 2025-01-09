@@ -80,10 +80,34 @@ class PdcPayment(models.Model):
         ('supplier', 'Vendor'),
     ], default='customer', tracking=True, required=True)
 
+    # == Payment methods fields ==
     payment_method_line_id = fields.Many2one('account.payment.method.line', string='Payment Method',
                                              readonly=False, store=True, copy=False,
                                              compute='_compute_payment_method_line_id',
-                                             domain="[('code', '=', 'pdc')]")
+                                             domain="[('id', 'in', available_payment_method_line_ids),('code', '=', 'pdc')]",
+                                             help="Manual: Pay or Get paid by any method outside of Odoo.\n"
+                                                  "Payment Providers: Each payment provider has its own Payment Method. Request a transaction on/to a card thanks to a payment token saved by the partner when buying or subscribing online.\n"
+                                                  "Check: Pay bills by check and print it from Odoo.\n"
+                                                  "Batch Deposit: Collect several customer checks at once generating and submitting a batch deposit to your bank. Module account_batch_payment is necessary.\n"
+                                                  "SEPA Credit Transfer: Pay in the SEPA zone by submitting a SEPA Credit Transfer file to your bank. Module account_sepa is necessary.\n"
+                                                  "SEPA Direct Debit: Get paid in the SEPA zone thanks to a mandate your partner will have granted to you. Module account_sepa is necessary.\n")
+    available_payment_method_line_ids = fields.Many2many('account.payment.method.line',
+                                                         compute='_compute_payment_method_line_fields')
+    payment_method_id = fields.Many2one(
+        related='payment_method_line_id.payment_method_id',
+        string="Method",
+        tracking=True,
+        store=True
+    )
+    available_journal_ids = fields.Many2many(
+        comodel_name='account.journal',
+        compute='_compute_available_journal_ids'
+    )
+
+    # payment_method_line_id = fields.Many2one('account.payment.method.line', string='Payment Method',
+    #                                          readonly=False, store=True, copy=False,
+    #                                          compute='_compute_payment_method_line_id',
+    #                                          domain="[('code', '=', 'pdc')]")
     is_reconciled = fields.Boolean(string="Is Reconciled", store=True,
                                    compute='_compute_reconciliation_status',
                                    help="Technical field indicating if the payment is already reconciled.")
@@ -101,11 +125,11 @@ class PdcPayment(models.Model):
         for record in self:
             record.attachment_count = record.pdc_attachment_ids.ids and len(record.pdc_attachment_ids.ids) or 0
 
-    @api.constrains('pdc_attachment_ids', 'attachment_count')
-    def check_attachments(self):
-        for record in self:
-            if len(record.pdc_attachment_ids.ids) <= 0 or record.attachment_count <= 0:
-                raise UserError(_("Please upload one attachment"))
+    # @api.constrains('pdc_attachment_ids', 'attachment_count')
+    # def check_attachments(self):
+    #     for record in self:
+    #         if len(record.pdc_attachment_ids.ids) <= 0 or record.attachment_count <= 0:
+    #             raise UserError(_("Please upload one attachment"))
 
     @api.onchange('payment_type')
     def change_partner_type(self):
@@ -184,16 +208,36 @@ class PdcPayment(models.Model):
 
     @api.depends('payment_type', 'journal_id')
     def _compute_payment_method_line_id(self):
+        print("------------computeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
         ''' Compute the 'payment_method_line_id' field.
         '''
         for pay in self:
             available_payment_method_line_ids = pay.journal_id._get_available_payment_method_lines(pay.payment_type)
+            print("---------avaiablr",available_payment_method_line_ids)
 
             if available_payment_method_line_ids:
+
                 payment_method_lines = available_payment_method_line_ids.filtered(lambda l: l.code == 'pdc')
+                print("-------payment method ;inesssssssssss",payment_method_lines)
+
+
                 pay.payment_method_line_id = payment_method_lines[0]._origin if payment_method_lines else False
             else:
                 pay.payment_method_line_id = False
+
+    @api.depends('payment_type', 'journal_id', 'currency_id')
+    def _compute_payment_method_line_fields(self):
+        for pay in self:
+            pay.available_payment_method_line_ids = pay.journal_id._get_available_payment_method_lines(pay.payment_type)
+            to_exclude = pay._get_payment_method_codes_to_exclude()
+            if to_exclude:
+                pay.available_payment_method_line_ids = pay.available_payment_method_line_ids.filtered(
+                    lambda x: x.code not in to_exclude)
+
+    def _get_payment_method_codes_to_exclude(self):
+        # can be overriden to exclude payment methods based on the payment characteristics
+        self.ensure_one()
+        return []
 
     def _seek_for_lines(self):
         ''' Helper used to dispatch the journal items between:
