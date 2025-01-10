@@ -16,7 +16,9 @@ class SalespersonInactive(models.Model):
         compute='_compute_is_sales_manager',
         store=False
     )
-    property_payment_term_id = fields.Many2one('account.payment.term',string='Payment Terms', domain="[('state', '=', 'approve')]")
+    property_payment_term_id = fields.Many2one('account.payment.term', string='Payment Terms',
+                                               domain="[('state', '=', 'approve')]")
+
     @api.depends()
     def _compute_is_sales_manager(self):
         sales_manager_group = self.env.ref('sale_customization.group_sales_manager')
@@ -59,21 +61,28 @@ class SalespersonInactive(models.Model):
                         if days_difference <= company.max_inactive_days:
                             contact.customer_state = 'active'
                         else:
-                            contact.customer_state = 'inactive'
+                            contact.sudo().write({
+                                'customer_state': 'inactive',
+                                'user_id': None
+                            })
+
             else:
                 for j in self:
                     j.customer_state = 'inactive'
+
+
 class ResCompany(models.Model):
     _inherit = 'res.company'
 
     max_order_amount = fields.Float(string="Maximum Order Amount")
     max_inactive_days = fields.Integer(string='Maximum Inactive Days')
 
+
 class AccountPaymentTerm(models.Model):
     _inherit = 'account.payment.term'
 
-    min_days= fields.Integer(string='Minimum Days Approval')
-    max_days= fields.Integer(string='Maximmum Days Approval')
+    min_days = fields.Integer(string='Minimum Days Approval')
+    max_days = fields.Integer(string='Maximmum Days Approval')
     state = fields.Selection([
         ('toapprove', 'To approve'),
         ('approve', 'Approve'),
@@ -92,13 +101,13 @@ class AccountPaymentTerm(models.Model):
     is_standard = fields.Boolean(string="Standard Payment Term")
 
     def action_approve(self):
-        self.state='approve'
+        self.state = 'approve'
 
     def action_reject(self):
-        self.state='reject'
+        self.state = 'reject'
 
     def action_draft(self):
-        self.state='toapprove'
+        self.state = 'toapprove'
 
     @api.depends()
     def _compute_is_sales_manager(self):
@@ -117,7 +126,3 @@ class AccountPaymentTerm(models.Model):
                 order.is_approval = sales_manager_group in self.env.user.groups_id
             else:
                 order.is_approval = False
-
-
-
-
