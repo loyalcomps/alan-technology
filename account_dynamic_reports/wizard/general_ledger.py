@@ -58,7 +58,7 @@ class InsGeneralLedger(models.TransientModel):
                 if int((date.month - 1) / 3) == 0:  # First quarter
                     self.date_from = datetime(date.year, 1, 1).strftime("%Y-%m-%d")
                     self.date_to = datetime(date.year, 3, calendar.mdays[3]).strftime("%Y-%m-%d")
-                if int((date.month - 1) / 3) == 1:  # Second quarter
+                if int((date.zmonth - 1) / 3) == 1:  # Second quarter
                     self.date_from = datetime(date.year, 4, 1).strftime("%Y-%m-%d")
                     self.date_to = datetime(date.year, 6, calendar.mdays[6]).strftime("%Y-%m-%d")
                 if int((date.month - 1) / 3) == 2:  # Third quarter

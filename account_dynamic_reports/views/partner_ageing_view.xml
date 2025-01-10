@@ -61,7 +61,7 @@
                         <table class="pims_report_line_table pims_report_content">
                             <thead>
                                 <tr class="text-center">
-                                    <th>Partner</th>
+                                    <th>Customer</th>
                                     <t t-foreach="Period_List" t-as="period">
                                         <th style="text-align:right;margin-bottom:10px;"><t t-esc="period"/></th>
                                     </t>

@@ -134,7 +134,7 @@ class InsPartnerAgeing(models.TransientModel):
             'bucket_2': self.bucket_2,
             'bucket_3': self.bucket_3,
             'bucket_4': self.bucket_4,
-            'bucket_5': self.bucket_5,
+            # 'bucket_5': self.bucket_5,
             'include_details': self.include_details,
 
             'partners_list': [(p.id, p.name) for p in partners],
@@ -200,7 +200,7 @@ class InsPartnerAgeing(models.TransientModel):
         lang = self.env.user.lang
         language_id = self.env['res.lang'].search([('code', '=', lang)])[0]
 
-        bucket_list = [self.bucket_1,self.bucket_2,self.bucket_3,self.bucket_4,self.bucket_5]
+        bucket_list = [self.bucket_1,self.bucket_2,self.bucket_3,self.bucket_4]
 
         start = False
         stop = date_from
@@ -214,7 +214,7 @@ class InsPartnerAgeing(models.TransientModel):
 
         stop = date_from
         final_date = False
-        for i in range(5):
+        for i in range(4):
             ref_date = date_from - relativedelta(days=1)
             start = stop - relativedelta(days=1)
             stop = ref_date - relativedelta(days=bucket_list[i])
@@ -229,7 +229,7 @@ class InsPartnerAgeing(models.TransientModel):
 
         start = final_date -relativedelta(days=1)
         stop = ''
-        name = str(self.bucket_5) + ' +'
+        name = str(self.bucket_4) + ' +'
 
         periods[6] = {
             'bucket': 'Above',

@@ -278,18 +278,18 @@ View Source move
 <td t-att-style="style" class="amt"><t t-raw="account_line.debit"/></td>
 <td t-att-style="style" class="amt"><t t-raw="account_line.credit"/></td>
 <td t-att-style="style" class="amt"><t t-raw="account_line.balance"/></td>
-<td t-att-style="style" class="amt">
-<t t-if="account_line['currency_symbol'] != account_line['company_currency_symbol']">
-<t t-if="account_line['currency_position'] == 'before'">
-<span t-esc="account_line['currency_symbol']"/>
-<span t-esc="account_line['amount_currency']"/>
-</t>
-<t t-if="account_line['currency_position'] == 'after'">
-<span t-esc="account_line['amount_currency']"/>
-<span t-esc="account_line['currency_symbol']"/>
-</t>
-</t>
-</td>
+<!--<td t-att-style="style" class="amt">-->
+<!--<t t-if="account_line['currency_symbol'] != account_line['company_currency_symbol']">-->
+<!--<t t-if="account_line['currency_position'] == 'before'">-->
+<!--<span t-esc="account_line['currency_symbol']"/>-->
+<!--<span t-esc="account_line['amount_currency']"/>-->
+<!--</t>-->
+<!--<t t-if="account_line['currency_position'] == 'after'">-->
+<!--<span t-esc="account_line['amount_currency']"/>-->
+<!--<span t-esc="account_line['currency_symbol']"/>-->
+<!--</t>-->
+<!--</t>-->
+<!--</td>-->
 </tr>
 </t>
 </tbody>
@@ -805,18 +805,18 @@ View Source move
 <td t-att-style="style" class="amt"><t t-raw="account_line.debit"/></td>
 <td t-att-style="style" class="amt"><t t-raw="account_line.credit"/></td>
 <td t-att-style="style" class="amt"><t t-raw="account_line.balance"/></td>
-<td t-att-style="style" class="amt">
-<t t-if="account_line['currency_symbol'] != account_line['company_currency_symbol']">
-<t t-if="account_line['currency_position'] == 'before'">
-<span t-esc="account_line['currency_symbol']"/>
-<span t-esc="account_line['amount_currency']"/>
-</t>
-<t t-if="account_line['currency_position'] == 'after'">
-<span t-esc="account_line['amount_currency']"/>
-<span t-esc="account_line['currency_symbol']"/>
-</t>
-</t>
-</td>
+<!--<td t-att-style="style" class="amt">-->
+<!--<t t-if="account_line['currency_symbol'] != account_line['company_currency_symbol']">-->
+<!--<t t-if="account_line['currency_position'] == 'before'">-->
+<!--<span t-esc="account_line['currency_symbol']"/>-->
+<!--<span t-esc="account_line['amount_currency']"/>-->
+<!--</t>-->
+<!--<t t-if="account_line['currency_position'] == 'after'">-->
+<!--<span t-esc="account_line['amount_currency']"/>-->
+<!--<span t-esc="account_line['currency_symbol']"/>-->
+<!--</t>-->
+<!--</t>-->
+<!--</td>-->
 </tr>
 </t>
 </tbody>

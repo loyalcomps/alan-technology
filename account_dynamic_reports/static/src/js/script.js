@@ -709,9 +709,9 @@ currency_id = session.get_currency(currency_id);
 var without_sign = field_utils.format.monetary(Math.abs(amount), {}, formatOptions);
 if(!amount){return '-'};
 if (currency_id.position === "after") {
-return sign + '&nbsp;' + without_sign + '&nbsp;' + currency_id.symbol;
+return sign + '&nbsp;' + without_sign;
 } else {
-return currency_id.symbol + '&nbsp;' + sign + '&nbsp;' + without_sign;
+return currency_id.symbol;
 }
 return without_sign;
 },
@@ -804,7 +804,6 @@ k.range_2 = self.formatWithSign(k.range_2, formatOptions, k.range_2 < 0 ? '-' : 
 k.range_3 = self.formatWithSign(k.range_3, formatOptions, k.range_3 < 0 ? '-' : '');
 k.range_4 = self.formatWithSign(k.range_4, formatOptions, k.range_4 < 0 ? '-' : '');
 k.range_5 = self.formatWithSign(k.range_5, formatOptions, k.range_5 < 0 ? '-' : '');
-k.range_6 = self.formatWithSign(k.range_6, formatOptions, k.range_6 < 0 ? '-' : '');
 k.date_maturity = field_utils.format.date(field_utils.parse.date(k.date_maturity, {}, {isUTC: true}));
 });
 $(event.currentTarget).parent().parent().parent().find('.py-mline-table-div').remove();
