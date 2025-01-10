@@ -267,3 +267,18 @@ class SaleOrderLine(models.Model):
                 'description': self.name,
             })
         return res
+class PurchaseOrder(models.Model):
+    _inherit = "purchase.order"
+
+
+    def button_confirm(self):
+        result = super(PurchaseOrder, self).button_confirm()
+        product_descriptions = {
+            line.product_id: line.name
+            for line in self.order_line
+        }
+        for picking in self.picking_ids:
+            for move in picking.move_ids_without_package:
+                if move.product_id in product_descriptions:
+                    move.description = product_descriptions[move.product_id]
+        return result
