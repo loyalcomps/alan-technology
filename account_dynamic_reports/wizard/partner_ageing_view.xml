@@ -19,7 +19,7 @@
                             <field name="bucket_2" nolabel="0"/>
                             <field name="bucket_3" nolabel="0"/>
                             <field name="bucket_4" nolabel="0"/>
-                            <field name="bucket_5" nolabel="0"/>
+<!--                            <field name="bucket_5" nolabel="0"/>-->
                         </group>
                         <group>
                             <field name="partner_ids" widget="many2many_tags"
