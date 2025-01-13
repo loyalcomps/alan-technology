@@ -151,14 +151,25 @@ class SaleOrder(models.Model):
                      order.date_order and
                      today >=
                      order.date_order.date() + relativedelta(days=order.payment_term_id.min_days))):
-                order.approval_description= ' Order Amount Exceeded and Minimum Days for Payment Exceeded !!!!!!'
+
+                order.approval_description ='Congratulations for your order, having above AED ' + str(company.max_order_amount) + ' value, you may request an Approval from Sales Director'
+
+                if order.payment_term_id.min_days >= 90:
+                    order.approval_description = order.approval_description +  ' and Payments overdue by ' + str(order.payment_term_id.min_days) + 'days for this customer, Approval required from Sales Director !!'
+                else:
+                    order.approval_description =order.approval_description +  ' and   Payments overdue by ' + str(order.payment_term_id.min_days) + 'days for this customer, Approval required from Sales Manager !!'
+
             elif order.amount_total > company.max_order_amount:
-                order.approval_description = 'Order Amount Exceeded !!!!!!'
+                order.approval_description ='Congratulations for your order, having above AED ' + str(company.max_order_amount) + ' value, you may request an Approval from Sales Director'
             elif (order.payment_term_id.min_days and
                      order.date_order and
                      today >=
                      order.date_order.date() + relativedelta(days=order.payment_term_id.min_days)):
-                order.approval_description = ' Minimum Days for Payment Exceeded !!!!!!'
+
+                if order.payment_term_id.min_days >= 90:
+                    order.approval_description = ' Payments overdue by ' + str(order.payment_term_id.min_days) + 'days for this customer, Approval required from Sales Director !!'
+                else:
+                    order.approval_description = ' Payments overdue by ' + str(order.payment_term_id.min_days)+ 'days for this customer, Approval required from Sales Manager !!'
             else:
                 order.approval_description = ''
 

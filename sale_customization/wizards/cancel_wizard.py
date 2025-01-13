@@ -35,7 +35,9 @@ class SaleCancelCustom(models.TransientModel):
 
             email_body = (f"Dear {user.name},<br/><br/>\n\n"
 
-                          f" Please Approve the Sale Order -<b>  {sale_id.name} </b> as  {sale_id.approval_description}<br/>"
+                          f"    {sale_id.approval_description}<br/>"
+                          
+                          f"  Sale Order Reference :  <b>  {sale_id.name} </b><br/>"
                          
                           f"Best regards,<br/>"
                           f"{sale_id.company_id.name}")

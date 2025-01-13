@@ -413,7 +413,7 @@ class InsPartnerAgeing(models.TransientModel):
             final_list = self.env.cr.dictfetchall() or []
             move_lines = []
             for m in final_list:
-                if (m['range_0'] or m['range_1'] or m['range_2'] or m['range_3'] or m['range_4'] or m['range_5']):
+                if (m.get('range_0') or m.get('range_1') or m.get('range_2') or m.get('range_3') or m.get('range_4') or m.get('range_5')):
                     move_lines.append(m)
 
             if move_lines:
@@ -807,15 +807,18 @@ class InsPartnerAgeing(models.TransientModel):
                             datestring = fields.Date.from_string(str(sub_line.get('date_maturity') or sub_line.get('date'))).strftime(
                                 lang_id.date_format)
                             sheet.write(row_pos, 1, datestring, line_header_light_date)
-                            sheet.write(row_pos, 2, sub_line.get('journal_name'), line_header_light)
-                            sheet.write(row_pos, 3, sub_line.get('account_name') or '', line_header_light)
-                            sheet.write(row_pos, 4, float(sub_line.get('range_0')), line_header_light_period)
-                            sheet.write(row_pos, 5, float(sub_line.get('range_1')), line_header_light_period)
-                            sheet.write(row_pos, 6, float(sub_line.get('range_2')), line_header_light_period)
-                            sheet.write(row_pos, 7, float(sub_line.get('range_3')), line_header_light_period)
-                            sheet.write(row_pos, 8, float(sub_line.get('range_4')), line_header_light_period)
-                            sheet.write(row_pos, 9, float(sub_line.get('range_5')), line_header_light_period)
-                            sheet.write(row_pos, 10, float(sub_line.get('range_6')), line_header_light_period)
+
+                            journal_name = sub_line.get('journal_name', {}).get('en_US', '')
+                            account_name = sub_line.get('account_name', {}).get('en_US', '')
+                            sheet.write(row_pos, 2, journal_name, line_header_light)
+                            sheet.write(row_pos, 3, account_name or '', line_header_light)
+                            sheet.write(row_pos, 4, (sub_line.get('range_0')), line_header_light_period)
+                            sheet.write(row_pos, 5, (sub_line.get('range_1')), line_header_light_period)
+                            sheet.write(row_pos, 6, (sub_line.get('range_2')), line_header_light_period)
+                            sheet.write(row_pos, 7, (sub_line.get('range_3')), line_header_light_period)
+                            sheet.write(row_pos, 8, (sub_line.get('range_4')), line_header_light_period)
+                            sheet.write(row_pos, 9, (sub_line.get('range_5')), line_header_light_period)
+                            sheet.write(row_pos, 10, (sub_line.get('range_6')), line_header_light_period)
                             sheet.write(row_pos, 11, '', line_header_light_period)
             row_pos += 1
             k = 4
@@ -830,7 +833,7 @@ class InsPartnerAgeing(models.TransientModel):
         return {
             'type': 'ir.actions.act_url',
             'url': '/web/binary/download_document?model=common.xlsx.out&field=filedata&id=%s&filename=%s.xls' % (
-                report_id.id, 'Partner Ageing.xls'),
+                report_id.id, 'Partner Ageing'),
             'target': 'new',
         }
 

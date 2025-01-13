@@ -58,10 +58,10 @@
 
                         <br></br>
 
-                        <table class="pims_report_line_table pims_report_content">
+                        <table class="">
                             <thead>
                                 <tr class="text-center">
-                                    <th>Customer</th>
+                                    <th> Customer</th>
                                     <t t-foreach="Period_List" t-as="period">
                                         <th style="text-align:right;margin-bottom:10px;"><t t-esc="period"/></th>
                                     </t>
@@ -89,14 +89,18 @@
                                     </td>
                                     <t t-foreach="Period_List" t-as="period">
                                         <t t-if="Ageing_data[line][period]">
-                                            <td class="text-right">
-                                                <span t-esc="Ageing_data[line][period]" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                             <td style="text-align:right;">
+
+                                                <span style="text-align:right;" t-esc="'{0:,.2f}'.format(Ageing_data[line][period])"/>
+<!--                                                      t-options="{'widget': 'monetary'}"/>-->
                                             </td>
                                         </t><t t-else=""><td class="text-center">-</td></t>
                                     </t>
                                     <t t-if="Ageing_data[line]['total']">
-                                        <td class="text-right">
-                                            <span t-esc="Ageing_data[line]['total']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+<!--                                         <td style="text-align:right;">-->
+                                        <td style="text-align:right;">
+                                            <span style="text-align:right;"  t-esc="'{0:,.2f}'.format(Ageing_data[line]['total'])"/>
+<!--                                                  t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>-->
                                         </td>
                                     </t><t t-else=""><td class="text-center">-</td></t>
                                 </tr>
