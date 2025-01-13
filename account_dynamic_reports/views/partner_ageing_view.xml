@@ -58,7 +58,7 @@
 
                         <br></br>
 
-                        <table class="">
+                        <table class="pims_report_line_table pims_report_content">
                             <thead>
                                 <tr class="text-center">
                                     <th> Customer</th>
