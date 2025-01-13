@@ -61,7 +61,7 @@ class PaymentAllocation(models.TransientModel):
                             ('account_id', 'in', pay_term_lines.account_id.ids),
                             ('move_id', '!=', self.payment_id.move_id.id),
 
-                            ('parent_state', '=', 'posted'), ('balance', '<', 0.0),
+                            ('parent_state', '=', 'posted'),
                             ('partner_id', '=', p.id),
                             ('reconciled', '=', False),
                             '|', ('amount_residual', '!=', 0.0), ('amount_residual_currency', '!=', 0.0),
@@ -70,7 +70,7 @@ class PaymentAllocation(models.TransientModel):
 
                         # for line in journal_entry:
                         for line in journal_entry.filtered(
-                                    lambda l: l.debit == 0 and l.move_id.journal_id.type not in ['bank', 'cash']):
+                                    lambda l:l.move_id.journal_id.type  in ['general'] and l.credit==0):
                             amount = 0
                             if line.currency_id == move.currency_id:
                                 # Same foreign currency.
@@ -84,15 +84,15 @@ class PaymentAllocation(models.TransientModel):
                                     line.date,
                                 )
 
-                            if line.debit == 0:
-                                val = line.id
-                                jvals = {'inv_amount': amount,
-                                        'name': line.move_id.name,
-                                        'inv_date': line.move_id.date,
-                                        'move_line_id': val,
-                                        'date_due': line.date,
-                                        'inv_unallocated_amount': line.amount_residual,
-                                        }
+
+                            val = line.id
+                            jvals = {'inv_amount': amount,
+                                    'name': line.move_id.name,
+                                    'inv_date': line.move_id.date,
+                                    'move_line_id': val,
+                                    'date_due': line.date,
+                                    'inv_unallocated_amount': line.amount_residual,
+                                    }
                             inv_vals.append((0, 0, jvals))
                     data.invoice_allocation_ids = inv_vals
 
@@ -137,7 +137,7 @@ class PaymentAllocation(models.TransientModel):
                             ('account_id', 'in', pay_term_lines.account_id.ids),
                             ('move_id', '!=', self.payment_id.move_id.id),
 
-                            ('parent_state', '=', 'posted'), ('balance', '>', 0.0),
+                            ('parent_state', '=', 'posted'),
                             ('partner_id', '=', p.id),
                             ('reconciled', '=', False),
                             '|', ('amount_residual', '!=', 0.0), ('amount_residual_currency', '!=', 0.0),
@@ -145,7 +145,7 @@ class PaymentAllocation(models.TransientModel):
 
                         # for line in journal_entry:
                         for line in journal_entry.filtered(
-                                    lambda l: l.credit == 0 and l.move_id.journal_id.type not in ['bank', 'cash']):
+                                    lambda l: l.move_id.journal_id.type  in ['general'] and l.credit==0):
                             amount = 0
                             if line.currency_id == move.currency_id:
                                 # Same foreign currency.
@@ -159,15 +159,15 @@ class PaymentAllocation(models.TransientModel):
                                     line.date,
                                 )
 
-                            if line.credit == 0:
-                                val = line.id
-                                j_vals = {'inv_amount': amount,
-                                        'name': line.move_id.name,
-                                        'inv_date': line.move_id.date,
-                                        'move_line_id': val,
-                                        'date_due': line.date,
-                                        'inv_unallocated_amount': line.amount_residual,
-                                        }
+
+                            val = line.id
+                            j_vals = {'inv_amount': amount,
+                                    'name': line.move_id.name,
+                                    'inv_date': line.move_id.date,
+                                    'move_line_id': val,
+                                    'date_due': line.date,
+                                    'inv_unallocated_amount': line.amount_residual,
+                                    }
                             inv_vals.append((0, 0, j_vals))
                     data.invoice_allocation_ids = inv_vals
 
@@ -200,12 +200,10 @@ class PaymentAllocation(models.TransientModel):
                         invoice = self.env['account.move'].search([('partner_id', '=', p.id), (
                             'amount_residual', '>', 0.0), ('state', 'in', ['posted']),
                                                                    ('move_type', 'in', ['out_invoice'])])
-
                         for inv in invoice:
 
                             val = 0
                             for line in inv.line_ids:
-
                                 if line.credit == 0:
                                     val = line.id
                                     vals = {'inv_amount': inv.amount_total,
@@ -221,7 +219,7 @@ class PaymentAllocation(models.TransientModel):
 
                             ('move_id', '!=', self.payment_id.move_id.id),
 
-                            ('parent_state', '=', 'posted'), ('balance', '<', 0.0),
+                            ('parent_state', '=', 'posted'),
                             ('partner_id', '=', p.id),
                             ('reconciled', '=', False),
                             '|', ('amount_residual', '!=', 0.0), ('amount_residual_currency', '!=', 0.0),
@@ -229,7 +227,7 @@ class PaymentAllocation(models.TransientModel):
 
 
                         for line in journal_entry.filtered(
-                                    lambda l: l.debit == 0 and l.move_id.journal_id.type not in ['bank', 'cash']):
+                                    lambda l:l.move_id.journal_id.type in ['general'] and l.credit==0):
                             amount = 0
 
                             if line.currency_id == move.currency_id:
@@ -244,15 +242,15 @@ class PaymentAllocation(models.TransientModel):
                                     line.date,
                                 )
 
-                            if line.debit == 0:
-                                val = line.id
-                                j_vals = {'inv_amount': amount,
-                                        'name': line.move_id.name,
-                                        'inv_date': line.move_id.date,
-                                        'move_line_id': val,
-                                        'date_due': line.date,
-                                        'inv_unallocated_amount': line.amount_residual,
-                                        }
+
+                            val = line.id
+                            j_vals = {'inv_amount': amount,
+                                    'name': line.move_id.name,
+                                    'inv_date': line.move_id.date,
+                                    'move_line_id': val,
+                                    'date_due': line.date,
+                                    'inv_unallocated_amount': line.amount_residual,
+                                    }
                             inv_vals.append((0, 0, j_vals))
 
                     data.invoice_allocation_ids = inv_vals
@@ -302,14 +300,14 @@ class PaymentAllocation(models.TransientModel):
                             # ('account_id.account_type', 'in',['asset_receivable', 'liability_payable']),
                             ('move_id','!=',self.payment_id.move_id.id),
 
-                            ('parent_state', '=', 'posted'), ('balance', '>', 0.0),
+                            ('parent_state', '=', 'posted'),
                             ('partner_id', '=', p.id),
                             ('reconciled', '=', False),
                             '|', ('amount_residual', '!=', 0.0), ('amount_residual_currency', '!=', 0.0),
                         ])
 
 
-                        for line in journal_entry.filtered(lambda l:l.credit==0 and l.move_id.journal_id.type not in ['bank','cash']):
+                        for line in journal_entry.filtered(lambda l:l.move_id.journal_id.type in ['general'] and l.credit==0):
                             amount=0
 
 
@@ -325,15 +323,15 @@ class PaymentAllocation(models.TransientModel):
                                     line.date,
                                 )
 
-                            if line.credit == 0:
-                                val = line.id
-                                j_vals = {'inv_amount': amount,
-                                        'name': line.move_id.name,
-                                        'inv_date': line.move_id.date,
-                                        'move_line_id': val,
-                                        'date_due': line.date,
-                                        'inv_unallocated_amount': line.amount_residual,
-                                        }
+
+                            val = line.id
+                            j_vals = {'inv_amount': amount,
+                                    'name': line.move_id.name,
+                                    'inv_date': line.move_id.date,
+                                    'move_line_id': val,
+                                    'date_due': line.date,
+                                    'inv_unallocated_amount': line.amount_residual,
+                                    }
                             inv_vals.append((0, 0, j_vals))
 
 
