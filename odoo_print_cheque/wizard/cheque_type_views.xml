@@ -8,6 +8,7 @@
             <form string="Cheque Print wizard">
                 <group>
                     <field name="cheque_format_id"/>
+                    <field name="partner_name" readonly="0" required="1"/>
                 </group>
                 <footer>
                     <button string="Print" name="action_print_selected_cheque"

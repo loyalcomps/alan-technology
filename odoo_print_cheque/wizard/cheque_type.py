@@ -47,6 +47,7 @@ class ChequeTypes(models.TransientModel):
                                                            'Number')
     payment_id = fields.Many2one('account.payment', string='Payment Type',
                                  help='Payment id')
+    partner_name = fields.Char(string="Name")
 
     def action_print_selected_cheque(self):
         """
@@ -79,7 +80,7 @@ class ChequeTypes(models.TransientModel):
             'amount_digit_tm': self.cheque_format_id.amount_digit_tm,
             'amount_digit_lm': self.cheque_format_id.amount_digit_lm,
             'amount_digit_ls': self.cheque_format_id.amount_digit_ls,
-            'partner': self.partner_id.name,
+            'partner': self.partner_name,
             'amount_in_words': self.cheque_amount_in_words,
             'amount_in_digit': self.cheque_amount,
             'cheque_date': cheque_date,

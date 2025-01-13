@@ -53,6 +53,7 @@ class AccountPayment(models.Model):
                 'default_cheque_date': cheque_date,
                 'default_cheque_amount': self.amount,
                 'default_check_number': self.check_number,
-                'default_payment_id': self.id
+                'default_payment_id': self.id,
+                'default_partner_name':self.partner_id.name
             }
         }
