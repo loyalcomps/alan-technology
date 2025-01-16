@@ -1,7 +1,9 @@
-<data>
-    <record id="bank_statement_alan_comp_rule" model="ir.rule">
-        <field name="name">Bank Statement  multi company rule</field>
-        <field name="model_id" ref="kg_bank_reconcilation.model_kg_bank_reconcilation"/>
-        <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
-    </record>
-</data>
+<odoo>
+    <data>
+        <record id="bank_statement_alan_comp_rule" model="ir.rule">
+            <field name="name">Bank Statement multi company rule</field>
+            <field name="model_id" ref="kg_bank_reconcilation.model_kg_bank_reconcilation"/>
+            <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
+        </record>
+    </data>
+</odoo>

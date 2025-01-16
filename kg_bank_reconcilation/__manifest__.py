@@ -5,7 +5,7 @@
     'author': "SHARMI SV",
     'website': 'https://www.klystronglobal.com',
 
-    'version': '16.00.00',
+    'version': '16.0.2.0.0',
 
     # any module necessary for this one to work correctly
     'depends': ['base','account'],
