@@ -11,8 +11,7 @@
 
     "author": "KG",
     "installable": True,
-    "depends": ['base', 'sale_management','kg_sale','account'
-                ],
+    "depends": ['base', 'sale_management', 'account'],
     "data": [
         'security/ir.model.access.csv',
         'security/security.xml',

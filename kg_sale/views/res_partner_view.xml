@@ -12,18 +12,20 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="/form/sheet/notebook/page[@name='sales_purchases']" position="after">
-                <page name="custom_sales" string="Sales" >
-<!--                      attrs="{'invisible': [('customer_rank','=', 0)]}">-->
+                <page name="custom_sales" string="Sales">
+                    <!--                      attrs="{'invisible': [('customer_rank','=', 0)]}">-->
                     <group>
                         <group>
-                            <field name="user_id"/>
+                            <field name="is_sales_manager" invisble="1"/>
+                            <field name="user_id" attrs="{'readonly':[('is_sales_manager', '=',False)]}"/>
                             <field name="team_id"/>
                             <field name="salesperson_1_id"/>
                             <field name="salesperson_2_id"/>
                             <field name="salesperson_3_id"/>
                             <field name="customer" invisible="1"/>
                             <field name="team_id"/>
-                            <field name="property_payment_term_id"/>
+                            <field name="property_payment_term_id"
+                                   attrs="{'readonly':[('is_sales_manager', '=',False)]}"/>
                             <field name="notify_email"/>
                             <field name="property_product_pricelist"/>
                         </group>
@@ -83,7 +85,7 @@
             </xpath>
             <field name="category_id" position="after">
                 <field name="kg_size_id" attrs="{'invisible': [('customer','=',False)]}"/>
-<!--                <field name="kg_ind_id" attrs="{'invisible': [('customer','=',False)]}"/>-->
+                <!--                <field name="kg_ind_id" attrs="{'invisible': [('customer','=',False)]}"/>-->
                 <field name="kg_department_id" invisible="1"/>
                 <field name="customer_type" attrs="{'invisible': [('customer_rank','=', 0)]}"/>
                 <field name="customer_rank" invisible="1"/>
@@ -176,7 +178,8 @@
                 <field name="total_quotation"/>
                 <field name="total_quotation_amt" optional="hide"/>
                 <field name="total_invoice"/>
-                <field name="total_invoiced"  string="Total Invoice Amt" widget="monetary" options="{'currency_field': 'currency_id'}" optional="hide"/>
+                <field name="total_invoiced" string="Total Invoice Amt" widget="monetary"
+                       options="{'currency_field': 'currency_id'}" optional="hide"/>
             </field>
         </field>
     </record>

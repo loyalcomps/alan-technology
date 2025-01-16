@@ -15,7 +15,7 @@
     "author": "KG",
     "installable": True,
     "depends": [
-        'sale', 'hr', 'sales_team', 'web', 'kg_crm', 'sale_margin', 'kg_inventory', 'sale_management', 'product',
+        'sale', 'hr', 'sales_team', 'web', 'kg_crm', 'sale_margin', 'kg_inventory', 'sale_management', 'product','sale_customization',
         'stock', 'contacts', 'base', 'kg_purchase', 'account', 'iwesabe_slno_in_sale_order_line', 'kg_amount_words',
     ],
     "data": [
