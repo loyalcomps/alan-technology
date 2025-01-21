@@ -15,5 +15,14 @@
         <field name="perm_create" eval="1"/>
         <field name="perm_unlink" eval="1"/>
     </record>
+        <record id="access_sale_order_sales_director" model="ir.model.access">
+        <field name="name">sale.order access for Sales Director</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="group_id" ref="group_directors"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+    </record>
 
 </odoo>

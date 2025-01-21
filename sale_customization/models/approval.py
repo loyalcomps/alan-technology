@@ -30,6 +30,17 @@ class SaleOrder(models.Model):
         tracking=3,
         default='draft'
     )
+    is_manager_approval = fields.Boolean(
+        string="Sales Manager Approval",
+        compute='_compute_is_sales_manager',
+        store=False
+    )
+    is_director_approval = fields.Boolean(
+        string="Sales Director Approval",
+        compute='_compute_is_sales_manager',
+        store=False
+    )
+
     is_sales_manager = fields.Boolean(
         string="Is Sales Manager",
         compute='_compute_is_sales_manager',
@@ -54,6 +65,16 @@ class SaleOrder(models.Model):
         ('po_created', 'PO Created'),
         ('po_confirm', 'PO Confirm'),
     ], compute='_compute_custom_status', string="Custom Status")
+    is_approve_visible = fields.Boolean(string='Visible Approve' ,compute='_compute_is_approve_visible', default=False, store=True)
+
+    def _compute_is_approve_visible(self):
+        for order in self:
+            is_manager_approval = self.env.user.has_group('sale_customization.group_sales_manager')
+            is_director_approval = self.env.user.has_group('sale_customization.group_directors')
+            if order.is_manager_approval and is_manager_approval and order.first_confirm and state not in ['draft', 'sent']:
+                order.is_approve_visible = True
+            else:
+                order.is_approve_visible = False
 
     @api.depends('state')
     def _compute_custom_status(self):
@@ -132,10 +153,14 @@ class SaleOrder(models.Model):
         sales_manager_group = self.env.ref('sale_customization.group_sales_manager', raise_if_not_found=False)
 
         for order in self:
-            order.approval_description=''
             # Check if the user belongs to the Sales Manager group
             order.is_sales_manager = sales_manager_group and sales_manager_group in self.env.user.groups_id
-
+            min_days = max_days = show_manager_alert = show_director_alert = is_manager_approval = is_director_approval = False
+            if order.payment_term_id:
+                if order.payment_term_id.min_days:
+                    min_days = order.payment_term_id.min_days
+                if order.payment_term_id.max_days:
+                    max_days = order.payment_term_id.max_days
 
             # Check conditions to show approval
             order.show_approve = (
@@ -145,36 +170,36 @@ class SaleOrder(models.Model):
                      today >=
                      order.date_order.date() + relativedelta(days=order.payment_term_id.min_days))
             )
+            invoice_recs = self.env['account.move'].search([('partner_id', '=', order.partner_id.id), ('state', '=', 'posted'),('payment_state', '!=', 'paid')])
 
-            if (order.amount_total > company.max_order_amount and
-                    (order.payment_term_id.min_days and
-                     order.date_order and
-                     today >=
-                     order.date_order.date() + relativedelta(days=order.payment_term_id.min_days))):
-
-                order.approval_description ='Congratulations for your order, having above AED ' + str(company.max_order_amount) + ' value, you may request an Approval from Sales Director'
-
-                if order.payment_term_id.min_days >= 90:
-                    order.approval_description = order.approval_description +  ' and Payments overdue by ' + str(order.payment_term_id.min_days) + 'days for this customer, Approval required from Sales Director !!'
-                else:
-                    order.approval_description =order.approval_description +  ' and   Payments overdue by ' + str(order.payment_term_id.min_days) + 'days for this customer, Approval required from Sales Manager !!'
-
-            elif order.amount_total > company.max_order_amount:
-                order.approval_description ='Congratulations for your order, having above AED ' + str(company.max_order_amount) + ' value, you may request an Approval from Sales Director'
-            elif (order.payment_term_id.min_days and
-                     order.date_order and
-                     today >=
-                     order.date_order.date() + relativedelta(days=order.payment_term_id.min_days)):
-
-                if order.payment_term_id.min_days >= 90:
-                    order.approval_description = ' Payments overdue by ' + str(order.payment_term_id.min_days) + 'days for this customer, Approval required from Sales Director !!'
-                else:
-                    order.approval_description = ' Payments overdue by ' + str(order.payment_term_id.min_days)+ 'days for this customer, Approval required from Sales Manager !!'
-            else:
-                order.approval_description = ''
-
-
-
+            if invoice_recs:
+                for rec in invoice_recs:
+                    invoice_date = rec.invoice_date
+                    if rec.payment_term_id:
+                        if rec.payment_term_id.min_days:
+                            min_days = rec.payment_term_id.min_days
+                        if rec.payment_term_id.max_days:
+                            max_days = rec.payment_term_id.max_days
+                        if today >= invoice_date + relativedelta(days=min_days) and today <= invoice_date + relativedelta(days=max_days):
+                            show_manager_alert = True
+                        else:
+                            show_director_alert = True
+                        break
+            approval_description = ''
+            if order.amount_total > company.max_order_amount:
+                approval_description ='Congratulations for your order, having above AED ' + str(company.max_order_amount) + ' value, you may request an Approval from Sales Director.'
+                is_director_approval = True
+            if show_director_alert:
+                approval_description = approval_description +  ' Previous Payments overdue by ' + str(min_days) + 'days for this customer, Approval required from Sales Director !!'
+            if show_manager_alert:
+                approval_description = approval_description +  ' Previous Payments overdue by ' + str(max_days) + 'days for this customer, Approval required from Sales Manager !!'
+                is_manager_approval = True
+            if (show_manager_alert and show_director_alert) or show_director_alert:
+                is_director_approval = True
+                is_manager_approval = False
+            order.is_manager_approval = is_manager_approval
+            order.is_director_approval = is_director_approval
+            order.approval_description = approval_description
 
 
     # @api.constrains('amount_total')
@@ -248,6 +273,12 @@ class SaleOrder(models.Model):
 
 
     def action_approve(self):
+        is_manager_approval = self.env.user.has_group('sale_customization.group_sales_manager')
+        is_director_approval = self.env.user.has_group('sale_customization.group_directors')
+        if order.is_manager_approval and not is_manager_approval:
+            raise AccessError("You are not authorized to approve this order.")
+        if order.is_director_approval and not is_director_approval:
+            raise AccessError("You are not authorized to approve this order.")
         self.state = 'approve'
 
 
