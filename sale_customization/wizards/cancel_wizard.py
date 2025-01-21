@@ -1,5 +1,7 @@
 from odoo import models, fields, api,_
 from datetime import datetime, timedelta
+from odoo.exceptions import UserError, AccessError
+
 class SaleCancelCustom(models.TransientModel):
     _name = 'sale.cancel.custom'
     _description = 'sale.cancel.custom'
@@ -12,12 +14,24 @@ class SaleCancelCustom(models.TransientModel):
 
     @api.model
     def send_so_approval_notifications(self,sale_id):
+        company = self.env.company
         email_subject = "Sale Order Approval Notification"
 
-        group_xml_ids = [
-            'sale_customization.group_sales_manager',
+        if sale_id.is_director_approval or sale_id.amount_total > company.max_order_amount:
 
-        ]
+            group_xml_ids =[
+                'sale_customization.group_directors',
+
+            ]
+            description = sale_id.director_description
+
+        else:
+            group_xml_ids = [
+                'sale_customization.group_sales_manager',
+
+            ]
+            description = sale_id.manager_description
+
         # Search for the corresponding group records
         groups = self.env['ir.model.data'].search([
             ('module', 'in', [xml_id.split('.')[0] for xml_id in group_xml_ids]),
@@ -35,9 +49,9 @@ class SaleCancelCustom(models.TransientModel):
 
             email_body = (f"Dear {user.name},<br/><br/>\n\n"
 
-                          f"    {sale_id.approval_description}<br/>"
+                          f"    {description}<br/>"
                           
-                          f"  Sale Order Reference :  <b>  {sale_id.name} </b><br/>"
+                          f"   </b><br/>"
                          
                           f"Best regards,<br/>"
                           f"{sale_id.company_id.name}")
@@ -144,8 +158,6 @@ class SaleOrderCancel(models.TransientModel):
 
 
         if self.show_approve and self.state not in ['approve']:
-
-
 
             raise UserError("You cannot confirm the Sale Order unless the state is 'Approved'.")
 

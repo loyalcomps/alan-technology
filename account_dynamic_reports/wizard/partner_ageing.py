@@ -413,6 +413,7 @@ class InsPartnerAgeing(models.TransientModel):
             final_list = self.env.cr.dictfetchall() or []
             move_lines = []
             for m in final_list:
+
                 if (m.get('range_0') or m.get('range_1') or m.get('range_2') or m.get('range_3') or m.get('range_4') or m.get('range_5')):
                     move_lines.append(m)
 
@@ -547,17 +548,28 @@ class InsPartnerAgeing(models.TransientModel):
                         amount = fetch_dict[0]['balance'] + fetch_dict[0]['sum_debit'] - fetch_dict[0]['sum_credit']
                         total_balance += amount
 
+
+
                     partner_dict[partner.id].update({period_dict[period]['name']:amount})
                     partner_dict['Total'][period_dict[period]['name']] += amount
                 partner_dict[partner.id].update({'count': count})
                 partner_dict[partner.id].update({'pages': self.get_page_list(count)})
                 partner_dict[partner.id].update({'single_page': True if count <= FETCH_RANGE else False})
                 partner_dict[partner.id].update({'total': total_balance})
+
                 partner_dict['Total']['total'] += total_balance
                 partner_dict[partner.id].update({'company_currency_id': company_currency_id})
                 partner_dict['Total'].update({'company_currency_id': company_currency_id})
+
+                if partner_dict[partner.id]['total']==0.0:
+                    partner_dict.pop(partner.id, None)
+
+
             else:
                 partner_dict.pop(partner.id, None)
+
+
+
         return period_dict, partner_dict
 
     def get_page_list(self, total_count):

@@ -2,7 +2,7 @@
 {
     "name": "Sale Customization",
     "summary": "Sale Customization",
-    "version": "16.0.6.0.0",
+    "version": "16.0.7.0.0",
     "category": "CRM",
     "website": "www.loyalitsolutions.com",
     "description": """

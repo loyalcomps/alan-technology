@@ -7,38 +7,39 @@
                     <div class="oe_structure"/>
                     <style>
                         .pims_report_content{
-                            font-size: 14px;
-                            font-family" 'Arial';
+                        font-size: 14px;
+                        font-family" 'Arial';
                         }
 
                         .pims_report_line_table {
-                            width:100%;
-                            border-collapse: collapse;
+                        width:100%;
+                        border-collapse: collapse;
                         }
 
                         .pims_report_line_table thead{
-                            width: 100%;
-                            overflow: auto;
-                            border-bottom:2px solid grey;
+                        width: 100%;
+                        overflow: auto;
+                        border-bottom:2px solid grey;
                         }
 
                         .pims_report_line_main_tr {
-                            font-weight:bold;
-                            --background-color: cyan;
-                            border-bottom:1px solid grey;
+                        font-weight:bold;
+                        --background-color: cyan;
+                        border-bottom:1px solid grey;
                         }
 
                         .pims_report_line_initial_tr {
-                            font-style:italic;
+                        font-style:italic;
                         }
 
                         .pims_report_line_subtotal {
-                            font-weight:bold;
-                            background-color: white;
-                            --border:1px solid grey;
+                        font-weight:bold;
+                        background-color: white;
+                        --border:1px solid grey;
                         }
                     </style>
-                    <h3><span t-esc="res_company.name"/>: Partner Ageing</h3>
+                    <h3><span t-esc="res_company.name"/>: Partner Ageing
+                    </h3>
                     <div>
 
                         <div class="row pims_report_content">
@@ -47,8 +48,10 @@
                                 <p t-esc="Filters['as_on_date']" t-options='{"widget": "date"}'></p>
                             </div>
                             <div class="col-6">
-                                <strong>Partners:</strong>
-                                <p t-esc="', '.join([ lt or '' for lt in Filters['partners'] ])"/>
+                                <t t-if="Filters['include_details']">
+                                    <strong>Partners:</strong>
+                                    <p t-esc="', '.join([ lt or '' for lt in Filters['partners'] ])"/>
+                                </t>
                             </div>
                             <div class="col-3">
                                 <strong>Partner Tags:</strong>
@@ -61,9 +64,11 @@
                         <table class="pims_report_line_table pims_report_content">
                             <thead>
                                 <tr class="text-center">
-                                    <th> Customer</th>
+                                    <th>Customer</th>
                                     <t t-foreach="Period_List" t-as="period">
-                                        <th style="text-align:right;margin-bottom:10px;"><t t-esc="period"/></th>
+                                        <th style="text-align:right;margin-bottom:10px;">
+                                            <t t-esc="period"/>
+                                        </th>
                                     </t>
                                     <th style="text-align:right">Total</th>
                                 </tr>
@@ -89,37 +94,45 @@
                                     </td>
                                     <t t-foreach="Period_List" t-as="period">
                                         <t t-if="Ageing_data[line][period]">
-                                             <td style="text-align:right;">
+                                            <td style="text-align:right;">
 
-                                                <span style="text-align:right;" t-esc="'{0:,.2f}'.format(Ageing_data[line][period])"/>
-<!--                                                      t-options="{'widget': 'monetary'}"/>-->
+                                                <span style="text-align:right;"
+                                                      t-esc="'{0:,.2f}'.format(Ageing_data[line][period])"/>
+                                                <!--                                                      t-options="{'widget': 'monetary'}"/>-->
                                             </td>
-                                        </t><t t-else=""><td class="text-center">-</td></t>
+                                        </t>
+                                        <t t-else="">
+                                            <td class="text-center">-</td>
+                                        </t>
                                     </t>
                                     <t t-if="Ageing_data[line]['total']">
-<!--                                         <td style="text-align:right;">-->
+                                        <!--                                         <td style="text-align:right;">-->
                                         <td style="text-align:right;">
-                                            <span style="text-align:right;"  t-esc="'{0:,.2f}'.format(Ageing_data[line]['total'])"/>
-<!--                                                  t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>-->
+                                            <span style="text-align:right;"
+                                                  t-esc="'{0:,.2f}'.format(Ageing_data[line]['total'])"/>
+                                            <!--                                                  t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>-->
                                         </td>
-                                    </t><t t-else=""><td class="text-center">-</td></t>
+                                    </t>
+                                    <t t-else="">
+                                        <td class="text-center">-</td>
+                                    </t>
                                 </tr>
                             </t>
                         </table>
                     </div>
                     <br></br>
-                    <p style="text-align:center"> *** END OF DOCUMENT ***</p>
+                    <p style="text-align:center">*** END OF DOCUMENT ***</p>
                 </div>
-           </t>
+            </t>
         </t>
     </template>
 
     <report id="action_print_partner_ageing"
-        model="ins.partner.ageing"
-        report_type="qweb-pdf"
-        menu="False"
-        string="Partner Ageing"
-        name="account_dynamic_reports.partner_ageing"
-        file="account_dynamic_reports.partner_ageing"
+            model="ins.partner.ageing"
+            report_type="qweb-pdf"
+            menu="False"
+            string="Partner Ageing"
+            name="account_dynamic_reports.partner_ageing"
+            file="account_dynamic_reports.partner_ageing"
     />
 </odoo>

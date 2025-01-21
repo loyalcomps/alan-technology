@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name' : 'All in one Dynamic Financial Reports v16',
-    'version' : '16.0.7.0.1',
+    'version' : '16.0.8.0.1',
     'summary': "General Ledger Trial Balance Ageing Balance Sheet Profit and Loss Cash Flow Dynamic",
     'sequence': 15,
     'description': """
