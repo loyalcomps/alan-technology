@@ -105,8 +105,7 @@ class InsPartnerAgeing(models.TransientModel):
         return ret
 
     def validate_data(self):
-        if not(self.bucket_1 < self.bucket_2 and self.bucket_2 < self.bucket_3 and self.bucket_3 < self.bucket_4 and \
-            self.bucket_4 < self.bucket_5):
+        if not(self.bucket_1 < self.bucket_2 and self.bucket_2 < self.bucket_3 and self.bucket_3 < self.bucket_4 and self.bucket_4 < self.bucket_5):
             raise ValidationError(_('"Bucket order must be ascending"'))
         return True
 
