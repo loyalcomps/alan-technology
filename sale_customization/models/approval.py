@@ -69,7 +69,7 @@ class SaleOrder(models.Model):
     ], compute='_compute_custom_status', string="Custom Status")
     is_approve_visible = fields.Boolean(string='Visible Approve', compute='_compute_is_approve_visible', default=False,
                                        )
-
+    @api.depends('state', 'first_confirm')
     def _compute_is_approve_visible(self):
         for order in self:
             is_manager_approval = self.env.user.has_group('sale_customization.group_sales_manager')
