@@ -74,8 +74,7 @@ class SaleOrder(models.Model):
         for order in self:
             is_manager_approval = self.env.user.has_group('sale_customization.group_sales_manager')
             is_director_approval = self.env.user.has_group('sale_customization.group_directors')
-            if (is_director_approval or is_manager_approval) and order.first_confirm and order.state not in ['draft',
-                                                                                                             'sent']:
+            if (is_director_approval or is_manager_approval) and order.first_confirm and order.state in ['draft','sent']:
                 order.is_approve_visible = True
             else:
                 order.is_approve_visible = False
