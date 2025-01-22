@@ -68,7 +68,7 @@ class SaleOrder(models.Model):
         ('po_confirm', 'PO Confirm'),
     ], compute='_compute_custom_status', string="Custom Status")
     is_approve_visible = fields.Boolean(string='Visible Approve', compute='_compute_is_approve_visible', default=False,
-                                        store=True)
+                                       )
 
     def _compute_is_approve_visible(self):
         for order in self:
