@@ -122,7 +122,7 @@ class SaleOrder(models.Model):
         is_director = self.env.user.has_group('sale_customization.group_directors')
         for order in self:
             purchase_orders = self.env['purchase.order'].search(
-                [('kg_sale_order_id', 'in', i.ids), ('state', 'in', ['purchase', 'done'])])
+                [('kg_sale_order_id', 'in', order.ids), ('state', 'in', ['purchase', 'done'])])
             if purchase_orders and not is_manager and not is_director:
                 raise UserError("You cannot cancel sale order.")
             else:
