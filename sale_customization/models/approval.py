@@ -118,10 +118,12 @@ class SaleOrder(models.Model):
                 i.customer_state = 'inactive'
 
     def action_custom_cancel(self):
-        for i in self:
+        is_manager = self.env.user.has_group('sale_customization.group_sales_manager')
+        is_director = self.env.user.has_group('sale_customization.group_directors')
+        for order in self:
             purchase_orders = self.env['purchase.order'].search(
                 [('kg_sale_order_id', 'in', i.ids), ('state', 'in', ['purchase', 'done'])])
-            if purchase_orders:
+            if purchase_orders and not is_manager and not is_director:
                 raise UserError("You cannot cancel sale order.")
             else:
                 return {
@@ -131,7 +133,7 @@ class SaleOrder(models.Model):
                     'view_mode': 'form',
                     'target': 'new',
                     'context': {
-                        'default_sale_id': self.id,
+                        'default_sale_id': order.id,
                     },
                 }
 
