@@ -87,6 +87,16 @@ class SaleOrder(models.Model):
 
     pro_seq = fields.Char(string="Proforma Sequence", copy=False)
     bank_id = fields.Many2one('res.bank', string='Bank', domain=_get_branch_domain)
+    show_send_button = fields.Boolean(string="Show Send Button", compute='_compute_show_send_button')
+
+    def _compute_show_send_button(self):
+        for rec in self:
+            show_send_button = False
+            user = self.env.user
+
+            if rec.pro_seq and rec.state == 'draft' and (user.has_group('sale.group_proforma_sales') or rec.invoice_count == 0):
+                show_send_button = True
+            rec.show_send_button = show_send_button
 
     def action_unlock(self):
         res = super(SaleOrder, self).action_unlock()

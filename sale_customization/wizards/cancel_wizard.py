@@ -40,7 +40,7 @@ class SaleCancelCustom(models.TransientModel):
 
         # Find users who belong to these groups
         user_records = self.env['res.users'].search([('groups_id', 'in', groups)])
-
+        
         partner_ids = [(4, user.partner_id.id) for user in user_records]
 
         notification_ids = []

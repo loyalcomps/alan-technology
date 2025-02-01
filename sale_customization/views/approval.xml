@@ -43,7 +43,7 @@
                     <!--                                    <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'sent','sale']), ('id', '=', False)]}" data-hotkey="z"/>-->
 
                 </xpath>
-                <xpath expr="//header/button[@name='action_quotation_send']" position="after">
+                <xpath expr="//header" position="inside">
                     <button name="action_custom_cancel" type="object" string="Cancel"
                             attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'sent','sale','approve']), ('id', '=', False)]}"
                             class="btn-danger"/>
@@ -62,8 +62,14 @@
                 </xpath>
 
 
-                <xpath expr="//button[@name='action_confirm']" position="attributes">
+                <xpath expr="//button[@name='action_confirm'][1]" position="attributes">
                     <attribute name="attrs">{'invisible': [('state', 'not in', ['sent','approve'])]}</attribute>
+                    <attribute name="class">btn-success</attribute>
+                    <attribute name="string">Confirm</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
+                    <attribute name="class">btn-success</attribute>
+                    <attribute name="string">Confirm</attribute>
                 </xpath>
 
 
