@@ -61,12 +61,12 @@ class SaleOrder(models.Model):
 
     cancelled_reason = fields.Text()
     custom_status = fields.Selection([
-        ('quotation', 'Quotation'),
-        ('sale', 'Sale Order'),
-        ('partial_purchase', 'Partially PO Created'),
-        ('po_created', 'PO Created'),
-        ('po_confirm', 'PO Confirm'),
-    ], compute='_compute_custom_status', string="Custom Status")
+        ('quotation', 'Not Created'),
+        ('sale', 'Not Created'),
+        ('partial_purchase', 'Partially Created'),
+        ('po_created', 'Fully Created'),
+        ('po_confirm', 'Confirmed'),
+    ], compute='_compute_custom_status', string="Purchase Status")
     is_approve_visible = fields.Boolean(string='Visible Approve', compute='_compute_is_approve_visible', default=False,
                                        )
     @api.depends('state', 'first_confirm')
