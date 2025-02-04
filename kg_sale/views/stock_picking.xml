@@ -17,7 +17,9 @@
                 <field name="kg_sale_order_type"/>
             </field>
             <button name="action_confirm" position="after">
-			  <button name="create_invoice_from_delivery" class="oe_highlight" string="Create Invoice" type="object" attrs="{'invisible': ['|','|',('state', '!=', 'done'),('kg_type', '!=', 'sale'),('invoice_count', '!=', 0)]}" invisible="0"/>
+                <button name="create_invoice_from_delivery" class="oe_highlight" string="Create Invoice" type="object"
+                        attrs="{'invisible': ['|','|',('state', '!=', 'done'),('kg_type', '!=', 'sale'),('invoice_count', '!=', 0)]}"
+                        invisible="0"/>
             </button>
 
             <xpath expr="//button[@name='action_set_quantities_to_reservation']" position="attributes">
@@ -32,7 +34,7 @@
             <xpath expr="//button[@name='button_validate'][1]" position="attributes">
                 <attribute name="class">btn-primary</attribute>
             </xpath>
-              <xpath expr="//button[@name='button_validate'][2]" position="attributes">
+            <xpath expr="//button[@name='button_validate'][2]" position="attributes">
                 <attribute name="class">btn-success</attribute>
             </xpath>
             <xpath expr="//button[@name='action_open_label_type']" position="attributes">
@@ -47,24 +49,51 @@
             <xpath expr="//button[@name='action_toggle_is_locked'][1]" position="attributes">
                 <attribute name="class">btn-warning</attribute>
             </xpath>
-               <xpath expr="//button[@name='action_toggle_is_locked'][2]" position="attributes">
+            <xpath expr="//button[@name='action_toggle_is_locked'][2]" position="attributes">
                 <attribute name="class">btn-warning</attribute>
             </xpath>
+              <xpath expr="//button[@name='do_unreserve']" position="attributes">
+                    <attribute name="class">btn-primary</attribute>
+                </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_view_invoice"
                         type="object"
                         class="oe_stat_button"
-                        icon="fa-pencil-square-o" attrs="{'invisible': ['|',('state', '!=', 'done'),('kg_type', '!=', 'sale')]}">
-<!--                        attrs="{'invisible': [('invoice_count', '=', 0)]}">-->
-                        <field name="invoice_count" widget="statinfo" string="Invoices"/>
-                    </button>
+                        icon="fa-pencil-square-o"
+                        attrs="{'invisible': ['|',('state', '!=', 'done'),('kg_type', '!=', 'sale')]}">
+                    <!--                        attrs="{'invisible': [('invoice_count', '=', 0)]}">-->
+                    <field name="invoice_count" widget="statinfo" string="Invoices"/>
+                </button>
             </xpath>
-<!--            <xpath expr="//notebook/page[@name='extra']/field[@name='priority']" position="after">-->
+            <!--            <xpath expr="//notebook/page[@name='extra']/field[@name='priority']" position="after">-->
             <xpath expr="//field[@name='user_id']" position="after">
-                <field name="client_order_do_ref" attrs="{'readonly': [('state', '=', 'done'), ('is_locked', '=', True)]}"/>
+                <field name="client_order_do_ref"
+                       attrs="{'readonly': [('state', '=', 'done'), ('is_locked', '=', True)]}"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="act_stock_return_picking" model="ir.ui.view">
+        <field name="name">stock.picking</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='%(stock.act_stock_return_picking)d']"
+                   position="attributes">
+                <attribute name="class">btn-primary</attribute>
             </xpath>
         </field>
     </record>
 
+    <record id="action_report_delivery" model="ir.ui.view">
+        <field name="name">stock.picking</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='%(stock.action_report_delivery)d']"
+                   position="attributes">
+                <attribute name="class">btn-info</attribute>
+            </xpath>
+        </field>
+    </record>
 
 </odoo>
