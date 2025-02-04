@@ -22,10 +22,43 @@
 <!--                <attribute name="attrs">{'invisible': ['|',('state', 'not in', ['sent']),('check_signature','=',False)]}-->
 <!--                </attribute>-->
 <!--            </xpath>-->
-            <xpath expr="//button[@name='button_confirm']" position="attributes">
-                <attribute name="attrs">{'invisible': [('state', '!=', 'draft')]}
-                </attribute>
+
+
+
+
+
+<!--            <xpath expr="//button[@name='button_confirm']" position="attributes">-->
+<!--                <attribute name="attrs">{'invisible': [('state', '!=', 'draft')]}-->
+<!--                </attribute>-->
+<!--            </xpath>-->
+
+              <xpath expr="//button[@name='button_confirm' and @states='draft']" position="attributes">
+                <attribute name="class">btn-primary</attribute>
             </xpath>
+            <xpath expr="//button[@name='action_rfq_send'and @states='purchase']" position="attributes">
+                <attribute name="class">btn-primary</attribute>
+            </xpath>
+            <xpath expr="//button[@name='confirm_reminder_mail']" position="attributes">
+                <attribute name="class">btn-primary</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_create_invoice'][1]" position="attributes">
+                <attribute name="class">btn-primary</attribute>
+            </xpath>
+              <xpath expr="//button[@name='action_create_invoice'][2]" position="attributes">
+                <attribute name="class">btn-primary</attribute>
+            </xpath>
+            <xpath expr="//button[@name='button_cancel']" position="attributes">
+                <attribute name="class">btn-danger</attribute>
+            </xpath>
+            <xpath expr="//button[@name='button_done']" position="attributes">
+                <attribute name="class">btn-warning</attribute>
+            </xpath>
+            <xpath expr="//button[@name='button_unlock']" position="attributes">
+                <attribute name="class">btn-warning</attribute>
+            </xpath>
+
+
+
 <!--            <xpath expr="//button[@name='button_confirm']" position="attributes">-->
 <!--                <attribute name="attrs">{'invisible':['|',('state', 'not in', ['draft']),('check_signature','=',False)]}-->
 <!--                </attribute>-->

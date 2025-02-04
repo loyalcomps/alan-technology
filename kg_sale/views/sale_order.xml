@@ -46,6 +46,12 @@
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
                 <data>
+                    <xpath expr="//button[@name='action_done']" position="attributes">
+                        <attribute name="class">btn-warning</attribute>
+                    </xpath>
+                    <xpath expr="//button[@name='action_unlock']" position="attributes">
+                        <attribute name="class">btn-warning</attribute>
+                    </xpath>
                     <button name="action_confirm" position="after">
                         <button name="proforma_invoice" type="object" string="Print Proforma" class="btn-info"
                                 attrs="{'invisible':['|',('kg_invoice_status_1', '!=', 'proforma_invoice'),('state', 'not in', ['draft', 'send'])]}"/>
@@ -325,7 +331,7 @@
                            position="before">
 
 
-                                                <field name="kg_serial_no" />
+<!--                                                <field name="kg_serial_no" />-->
                         <field name="kg_brand_id" optional="hide"/>
                         <field name="kg_categ_id" invisible="1"/>
 

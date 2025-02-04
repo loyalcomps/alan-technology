@@ -26,6 +26,12 @@ class SaleOrderLine(models.Model):
     kg_subheading = fields.Boolean(string="Subheading")
 
     #
+    @api.onchange('kg_serial_no')
+    def _onchange_kg_serial_no(self):
+        if self.kg_serial_no:
+            self.sl_no=self.kg_serial_no
+
+
     @api.depends('product_id', 'purchase_price', 'product_uom_qty', 'price_unit', 'kg_is_it_tranpcharge', 'kg_optional',
                  'price_unit')
     def _product_margin(self):
@@ -411,7 +417,7 @@ class SaleOrder(models.Model):
         ('invoice_p', 'Invoiced (P)'),
         ('invoiced', 'Invoiced'),
         ('completed', 'Completed'),
-    ], string='Invoice Status', default='draft', readonly=True, copy=False)
+    ], string='Quotation Status', default='draft', readonly=True, copy=False)
 
     inv_count = fields.Integer(string="Invoice", compute='_compute_invoice_count')
 
