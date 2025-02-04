@@ -20,7 +20,15 @@
 			  <button name="create_invoice_from_delivery" class="oe_highlight" string="Create Invoice" type="object" attrs="{'invisible': ['|','|',('state', '!=', 'done'),('kg_type', '!=', 'sale'),('invoice_count', '!=', 0)]}" invisible="0"/>
             </button>
 
-
+            <xpath expr="//button[@name='action_set_quantities_to_reservation']" position="attributes">
+                <attribute name="class">btn-primary</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_clear_quantities_to_zero']" position="attributes">
+                <attribute name="class">btn-primary</attribute>
+            </xpath>
+            <xpath expr="//button[@name='do_print_picking']" position="attributes">
+                <attribute name="class">btn-info</attribute>
+            </xpath>
             <xpath expr="//button[@name='button_validate'][1]" position="attributes">
                 <attribute name="class">btn-primary</attribute>
             </xpath>

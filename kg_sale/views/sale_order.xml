@@ -179,14 +179,37 @@
                         </button>
 
                     </button>
-                    <button name="action_view_delivery" position="after">
-                        <button class="oe_stat_button" type="object" string="Invoices"
-                                name="action_invoice" icon="fa-pencil-square-o">
-                            <field name="inv_count" widget="statinfo" string="Invoices"/>
-                        </button>
-
-
+                    <xpath expr="//form/sheet/group" position="inside">
+                        <field name="invoice_count" invisible="1"/>
+                        <field name="inv_count" invisible="1"/>
+                    </xpath>
+                 <xpath expr="//button[@name='action_view_invoice']" position="replace">
+                    <button name="action_invoice"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-pencil-square-o">
+                        <field name="inv_count" widget="statinfo" string="Invoices"/>
                     </button>
+                </xpath>
+
+
+<!--                    <button name="action_view_delivery" position="after">-->
+<!--                        <button class="oe_stat_button" type="object" string="Invoices"-->
+<!--                                name="action_invoice" icon="fa-pencil-square-o">-->
+<!--                            <field name="inv_count" widget="statinfo" string="Invoices"/>-->
+<!--                        </button>-->
+
+
+<!--                    </button>-->
+<!--                    <xpath expr="//div[@name='button_box']" position="inside">-->
+<!--                    <button name="action_view_invoice"-->
+<!--                            type="object"-->
+<!--                            class="oe_stat_button"-->
+<!--                            icon="fa-pencil-square-o" >-->
+<!--    &lt;!&ndash;                        attrs="{'invisible': [('invoice_count', '=', 0)]}">&ndash;&gt;-->
+<!--                            <field name="invoice_count" widget="statinfo" string="Invoices"/>-->
+<!--                        </button>-->
+<!--                    </xpath>-->
 
                     <xpath expr="/form/sheet/notebook/page[2]" position="after">
                         <page string="Related PO" attrs="{'invisible': [('kg_purchase_order_lines','=',[])]}">
