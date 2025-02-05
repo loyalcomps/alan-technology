@@ -59,6 +59,8 @@ class Picking(models.Model):
 
                         'tax_ids': move_ids_without_package.sale_line_id.tax_id.ids,
                         'quantity': move_ids_without_package.quantity_done,
+                        'description': move_ids_without_package.description,
+
                     })
                     invoice_line_list.append(vals)
                 invoice = picking_id.env['account.move'].create({
