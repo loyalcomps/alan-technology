@@ -15,6 +15,20 @@ class KgPartnerPaymentExtensionLine(models.Model):
 
 
     def unlink(self):
+        """Prevents deletion of the record if it has been approved.
+
+        This method raises a `UserError` if the record has already been approved,
+        preventing its deletion. If the record is not approved, the deletion proceeds
+        by calling the superclass `unlink` method.
+
+        Returns:
+            bool: Returns the result of the superclass `unlink` method, allowing
+                  deletion only if the record has not been approved.
+
+        Raises:
+            UserError: If the record is approved, it raises a `UserError` with a message
+                       indicating that the record cannot be deleted.
+        """
         if self.approved:
             raise UserError(_('you cannot delete it,its already approved'))
             
@@ -22,6 +36,21 @@ class KgPartnerPaymentExtensionLine(models.Model):
         return super(KgPartnerPaymentExtensionLine, self).unlink()    
 
     def allow_extension_approval(self):
+        """Approves the payment extension and calculates the total extended days.
+
+        This method approves the payment extension and calculates the total extended
+        days by adding the `payment_extension_id.days` and the days from any previous
+        extensions for the same partner. It updates the partner's extension remarks
+        and marks the extension as approved.
+
+        Returns:
+            None
+
+        Raises:
+            UserError: If the record has already been approved, a `UserError` is raised.
+            UserError: If the partner has not been set, a `UserError` is raised asking
+                       the user to save the form first.
+        """
         partner_id = self.partner_id and self.partner_id.id
         if self.approved:
             raise UserError(_('already approved'))            

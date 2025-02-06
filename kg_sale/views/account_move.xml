@@ -33,16 +33,9 @@
                     <xpath expr="/form/sheet/notebook/page/field/tree/field[@name='quantity']" position="after">
                         <field name="kg_is_it_tranpcharge" readonly="1"/>
                         <field name="kg_provision_acc_id" readonly="0"/>
-                        <!--                              domain="[('user_type_id', '=', 9)]" invisible="1"/>-->
                     </xpath>
 
-                    <!--                    <field name="name" position="replace">-->
-                    <!--                        <field name="number" class="oe_inline" attrs="{'invisible': [('number','=',False)]}"-->
-                    <!--                               readonly="1"/>-->
-                    <!--                    </field>-->
 
-
-                    <!--                     <xpath expr="//group[@name='narration']//group/field[@name='tax_totals']" position="before">-->
                     <xpath expr="//group[@class='oe_invoice_lines_tab']//group/field[@name='tax_totals']"
                            position="before">
                         <field name="kg_discount_per" attrs="{'readonly': [('state', '!=', 'draft')]}" invisible="0"/>
@@ -56,9 +49,6 @@
                         <group>
                             <group>
                                 <field name="kg_discount_acc_id" invisible="1"/>
-                                <!--                                       attrs="{'invisible': [('kg_discount_per', '=',0),('kg_discount', '=',0)],'readonly': [('state','!=','draft')]}"-->
-                                <!--                                      invisible="1"/>-->
-                                <!--                                       domain="[('user_type_id', '=', 16)]" invisible="1"/>-->
 
                                 <field name="kg_trans_exp_acc_id"
                                        attrs="{'readonly': [('state','!=','draft')]}" invisible="1"/>
@@ -72,8 +62,7 @@
                             </group>
                         </group>
                     </field>
-                    <!--                    <field name="payment_term_id" position="replace">-->
-                    <!--                    </field>-->
+
                     <page name="other_info" position="before">
 
                         <page string="Terms and conditions">
@@ -82,7 +71,6 @@
                                 <group>
                                     <field name="kg_warranty_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                                     <field name="kg_validity_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                                    <!--                                    <field name="payment_term_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>-->
                                     <field name="kg_another_ref"/>
 
                                 </group>
@@ -101,14 +89,7 @@
                     </page>
 
 
-                    <!--                 <xpath expr="/form/sheet/notebook/page/field[@name='invoice_line_ids']" position="after">-->
-                    <!--                    <field name="kg_terms_condition_line">-->
-                    <!--                      <tree editable="top">-->
-                    <!--                        <field name="terms_id" required="1"/>-->
-                    <!--                      -->
-                    <!--                      </tree>-->
-                    <!--                     </field>                 -->
-                    <!--                 </xpath>-->
+
 
 
                 </data>

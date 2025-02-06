@@ -2,9 +2,7 @@
 <odoo>
     <template id="assets_backend_style" name="assets_style" inherit_id="web.assets_backend">
         <xpath expr="." position="inside">
-<!--            <script type="text/javascript" src="/ffm2_purchase/static/src/js/fix_width_list_view.js"></script>-->
               <link rel="stylesheet" type="text/scss" href="/kg_sale/static/src/css/order_line_style.css"/>
-<!--            <script type="text/javascript" src="\kg_sale\static\src\css\order_line_style.css"></script>-->
         </xpath>
     </template>
 </odoo>

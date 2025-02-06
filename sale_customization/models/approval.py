@@ -71,6 +71,23 @@ class SaleOrder(models.Model):
                                        )
     @api.depends('state', 'first_confirm')
     def _compute_is_approve_visible(self):
+        """Computes the visibility of the approval button based on the user's role and order state.
+
+        This method determines whether the approval button should be visible by checking:
+        - If the current user belongs to either the 'Sales Manager' (`group_sales_manager`)
+          or 'Directors' (`group_directors`) group.
+        - If the `first_confirm` field is set.
+        - If the order state is either 'draft' or 'sent'.
+
+        If all conditions are met, the `is_approve_visible` field is set to `True`,
+        making the approval button visible; otherwise, it is set to `False`.
+
+        Fields Updated:
+            - `is_approve_visible`: Boolean field determining the visibility of the approval button.
+
+        Returns:
+            None
+        """
         for order in self:
             is_manager_approval = self.env.user.has_group('sale_customization.group_sales_manager')
             is_director_approval = self.env.user.has_group('sale_customization.group_directors')
@@ -81,6 +98,25 @@ class SaleOrder(models.Model):
 
     @api.depends('state')
     def _compute_custom_status(self):
+        """Computes the custom status of the sale order based on its state and related purchase orders.
+
+        This method determines the `custom_status` of a sale order by evaluating:
+        - The order's state (`draft` → 'quotation', `sale` → 'sale').
+        - The existence of linked purchase orders (`kg_sale_order_id` in `purchase.order`).
+        - If no purchase orders exist, the status remains based on the sale order's state.
+        - If purchase orders exist, it checks whether:
+            - The purchase order's product and quantity match the sale order line.
+            - The purchase order is in `draft` (status → 'po_created') or `purchase` (status → 'po_confirm').
+            - If quantities do not match, the status is set to 'partial_purchase'.
+
+        The method also logs an error in case of an exception during computation.
+
+        Fields Updated:
+            - `custom_status`: A computed field representing the sale order's purchase-related status.
+
+        Returns:
+            None
+        """
         for order in self:
             order.custom_status = 'quotation'
             try:
@@ -111,6 +147,19 @@ class SaleOrder(models.Model):
 
     @api.depends('partner_id', 'partner_id.customer_state')
     def _compute_customer_status(self):
+        """Computes the customer status based on the partner's customer state.
+
+        This method checks the `customer_state` of the associated partner (`partner_id`) and
+        assigns a corresponding value to the `customer_state` field of the sale order:
+        - If the partner's state is 'active', the sale order's customer state is set to 'final'.
+        - If the partner's state is 'inactive', the sale order's customer state is set to 'inactive'.
+
+        Fields Updated:
+            - `customer_state`: A computed field reflecting the partner's customer status.
+
+        Returns:
+            None
+        """
         for i in self:
             if i.partner_id.customer_state == 'active':
                 i.customer_state = 'final'
@@ -118,6 +167,23 @@ class SaleOrder(models.Model):
                 i.customer_state = 'inactive'
 
     def action_custom_cancel(self):
+        """Handles the custom cancellation process for a sale order.
+
+        This method checks whether the current user has the required permissions
+        (Sales Manager or Director) to cancel a sale order that has linked purchase
+        orders in 'purchase' or 'done' state. If the user is not authorized, a
+        `UserError` is raised.
+
+        If the user is authorized or there are no linked purchase orders, a form
+        view (`sale.cancel.custom`) is opened to proceed with the cancellation.
+
+        Returns:
+            dict: An action dictionary to open the cancellation form view.
+
+        Raises:
+            UserError: If the user is not authorized to cancel a sale order with
+                       confirmed purchase orders.
+        """
         is_manager = self.env.user.has_group('sale_customization.group_sales_manager')
         is_director = self.env.user.has_group('sale_customization.group_directors')
         for order in self:
@@ -137,16 +203,35 @@ class SaleOrder(models.Model):
                     },
                 }
 
-            # if not purchase_orders:
-            #     self.state = 'cancel'
-            # for j in purchase_orders:
-            #     if j.state in ['purchase', 'done','cancel']:
+
 
     @api.depends()
     def _compute_is_sales_manager(self):
 
-        """
-        Computes if the current user is a Sales Manager and whether the approval button should be shown.
+        """Computes whether the current user is a Sales Manager and determines approval requirements.
+
+        This method evaluates whether the user belongs to the Sales Manager group and sets
+        the `is_sales_manager` and `show_approve` fields accordingly. It also checks
+        various conditions related to payment terms, overdue invoices, and company limits
+        to determine if approval is required from a Sales Manager or Director.
+
+        Conditions checked:
+        - If the sale order amount exceeds the company’s `max_order_amount`, approval is required.
+        - If invoices for the partner have overdue payments within a certain range,
+         approval from a Sales Manager is required.
+        - If overdue payments exceed the maximum allowed days, approval from a Director is required.
+
+        Fields Updated:
+           - `is_sales_manager`: Boolean indicating if the user is a Sales Manager.
+           - `show_approve`: Boolean determining if approval is required.
+           - `is_manager_approval`: Boolean indicating if Sales Manager approval is needed.
+           - `is_director_approval`: Boolean indicating if Director approval is needed.
+           - `approval_description`: Description text for the approval request.
+           - `manager_description`: Alert message for Sales Managers.
+           - `director_description`: Alert message for Directors.
+
+        Returns:
+           None
         """
         company = self.env.company
         today = fields.Date.today()
@@ -164,14 +249,6 @@ class SaleOrder(models.Model):
                 if order.payment_term_id.max_days:
                     max_days = order.payment_term_id.max_days
 
-            # Check conditions to show approval
-            # order.show_approve = (
-            #         order.amount_total > company.max_order_amount or
-            #         (order.payment_term_id.min_days and
-            #          order.date_order and
-            #          today >=
-            #          order.date_order.date() + relativedelta(days=order.payment_term_id.min_days))
-            # )
 
             if order.amount_total > company.max_order_amount:
                 order.show_approve = True
@@ -234,29 +311,24 @@ class SaleOrder(models.Model):
             order.director_description = director_description + '<br> Please Approve the Sale Order - <b>' + str(
                 order.name) + '!! </b>.'
 
-    # @api.constrains('amount_total')
-    # def _check_order_amount(self):
-    #     company = self.env.company
-    #     if self.amount_total > company.max_order_amount:
-    #         raise UserError(
-    #             f"The total amount of this sale order exceeds the configured limit of {company.max_order_amount}. Approval required.")
 
-    # def update_first_confirm(self):
-    #     self.env.cr.execute("""
-    #                        UPDATE sale_order
-    #                        SET first_confirm = TRUE
-    #                        WHERE id = %s
-    #                    """, (self.id,))
     def action_confirm(self):
         """Confirm sale order and update move descriptions from order lines.
 
+        This method handles the confirmation of a sale order. If the order requires
+        approval and has not yet been approved, it opens a form requesting approval.
+        Otherwise, it proceeds with the standard confirmation process.
+
+        It also updates the descriptions of stock moves based on order line descriptions
+        to ensure consistency in product details.
+
         Returns:
-            Result from super call after confirming sale order
+           dict: A dictionary containing action details if approval is required.
+           Otherwise, it returns the result from the super call after confirming the sale order.
 
         Raises:
-            UserError: If order requires approval but hasn't been approved yet
+           UserError: If the order requires approval but has not been approved.
         """
-        # self.sudo().update_first_confirm()
 
         if self.show_approve and self.state not in ['approve']:
             return {
@@ -297,6 +369,15 @@ class SaleOrder(models.Model):
         return result
 
     def action_approve(self):
+        """Approve a sale order if the user has the required permissions.
+
+        This method checks whether the current user has the necessary approval
+        rights (Sales Manager or Director) before changing the sale order's state
+        to 'approve'.
+
+        Raises:
+            AccessError: If the user is not authorized to approve the order.
+        """
         for order in self:
             is_manager_approval = self.env.user.has_group('sale_customization.group_sales_manager')
             is_director_approval = self.env.user.has_group('sale_customization.group_directors')
@@ -329,6 +410,20 @@ class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
 
     def _prepare_invoice_line(self, **optional_values):
+        """Prepares the invoice line dictionary with additional product details.
+
+        This method extends the standard `_prepare_invoice_line` method by ensuring
+        that the product description (`name` field from the sale order line) is added
+        to the invoice line's `description` field if a product is present.
+
+        Args:
+            **optional_values: Additional optional values that can be passed to the
+                               invoice line preparation method.
+
+        Returns:
+            dict: A dictionary containing the invoice line details, including
+                  the `description` field if a product is specified.
+        """
         res = super()._prepare_invoice_line(**optional_values)
         self.ensure_one()
         if self.product_id:
@@ -342,6 +437,18 @@ class PurchaseOrder(models.Model):
     _inherit = "purchase.order"
 
     def button_confirm(self):
+        """Confirms the purchase order and updates move descriptions.
+
+        This method extends the standard `button_confirm` function to:
+        - Confirm the purchase order by calling the parent method.
+        - Update the descriptions of stock moves based on the corresponding purchase order lines.
+
+        After confirmation, it ensures that the `description` field of stock moves
+        in related pickings is updated to match the `name` field from the purchase order lines.
+
+        Returns:
+            result: The result of the parent `button_confirm` method.
+        """
         result = super(PurchaseOrder, self).button_confirm()
         product_descriptions = {
             line.product_id: line.name

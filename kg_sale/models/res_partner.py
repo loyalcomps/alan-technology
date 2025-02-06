@@ -19,40 +19,45 @@ from datetime import timedelta, tzinfo, time, date, datetime
 from dateutil.relativedelta import relativedelta
 
 
-# from monthdelta import monthdelta
 
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    # def filter_customers_sales(self):
-    #     partners = []
-    #     sales = self.env['sale.order'].search([])
-    #     for sale in sales:
-    # 		partners.append(sale.partner_id and sale.partner_id.id)
-    #         # partners = list(set(partners))
-    #     domain = []
-    #     domain.append(('id','in',partners))
-    #     action = self.env.ref('base.action_partner_form').read()[0]
-    #
-    #     action['domain'] = domain
-    # p
 
-    # return action
 
     total_quotation = fields.Integer('Total Quotation', compute='total_invoice_and_quotation')
     total_invoice = fields.Integer('Total Invoices', compute='total_invoice_and_quotation')
     total_quotation_amt = fields.Monetary('Total Quotation Amt', compute='total_invoice_and_quotation')
 
-    # total_invoice_amt = fields.Monetary('Total Invoice Amt', compute='total_invoice_and_quotation')
 
     def total_invoice_and_quotation(self):
-        # for rec in self:
+        """Computes the total number of quotations and invoices for the partner.
+
+        This method calculates:
+        - The total number of quotations (`total_quotation`) and their total amount (`total_quotation_amt`)
+          for the partner and its child partners.
+        - The total number of invoices (`total_invoice`) for the partner and its child partners.
+
+        It performs the following steps:
+        1. Retrieves all child partners using `child_of` domain.
+        2. Reads sale orders grouped by partner and sums the total amount.
+        3. Reads invoices grouped by partner.
+        4. Iterates over the sale order groups and updates `total_quotation` and `total_quotation_amt`.
+        5. Iterates over the invoice groups and updates `total_invoice`.
+
+        Fields Updated:
+            - `total_quotation`: The total number of quotations for the partner.
+            - `total_invoice`: The total number of invoices for the partner.
+            - `total_quotation_amt`: The total amount of quotations for the partner.
+
+        Returns:
+            None
+        """
         self.total_quotation = False
         self.total_invoice = False
         self.total_quotation_amt = False
 
-        # retrieve all children partners and prefetch 'parent_id' on them
         all_partners = self.with_context(active_test=False).search([('id', 'child_of', self.ids)])
         all_partners.read(['parent_id'])
 
@@ -89,7 +94,24 @@ class ResPartner(models.Model):
 
     @api.depends('sale_order_ids')
     def _compute_sale_order_value(self):
+        """Computes the total value of open sale orders for the partner.
 
+        This method calculates the total value of sale orders associated with the partner
+        that are not confirmed (`sale`), completed (`done`), or canceled (`cancel`).
+        It converts the amount based on the sale order currency's exchange rate.
+
+        The method:
+        1. Iterates over all sale orders linked to the partner.
+        2. Checks if the sale order state is valid (not `sale`, `done`, or `cancel`).
+        3. Converts the order amount based on the exchange rate.
+        4. Sums up the total value and updates the `kg_total_value` field.
+
+        Fields Updated:
+            - `kg_total_value`: The total value of open sale orders.
+
+        Returns:
+            None
+        """
         for partner in self:
             sale_order_ids = partner.sale_order_ids
             total = 0
@@ -104,7 +126,17 @@ class ResPartner(models.Model):
 
     @api.depends('invoice_ids')
     def _compute_invoice_numbers(self):
+        """Computes the total number of invoices associated with the partner.
 
+        This method counts the number of invoices linked to the partner and updates
+        the `kg_no_of_invoices` field accordingly.
+
+        Fields Updated:
+            - `kg_no_of_invoices`: The total number of invoices associated with the partner.
+
+        Returns:
+            None
+        """
         for partner in self:
             invoice_ids = partner.invoice_ids
             no = len(invoice_ids)
@@ -113,7 +145,18 @@ class ResPartner(models.Model):
 
     @api.depends('sale_order_ids')
     def _compute_kg_no_of_quote(self):
+        """Computes the total number of quotations for the partner.
 
+        This method counts the number of sale orders linked to the partner that
+        are still in quotation stage (not confirmed, completed, or canceled)
+        and updates the `kg_no_of_quote` field.
+
+        Fields Updated:
+            - `kg_no_of_quote`: The total number of quotations associated with the partner.
+
+        Returns:
+            None
+        """
         for partner in self:
             quotes = []
             sale_order_ids = partner.sale_order_ids
@@ -127,7 +170,22 @@ class ResPartner(models.Model):
 
     @api.depends('invoice_ids')
     def _compute_outstanding(self):
+        """Computes the outstanding balance for the partner.
 
+        This method calculates the outstanding balance by summing up the residual
+        amounts of the partner’s invoices, adjusting for refunds and invoices.
+
+        The outstanding value is computed as:
+        - Subtracting residual amounts of refund invoices (`in_refund`, `out_refund`).
+        - Adding residual amounts of standard invoices (`in_invoice`, `out_invoice`).
+        - Applying currency conversion using the exchange rate.
+
+        Fields Updated:
+            - `kg_outstanding_value`: The total outstanding balance for the partner.
+
+        Returns:
+            None
+        """
         for partner in self:
             total = 0
             invoice_ids = partner.invoice_ids
@@ -147,42 +205,16 @@ class ResPartner(models.Model):
 
             partner.kg_outstanding_value = total
 
-    #
-    # #    @api.depends('invoice_ids','kg_payment_extension_line','sale_order_ids')
-    # #    def _compute_payment_extension(self):
-    # #
-    #
-    # #        for partner in self:
-    # #            invoice_ids = partner.invoice_ids
-    # #            kg_payment_extension_line = partner.kg_payment_extension_line
-    # #            max_ids = []
-    # #            for extention in kg_payment_extension_line:
-    # #                max_ids.append(extention and extention.id)
-    # #
-    # #
-    # #
-    # #            for inv in invoice_ids:
-    # #                if inv.type == 'out_invoice' and inv.state == 'open' and inv.date_due:
-    # #                    if
-    # #                    grace_period = 30
-    # #                    date_due = inv.date_due
-    # #                    new_date = datetime.strptime(date_due, "%Y-%m-%d") + relativedelta(day=30)
-    # #
-    # #
-    #
-    # #
-    #
-    # #            partner.kg_payment_extension_remarks = ''
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
+
     def default_login_user(self):
+        """Returns the ID of the currently logged-in user.
+
+        This method retrieves the ID of the currently authenticated user
+        and returns it.
+
+        Returns:
+            int: The ID of the currently logged-in user.
+        """
         current_user = self.env.user.id
         return current_user
 
@@ -205,10 +237,8 @@ class ResPartner(models.Model):
     kg_payment_extension_remarks = fields.Char(string="Remarks")
     kg_tr_no = fields.Char(string="TR NO")
     kg_size_id = fields.Many2one('kg.size', string="Company Size")
-    # kg_ind_id = fields.Many2one('kg.industry.master', string="Industry")
     kg_department_id = fields.Many2one('hr.department', string='Serving Department')
     kg_account_manager_id = fields.Many2one('res.users', string='Account Manager')
-    # kg_supplier_type_id = fields.Many2one('kg.supplier.type', string='Supplier Type')
     kg_rating = fields.Selection([
         ('bad', 'Bad'),
         ('medium', 'Medium'),
@@ -220,6 +250,16 @@ class ResPartner(models.Model):
                                                       string="Accounting Managers")
 
     def view_sale_order(self):
+        """Opens the quotations view filtered for the current partner.
+
+        This method retrieves the quotation action and filters it to display only
+        quotations (`sale.order` records) linked to the current partner, excluding
+        confirmed, completed, and canceled sales.
+
+        Returns:
+            dict: An action dictionary that opens the quotations view filtered for
+                  the current partner.
+        """
         print("------------------------")
         action = self.env.ref('sale.action_quotations').read()[0]
         partner_id = self.id
@@ -235,8 +275,18 @@ class ResPartner(models.Model):
 
         return action
 
-    #
     def view_quotes(self):
+        """Opens the quotations view filtered for the current partner.
+
+        This method is functionally identical to `view_sale_order()`. It retrieves
+        the quotation action and filters it to display only quotations (`sale.order`
+        records) linked to the current partner, excluding confirmed, completed,
+        and canceled sales.
+
+        Returns:
+            dict: An action dictionary that opens the quotations view filtered for
+                  the current partner.
+        """
         print("------------------------")
         action = self.env.ref('sale.action_quotations').read()[0]
         partner_id = self.id
@@ -252,10 +302,17 @@ class ResPartner(models.Model):
 
         return action
 
-    #
-    #
-    #
+
     def view_invoices(self):
+        """Opens the invoices view filtered for the current partner.
+
+        This method retrieves the customer invoices action and filters it to
+        display only invoices (`account.move` records) linked to the current partner.
+
+        Returns:
+            dict: An action dictionary that opens the invoices view filtered for
+                  the current partner.
+        """
         print("------------------------")
         action = self.env.ref('account.action_move_out_invoice_type').read()[0]
         partner_id = self.id
@@ -271,6 +328,16 @@ class ResPartner(models.Model):
         return action
 
     def view_invoices_outstanding(self):
+        """Opens the outstanding invoices view filtered for the current partner.
+
+        This method retrieves the customer invoices action and filters it to
+        display only outstanding invoices (`account.move` records) linked to
+        the current partner.
+
+        Returns:
+            dict: An action dictionary that opens the outstanding invoices
+                  view filtered for the current partner.
+        """
         print("------------------------")
         action = self.env.ref('account.action_move_out_invoice_type').read()[0]
         partner_id = self.id

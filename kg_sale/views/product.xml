@@ -13,13 +13,7 @@
 				<field name="kg_brand_id"/>
 
 
-<!--				    <field name="kg_optional_line">-->
-<!--				        <tree editable="top">-->
-<!--				            <product_id/>-->
-<!--				        -->
-<!--				        </tree>-->
-<!--				    -->
-<!--				    </field>-->
+
 
 
 
@@ -33,11 +27,7 @@
             <field name="type" position="after">
                     <field name="kg_servicecall_categories" string="Service Type" attrs="{'invisible': [('type','!=','service')],'required': [('type','=','service')]}"/>
             </field>
-<!--          <div class="oe_button_box" name="button_box">-->
-<!--                            <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">-->
-<!--                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>-->
-<!--                            </button>-->
-<!--                        </div>-->
+
 
             <div name="button_box" position="inside">
               <button class="oe_stat_button" name="open_cost_history" icon="fa-building-o" type="object" string="Cost History"/>

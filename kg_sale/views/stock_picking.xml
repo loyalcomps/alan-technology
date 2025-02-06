@@ -7,12 +7,7 @@
         <field name="type">form</field>
         <field name="inherit_id" ref="stock.view_picking_form"/>
         <field name="arch" type="xml">
-            <!--			<field name="move_line_ids" position="after">-->
-            <!--				<field name="kg_note"/>-->
-            <!--            </field>-->
-            <!--         <xpath expr="/form/sheet/notebook/page[@name='extra']/field[@name='company_id']" position="after">-->
-            <!--                        <field name="kg_sale_order_type"/>-->
-            <!--         </xpath>-->
+
             <field name="group_id" position="before">
                 <field name="kg_sale_order_type"/>
             </field>
@@ -61,11 +56,9 @@
                         class="oe_stat_button"
                         icon="fa-pencil-square-o"
                         attrs="{'invisible': ['|',('state', '!=', 'done'),('kg_type', '!=', 'sale')]}">
-                    <!--                        attrs="{'invisible': [('invoice_count', '=', 0)]}">-->
                     <field name="invoice_count" widget="statinfo" string="Invoices"/>
                 </button>
             </xpath>
-            <!--            <xpath expr="//notebook/page[@name='extra']/field[@name='priority']" position="after">-->
             <xpath expr="//field[@name='user_id']" position="after">
                 <field name="client_order_do_ref"
                        attrs="{'readonly': [('state', '=', 'done'), ('is_locked', '=', True)]}"/>

@@ -14,7 +14,6 @@ from odoo.tools.misc import formatLang
 class Picking(models.Model):
     _inherit = "stock.picking"
 
-    # kg_note = fields.Text(string='Note')
 
     kg_sale_order_type = fields.Selection(related='sale_id.kg_sale_order_type')
 
@@ -22,7 +21,19 @@ class Picking(models.Model):
     invoice_count = fields.Integer(string="Invoice Count", compute='_compute_invoice_count')
 
     def _compute_invoice_count(self):
-        """This compute function used to count the number of invoice for the picking"""
+        """Computes the number of invoices associated with the picking.
+
+        This method calculates the number of invoices that are linked to a specific
+        picking based on the picking's name, which is used as the `invoice_origin`.
+        The result is stored in the `invoice_count` field of the picking.
+
+        The method checks if there are any invoices matching the `invoice_origin`
+        and updates the `invoice_count` accordingly.
+
+        Fields Updated:
+            - `invoice_count`: The count of invoices related to the picking.
+        """
+
         for picking_id in self:
             move_ids = picking_id.env['account.move'].search([('invoice_origin', '=', picking_id.name)])
             if move_ids:
@@ -31,24 +42,57 @@ class Picking(models.Model):
                 self.invoice_count = 0
 
     def action_view_invoice(self):
+        """Returns an action to view the invoices related to the picking.
 
+        This method opens a window displaying a list of invoices (in `tree` and `form`
+        views) related to the current picking based on the `invoice_origin`. The
+        action prevents creation of new invoices and targets the current window.
+
+        Returns:
+            dict: An action dictionary to open the invoice list view filtered by the
+                  picking's name in the `invoice_origin`.
+        """
         return {
             'name': 'Invoices',
             'type': 'ir.actions.act_window',
             'view_mode': 'tree,form',
             'res_model': 'account.move',
             'domain': [('invoice_origin', '=', self.name)],
-            # 'context': {'default_kg_so_id': 'sale_id.id'},
             'context': {'create': False},
             'target': 'current'
         }
 
     def create_invoice_from_delivery(self):
+        """Creates an invoice from the delivery (picking) for outgoing shipments.
+
+        This method generates an invoice from a delivery (picking) of type 'outgoing'.
+        It creates invoice lines based on the products and quantities in the picking,
+        calculates the appropriate account and tax information, and associates the
+        invoice with the sale order. The invoice is then created and linked to the
+        picking and sale order.
+
+        The method also updates the sale order's invoice status depending on the 
+        delivery quantity and the total sale order quantity, and links the 
+        `kg_po_ref` (purchase order reference) if available to the invoice.
+
+        Process:
+        1. It checks if the picking is of type 'outgoing'.
+        2. Loops through the move lines of the picking and creates the corresponding 
+        invoice lines.
+        3. Creates an invoice based on the picking details.
+        4. Updates the sale order's invoice status based on the invoiced and delivered quantities.
+        5. Links the generated invoice to the picking and updates relevant references.
+
+        Returns:
+            account.move: The created invoice record.
+        """
         for picking_id in self:
             current_user = self.env.uid
             if picking_id.picking_type_id.code == 'outgoing':
                 invoice_line_list = []
                 for move_ids_without_package in picking_id.move_ids_without_package:
+                    sale_line = move_ids_without_package.sale_line_id
+
                     vals = (0, 0, {
                         'name': move_ids_without_package.description_picking,
                         'product_id': move_ids_without_package.product_id.id,
@@ -60,6 +104,7 @@ class Picking(models.Model):
                         'tax_ids': move_ids_without_package.sale_line_id.tax_id.ids,
                         'quantity': move_ids_without_package.quantity_done,
                         'description': move_ids_without_package.description,
+                        'sale_line_ids': [(6, 0, [sale_line.id])]
 
                     })
                     invoice_line_list.append(vals)
@@ -79,6 +124,7 @@ class Picking(models.Model):
                 picking_id.update({'kg_invoice_id': invoice.id})
                 so = picking_id.kg_sale_order_id
                 so.update({'invoice_ids': [(4, invoice.id)]})
+                picking_id.kg_invoice_status='original'
                 delivery_qty = sum(self.sale_id.picking_ids.filtered(lambda p: p.state == 'done').mapped(
                     'move_line_ids_without_package').mapped('qty_done'))
                 sale_qty = sum(self.sale_id.order_line.mapped('product_uom_qty'))

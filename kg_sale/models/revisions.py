@@ -51,6 +51,15 @@ class KgRevisions(models.Model):
     team_id = fields.Many2one('crm.team', 'Sales Team')
 
     def unlink(self):
+        """Prevents deletion of revision records.
+
+        This method overrides the default `unlink` function to prevent the deletion
+        of records in the `KgRevisions` model. If a deletion attempt is made, a
+        `UserError` is raised, restricting users from deleting revisions.
+
+        Raises:
+            UserError: Always raised to prevent deletion of revisions.
+        """
         raise UserError(_('You cannot delete revisions.'))
         return super(KgRevisions, self).unlink()
 

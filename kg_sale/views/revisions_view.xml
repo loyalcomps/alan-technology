@@ -119,19 +119,11 @@
         </record>
         <record model="ir.actions.act_window" id="action_kg_revisions">
             <field name="name">Sales Revisions</field>
-<!--            <field name="type">ir.actions.act_window</field>-->
             <field name="res_model">kg.revisions</field>
-<!--            <field name="view_type">form</field>-->
             <field name="view_mode">tree,form</field>
-<!--            <field name="help" type="html">-->
-<!--                <p class="oe_view_nocontent_create">-->
-<!--                    Click to add new Terms and Conditions.-->
-<!--                </p>-->
-<!--            </field>-->
+
         </record>
 
-        <!--    <menuitem action="action_kg_revisions"-->
-        <!--            id="action_kg_revisions_id" parent="sales_team.menu_sale_config"-->
-        <!--            sequence="12"/>-->
+
     </data>
 </odoo>

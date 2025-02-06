@@ -4,7 +4,31 @@ class StockPickingInherit(models.Model):
     _inherit='stock.picking'
 
     def create_invoice_from_delivery(self):
+        """Creates an invoice from the delivery (picking) for outgoing shipments.
 
+        This method generates an invoice for outgoing deliveries (pickings) by creating
+        invoice lines based on the products and quantities in the picking. It then links
+        the created invoice to the corresponding sale order and updates the invoice status.
+
+        The method performs the following actions:
+        - Checks if the picking type is 'outgoing' before proceeding with invoice creation.
+        - Loops through the move lines without packages in the picking to create invoice lines.
+        - Creates an invoice with the calculated details, including customer, product,
+          account, tax information, and payment reference.
+        - Updates the picking and sale order with the generated invoice details.
+        - Calculates the delivery quantity and compares it with the sale order's quantity.
+          Based on this comparison, it updates the invoice status of the sale order (`kg_invoice_status_1`).
+        - If a purchase order reference (`kg_po_ref`) is provided, it is linked to the invoice.
+
+        Returns:
+            account.move: The created invoice record.
+
+        Fields Updated:
+            - `kg_invoice_id`: Links the created invoice to the picking.
+            - `invoice_ids`: Links the created invoice to the sale order.
+            - `kg_invoice_status_1`: Updates the invoice status on the sale order based on the quantity comparison.
+            - `kg_another_ref`: Sets the purchase order reference on the invoice if available.
+        """
         for picking_id in self:
             current_user = self.env.uid
             if picking_id.picking_type_id.code == 'outgoing':
@@ -39,6 +63,8 @@ class StockPickingInherit(models.Model):
                 picking_id.update({'kg_invoice_id': invoice.id})
                 so = picking_id.kg_sale_order_id
                 so.update({'invoice_ids': [(4, invoice.id)]})
+
+
                 delivery_qty = sum(self.sale_id.picking_ids.filtered(lambda p: p.state == 'done').mapped(
                     'move_line_ids_without_package').mapped('qty_done'))
                 sale_qty = sum(self.sale_id.order_line.mapped('product_uom_qty'))
