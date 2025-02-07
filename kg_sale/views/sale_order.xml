@@ -294,7 +294,7 @@
                            position="replace">
 
 
-                        <field name="product_id" widget="selection"
+                        <field name="product_id"
                                domain="[('categ_id','=',kg_categ_id),('kg_brand_id','=',kg_brand_id)]"/>
 
                     </xpath>
