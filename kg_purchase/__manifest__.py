@@ -1,6 +1,6 @@
 {
     'name': 'KG Purchase',
-    'version': '16.0.1.0.0',
+    'version': '16.0.1.0.1',
     'description': 'KG Purchase',
     'depends': ['base', 'purchase', 'account', 'sale','stock'],
     'data': [

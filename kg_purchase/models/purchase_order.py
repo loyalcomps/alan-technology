@@ -208,15 +208,19 @@ class AccountMove(models.Model):
            Depends on the field values passed in `vals` and the logic of the `write` method.
         """
         res = super(AccountMove, self).write(vals)
-        if self.invoice_origin and  len(self.invoice_origin)>0:
-            purchase_order = self.env['purchase.order'].search([('name', '=', self.invoice_origin[0])])
-            if purchase_order:
-                total_qty_ordered = sum(purchase_order.order_line.mapped('product_qty'))
-                total_qty_invoiced = sum(purchase_order.order_line.mapped('qty_invoiced'))
-                if total_qty_ordered > total_qty_invoiced:
-                    purchase_order.payment_state = 'partial_invoiced'
-                else:
-                    purchase_order.payment_state = 'full_invoiced'
+
+        for rec in self:
+
+            if rec.invoice_origin:
+                purchase_order = self.env['purchase.order'].search([('name', '=', rec.invoice_origin)],limit=1)
+                if purchase_order:
+                    total_qty_ordered = sum(purchase_order.order_line.mapped('product_qty'))
+                    total_qty_invoiced = sum(purchase_order.order_line.mapped('qty_invoiced'))
+                    if total_qty_ordered > total_qty_invoiced:
+                        purchase_order.payment_state = 'partial_invoiced'
+                    else:
+                        purchase_order.payment_state = 'full_invoiced'
+        return res
 
 
 
