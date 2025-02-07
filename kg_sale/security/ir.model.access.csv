@@ -1,0 +1,14 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+
+access_kg_product_brand,access_kg_product_brand,model_kg_product_brand,,1,1,1,1
+access_kg_optional_product,access_kg_optional_product,model_kg_optional_product,,1,1,1,1
+access_kg_product_cost_history,access_kg_product_cost_history,model_kg_product_cost_history,,1,1,1,1
+access_kg_partner_accounting_managers_line,access_kg_partner_accounting_managers_line,model_kg_partner_accounting_managers_line,,1,1,1,1
+access_kg_revisions,access_kg_revisions,model_kg_revisions,,1,1,1,1
+access_kg_revisions_line,access_kg_revisions_line,model_kg_revisions_line,,1,1,1,1
+access_kg_revisions_terms_line,access_kg_revisions_terms_line,model_kg_revisions_terms_line,,1,1,1,1
+access_kg_so_po_wizard,access_kg_so_po_wizard,model_kg_so_po_wizard,,1,1,1,1
+access_kg_so_po_wizard_line,access_kg_so_po_wizard_line,model_kg_so_po_wizard_line,,1,1,1,1
+access_kg_sale_terms_line,access_kg_sale_terms_line,model_kg_sale_terms_line,,1,1,1,1
+
+access_kg_partner_payment_extension_line,access_kg_partner_payment_extension_line,model_kg_partner_payment_extension_line,,1,1,1,1

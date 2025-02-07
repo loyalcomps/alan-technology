@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="kg_validity_tree">
+            <field name="name">kg.validity</field>
+            <field name="model">kg.validity</field>
+            <field name="arch" type="xml">
+                <tree string="Validity">
+
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record model="ir.ui.view" id="kg_validity_form">
+            <field name="name">kg.validity</field>
+            <field name="model">kg.validity</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" required="1"/>
+                            </group>
+                            <group>
+
+                            </group>
+                        </group>
+                        <field name="note" placeholder="Description...."/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_kg_validity">
+            <field name="name">Validity</field>
+            <field name="res_model">kg.validity</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem action="action_kg_validity"
+                  id="action_kg_validity_id" parent="crm.crm_menu_config"
+                  sequence="12"/>
+    </data>
+</odoo>

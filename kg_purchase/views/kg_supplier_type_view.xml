@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="kg_supplier_type_tree">
+        <field name="name">kg.supplier.type</field>
+        <field name="model">kg.supplier.type</field>
+        <field name="arch" type="xml">
+            <tree string="Supplier Type">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="kg_supplier_type_form">
+        <field name="name">kg.supplier.type</field>
+        <field name="model">kg.supplier.type</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" required="1"/>
+                        </group>
+                        <group>
+
+                        </group>
+                    </group>
+                    <field name="desc" placeholder="Description...."/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_supplier_track" model="ir.actions.act_window">
+        <field name="name">Supplier Type</field>
+        <field name="res_model">kg.supplier.type</field>
+        <field name="type">ir.actions.act_window</field>
+
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem id="menu_supplier_track" name="Supplier Type" parent="purchase.menu_purchase_config"
+              action="action_supplier_track" sequence="2"/>
+</odoo>

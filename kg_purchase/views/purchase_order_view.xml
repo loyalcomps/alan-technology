@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="kg_purchase_order" model="ir.ui.view">
+        <field name="name">kg.purchase.order</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <field name="date_order" position="after">
+                <field name="kg_po_order_type" required="1" string="Type"/>
+                <field name="kg_sale_order_id" readonly="1" widget="many2many_tags"/>
+            </field>
+
+            <xpath expr="/form/header//field[@name='state']" position="after">
+                <field name="payment_state" widget="statusbar" statusbar_visible="partial_invoiced,full_invoiced"/>
+            </xpath>
+
+
+
+
+
+
+              <xpath expr="//button[@name='button_confirm' and @states='draft']" position="attributes">
+                <attribute name="class">btn-primary</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_rfq_send'and @states='purchase']" position="attributes">
+                <attribute name="class">btn-primary</attribute>
+            </xpath>
+            <xpath expr="//button[@name='confirm_reminder_mail']" position="attributes">
+                <attribute name="class">btn-primary</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_create_invoice'][1]" position="attributes">
+                <attribute name="class">btn-primary</attribute>
+            </xpath>
+              <xpath expr="//button[@name='action_create_invoice'][2]" position="attributes">
+                <attribute name="class">btn-primary</attribute>
+            </xpath>
+            <xpath expr="//button[@name='button_cancel']" position="attributes">
+                <attribute name="class">btn-danger</attribute>
+            </xpath>
+            <xpath expr="//button[@name='button_done']" position="attributes">
+                <attribute name="class">btn-warning</attribute>
+            </xpath>
+            <xpath expr="//button[@name='button_unlock']" position="attributes">
+                <attribute name="class">btn-warning</attribute>
+            </xpath>
+
+
+
+
+            <xpath expr="/form/sheet/notebook/page[2]" position="after">
+                <page string="Merged Details"
+                      attrs="{'invisible': [('kg_merge_line','=',[]), ('kg_combined_line','=',[])]}">
+                    <group>
+                        <group attrs="{'invisible': [('kg_merge_line','=',[])]}">
+                            <field name="kg_merge_line" readonly="1">
+                                <tree editable="bottom">
+                                    <field name="sale_order_id"/>
+                                    <field name="purchase_order_id"/>
+                                    <field name="merged" invisible="1"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group attrs="{'invisible': [('kg_combined_line','=',[])]}">
+                            <field name="kg_combined_line" readonly="1">
+                                <tree editable="bottom">
+                                    <field name="sale_order_id"/>
+                                    <field name="purchase_order_id"/>
+                                    <field name="merged" invisible="1"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    <record model="ir.ui.menu" id="purchase.purchase_report_main">
+        <field name="name">Reports</field>
+    </record>
+</odoo>

@@ -1,0 +1,43 @@
+<odoo>
+
+    <record id="cancel_custom_wizard_form" model="ir.ui.view">
+        <field name="name">sale.cancel.custom.form</field>
+        <field name="model">sale.cancel.custom</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+
+                     <group>
+                        <field name="check_approve" invisible="1"/>
+
+                   </group>
+                     <field name="description" readonly="1"   attrs="{'invisible': [('check_approve', '=', False)]}"/>
+
+                    <group>
+
+                        <field name="cancel_reason"
+                                                       attrs="{'invisible': [('check_approve', '!=', False)]}"/>
+<!--                               invisible="check_approve !=False"/>-->
+                    </group>
+
+                </sheet>
+                <footer>
+                    <button name="action_approve" type="object"
+                              attrs="{'invisible': [('check_approve', '=', False)]}"
+                            class="btn btn-primary"
+                            string="OK"/>
+
+                    <button type="object"
+                            attrs="{'invisible': [('check_approve', '!=', False)]}"
+                            confirm="Are you sure you want to Cancel Sale Order ?."
+                            string="Confirm" name="action_cancel_confirm" class="btn btn-primary"
+                            data-hotkey="q"/>
+                    <button special="cancel"
+                            attrs="{'invisible': [('check_approve', '!=', False)]}"
+                            string="Cancel" class="btn btn-secondary" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

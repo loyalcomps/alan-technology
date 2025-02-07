@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+
+    <record model="ir.ui.view" id="res_partner_view_inherit_form_id">
+        <field name="name">res.partner</field>
+        <field name="model">res.partner</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="/form/sheet/notebook/page[@name='sales_purchases']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page[@name='sales_purchases']" position="after">
+                <page name="custom_sales" string="Sales">
+                    <group>
+                        <group>
+                            <field name="is_sales_manager" invisble="1"/>
+                            <field name="user_id" attrs="{'readonly':[('is_sales_manager', '=',False)]}"/>
+                            <field name="team_id"/>
+                            <field name="salesperson_1_id"/>
+                            <field name="salesperson_2_id"/>
+                            <field name="salesperson_3_id"/>
+                            <field name="customer" invisible="1"/>
+                            <field name="team_id"/>
+                            <field name="property_payment_term_id"
+                                   attrs="{'readonly':[('is_sales_manager', '=',False)]}"/>
+                            <field name="notify_email"/>
+                            <field name="property_product_pricelist"/>
+                        </group>
+                        <group string="Fiscal Information" name="fiscal_information" priority="5">
+                            <field name="property_account_position_id"/>
+                        </group>
+                        <group string="Inventory" name="inventory" colspan="2">
+                            <field name="property_stock_customer" can_create="true" can_write="true"/>
+                            <field name="property_stock_supplier" can_create="true" can_write="true"/>
+                        </group>
+                        <group name="misc" string="Misc">
+                            <field name="company_registry"/>
+                            <field name="ref" string="Reference"/>
+                            <field name="industry_id"/>
+                        </group>
+                    </group>
+                </page>
+                <page string="Purchase" name="custom_purchase" attrs="{'invisible': [('supplier_rank','=', 0)]}">
+                    <group>
+                        <group>
+                            <field name="vendor" invisible="1"/>
+                            <field name="property_supplier_payment_term_id"/>
+                            <field name="property_payment_method_id"/>
+                            <field name="receipt_reminder_email"/>
+                            <field name="reminder_date_before_receipt"/>
+                        </group>
+                        <group string="Fiscal Information" name="fiscal_information" priority="5">
+                            <field name="property_account_position_id"/>
+                        </group>
+                        <group string="Inventory" name="inventory" colspan="2">
+                            <field name="property_stock_customer" can_create="true" can_write="true"/>
+                            <field name="property_stock_supplier" can_create="true" can_write="true"/>
+                        </group>
+                        <group name="misc" string="Misc">
+                            <field name="company_registry"/>
+                            <field name="ref" string="Reference"/>
+                            <field name="industry_id"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+
+
+            <xpath expr="//field[@name='lang']" position="after">
+                <field name="kg_trade_license"/>
+                <field name="kg_rating"/>
+
+            </xpath>
+            <xpath expr="//field[@name='vat']" position="replace">
+                <field name="vat" required="1"/>
+
+            </xpath>
+            <xpath expr="//field[@name='parent_id']" position="before">
+                <field name="kg_tr_no" placeholder="TR NO"/>
+
+            </xpath>
+            <field name="category_id" position="after">
+                <field name="kg_size_id" attrs="{'invisible': [('customer','=',False)]}"/>
+                <field name="kg_department_id" invisible="1"/>
+                <field name="customer_type" attrs="{'invisible': [('customer_rank','=', 0)]}"/>
+                <field name="customer_rank" invisible="1"/>
+                <field name="supplier_rank" invisible="1"/>
+
+            </field>
+            <xpath expr="//field[@name='team_id']" position="after">
+                <field name="salesperson_1_id"/>
+                <field name="salesperson_2_id"/>
+                <field name="salesperson_3_id"/>
+            </xpath>
+
+            <div name="button_box" position="inside">
+
+                <button class="oe_stat_button" type="object" name="view_sale_order" string="Quote Value"
+                        icon="fa-pencil-square-o">
+                    <field string="Quote.Value" name="kg_total_value" widget="statinfo"/>
+
+                </button>
+
+                <button class="oe_stat_button" type="object" name="view_invoices" string="No.Invoices"
+                        icon="fa-pencil-square-o">
+                    <field name="kg_no_of_invoices" widget="statinfo" string="No.Invoices"/>
+
+                </button>
+                <button class="oe_stat_button" type="object" name="view_invoices_outstanding" string="Outstanding"
+                        icon="fa-pencil-square-o">
+                    <field string="Outstanding" name="kg_outstanding_value" widget="statinfo"/>
+                </button>
+
+                <button class="oe_stat_button" type="object" name="view_quotes" string="Quotes"
+                        icon="fa-pencil-square-o">
+                    <field string="Quotes" name="kg_no_of_quote" widget="statinfo"/>
+
+                </button>
+
+            </div>
+            <page name="accounting" position="after">
+
+                <page name="kg_payment_extension_line" string="Payment Extension">
+                    <group>
+
+
+                        <field name="kg_payment_extension_remarks"/>
+                    </group>
+
+                    <field name="kg_payment_extension_line_ids">
+                        <tree editable="top">
+
+                            <field name="payment_extension_id" required="1"
+                                   attrs="{'readonly': [('approved', '!=', False)]}"/>
+                            <field name="extended_days" attrs="{'readonly': [('approved', '!=', False)]}"/>
+                            <field name="approved" readonly="1"/>
+                            <button name="allow_extension_approval" type="object" string="Approve"/>
+                        </tree>
+
+                    </field>
+                </page>
+
+                <page name="accounting_managers" string="Other Account Managers">
+                    <field name="kg_accounting_managers_line_ids">
+                        <tree editable="top">
+
+                            <field name="department_id" required="1"/>
+                            <field name="employee_id" required="1" domain="[('department_id','=',department_id)]"
+                                   string="Manager"/>
+                        </tree>
+                    </field>
+                </page>
+            </page>
+
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="res_partner_view_inherit_view_id">
+        <field name="name">res.partner</field>
+        <field name="model">res.partner</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="arch" type="xml">
+            <field name="vat" position="after">
+                <field name="total_quotation"/>
+                <field name="total_quotation_amt" optional="hide"/>
+                <field name="total_invoice"/>
+                <field name="total_invoiced" string="Total Invoice Amt" widget="monetary"
+                       options="{'currency_field': 'currency_id'}" optional="hide"/>
+            </field>
+        </field>
+    </record>
+
+
+</odoo>

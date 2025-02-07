@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+
+access_kg_industry_master,access_kg_industry_master,model_kg_industry_master,,1,1,1,1
+access_kg_payment_extension,access_kg_payment_extension,model_kg_payment_extension,,1,1,1,1
+access_kg_validity,access_kg_validity,model_kg_validity,,1,1,1,1
+access_kg_delivery,access_kg_delivery,model_kg_delivery,,1,1,1,1
+access_kg_lpo_terms,access_kg_lpo_terms,model_kg_lpo_terms,,1,1,1,1
+access_kg_warranty,access_kg_warranty,model_kg_warranty,,1,1,1,1
+access_kg_size,access_kg_size,model_kg_size,,1,1,1,1
+
+

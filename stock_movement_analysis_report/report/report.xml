@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="action_stock_movement_analysis_report" model="ir.actions.report">
+        <field name="name">Stock Movement Analysis</field>
+        <field name="model">stock.movement.analysis</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">stock_movement_analysis_report.stock_report</field>
+        <field name="report_file">stock_movement_analysis_report.stock_report</field>
+    </record>
+</odoo>

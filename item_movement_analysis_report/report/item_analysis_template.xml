@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="item_report">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <t t-foreach="items" t-as="i">
+                    <t t-set="docs" t-value="docs.with_context()"/>
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        <div align="center">
+                            <br/>
+                            <h2>
+                                <span t-esc="i['product_name']"/>
+                            </h2>
+                            <br/>
+                            <h4>Item Movement Analysis</h4>
+                            <br/>
+                            <span t-field="docs.start_date"/>
+                            to
+                            <span t-field="docs.end_date"/>
+                        </div>
+                        <br/>
+                        <table class="table table-borderless">
+                            <thead>
+                                <tr style="border-top:1px solid black; border-bottom: 2px solid #ddd">
+                                    <th style="width:40%;">Particulars</th>
+
+                                    <th/>
+                                    <th/>
+                                    <th/>
+                                    <th>Movement Value</th>
+                                    <th/>
+                                </tr>
+                                <tr style=" border-bottom: 1px solid #ddd">
+                                    <td/>
+                                    <td>Inv No</td>
+                                    <td>Date</td>
+                                    <td>Quantity</td>
+                                    <td>Effective Rate</td>
+                                    <td>Value</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #ddd">
+                                    <td style="width:40%;">
+                                        <b>Movement Inward:</b>
+                                    </td>
+                                    <td style="width:12%;"/>
+                                    <td style="width:12%;"/>
+                                    <td style="width:12%;"/>
+                                    <td style="width:12%;"/>
+                                    <td style="width:12%;"/>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #ddd">
+                                    <td style="width:40%;">
+                                        <b>Suppliers:</b>
+                                    </td>
+                                    <td style="width:12%;"/>
+                                    <td style="width:12%;"/>
+                                    <td style="width:12%;"/>
+                                    <td style="width:12%;"/>
+                                    <td style="width:12%;"/>
+                                </tr>
+                            </thead>
+                            <br/>
+                            <tbody class="sale_tbody">
+                                <t t-foreach="i['inward_items']" t-as="inward_item">
+                                    <tr>
+                                        <td style="width:40%;">
+                                            <span t-esc="inward_item['name']"/>
+                                        </td>
+                                        <td style="width:12%;">
+                                            <span t-esc="inward_item['number']"/>
+                                        </td>
+                                        <td style="width:12%;">
+                                            <span t-esc="inward_item['invoice_date']"/>
+                                        </td>
+                                        <td style="width:12%;">
+                                            <span t-esc="'%.2f'%(inward_item['qty'])"/>
+                                        </td>
+                                        <td style="width:12%;">
+                                            <span t-esc="'%.2f'%(inward_item['unit'])"/>
+                                        </td>
+                                        <td style="width:12%;">
+                                            <span t-esc="'%.2f'%(inward_item['value'])"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                        <table class="table table-borderless">
+                            <thead>
+                                <tr style="border-bottom: 1px solid #ddd">
+                                    <td style="width:40%;">
+                                        <b>Movement Outward:</b>
+                                    </td>
+                                    <td style="width:12%;"/>
+                                    <td style="width:12%;"/>
+                                    <td style="width:12%;"/>
+                                    <td style="width:12%;"/>
+                                    <td style="width:12%;"/>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #ddd">
+                                    <td style="width:40%">
+                                        <b>Buyers:</b>
+                                    </td>
+                                    <td style="width:12%;"/>
+                                    <td style="width:12%;"/>
+                                    <td style="width:12%;"/>
+                                    <td style="width:12%;"/>
+                                    <td style="width:12%;"/>
+                                </tr>
+                            </thead>
+                            <br/>
+                            <tbody class="sale_tbody">
+                                <t t-foreach="i['outward_items']" t-as="outward_item">
+                                    <tr>
+                                        <td style="width:40%;">
+                                            <span t-esc="outward_item['name']"/>
+                                        </td>
+                                        <td style="width:12%;">
+                                            <span t-esc="outward_item['number']"/>
+                                        </td>
+                                        <td style="width:12%;">
+                                            <span t-esc="outward_item['invoice_date']"/>
+                                        </td>
+                                        <td style="width:12%;">
+                                            <span t-esc="'%.2f'%(outward_item['qty'])"/>
+                                        </td>
+                                        <td style="width:12%;">
+                                            <span t-esc="'%.2f'%(outward_item['unit'])"/>
+                                        </td>
+                                        <td style="width:12%;">
+                                            <span t-esc="'%.2f'%(outward_item['value'])"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="so_form_view_customizes_tree_file" model="ir.ui.view">
+            <field name="name">sale.order.tree.view.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='state']" position="after">
+                    <field name="custom_status"
+                           decoration-success="custom_status == 'po_confirm'"
+                           decoration-warning="custom_status == 'sale'"
+                           decoration-info="custom_status == 'po_created'"
+                           decoration-muted="custom_status == 'quotation'"
+                           decoration-danger="custom_status == 'partial_purchase'"
+                           widget="badge"/>
+                </xpath>
+
+            </field>
+        </record>
+        <record id="so_form_view_customizes_file" model="ir.ui.view">
+            <field name="name">sale.order.form.view.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="is_sales_manager" invisible="1"/>
+                    <field name="customer_state" invisible="1"/>
+                    <field name="cancelled_reason"
+                           readonly="1"
+                           attrs="{'invisible': [('cancelled_reason', '=', False)]}"
+                    />
+                    <field name="custom_status"/>
+
+                    <field name="approval_description" invisible="1"/>
+
+                </xpath>
+                <xpath expr="//header/field[@name='state']" position="replace">
+                    <field name="state" widget="statusbar" statusbar_visible="draft,sent,approve,sale"/>
+                </xpath>
+                <xpath expr="//header/button[@name='action_cancel']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                    <!--                                    <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'sent','sale']), ('id', '=', False)]}" data-hotkey="z"/>-->
+
+                </xpath>
+                <xpath expr="//header" position="inside">
+                    <button name="action_custom_cancel" type="object" string="Cancel"
+                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'sent','sale','approve']), ('id', '=', False)]}"
+                            class="btn-danger"/>
+                </xpath>
+                <xpath expr="//header/button[@name='action_quotation_send']" position="before">
+                    <field name="is_approve_visible" invisible="1"/>
+                    <button name="action_approve" string="Approve"
+                            attrs="{'invisible': [('is_approve_visible','=',False)]}"
+                            type="object"
+                            class="btn-primary"/>
+
+
+                    <field name="is_sales_manager" invisible="1"/>
+
+
+                </xpath>
+
+
+                <xpath expr="//button[@name='action_confirm'][1]" position="attributes">
+                    <attribute name="attrs">{'invisible': [('state', 'not in', ['sent','approve'])]}</attribute>
+                    <attribute name="class">btn-success</attribute>
+                    <attribute name="string">Confirm</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
+                    <attribute name="class">btn-success</attribute>
+                    <attribute name="string">Confirm</attribute>
+                </xpath>
+
+
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="customer_state" invisible="1"/>
+                    <field name="show_approve" invisible="1"/>
+                    <field name="first_confirm" force_save="1" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="stock_picking_form_view_invoice_button" model="ir.ui.view">
+            <field name="name">stock.picking.form.invoice.button</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_id']"
+                       position="after">
+                    <field name="description"/>
+                </xpath>
+
+            </field>
+        </record>
+        <record id="view_stock_move_line_detailed_operation_tree_delivery_inherited" model="ir.ui.view">
+            <field name="name">stock.move.line.operations.tree.inherit.custom</field>
+            <field name="model">stock.move.line</field>
+            <field name="inherit_id" ref="stock.view_stock_move_line_detailed_operation_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='product_id']" position="after">
+                    <field name="description"
+                           force_save="1"/>
+
+                </xpath>
+            </field>
+        </record>
+        <record id="account_move_form_view_invoice_button" model="ir.ui.view">
+            <field name="name">account.move.form.invoice.button</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='product_id']"
+                       position="after">
+                    <field name="description"/>
+                </xpath>
+                <xpath expr="//field[@name='line_ids']/tree/field[@name='name']"
+                       position="after">
+                    <field name="description"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

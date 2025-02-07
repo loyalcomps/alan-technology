@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="view_quotation_treeinheri_kg_so">
+            <field name="name">sale.order</field>
+            <field name="model">sale.order</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="sale.view_quotation_tree"/>
+            <field name="arch" type="xml">
+                 <field name="amount_total" position="after">
+                    <field name="margin"/>
+                </field> 
+
+                <field name="user_id" position="after">
+                    <field name="kg_subject"/>
+                </field>
+
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_order_treeinheri_kg_so">
+            <field name="name">sale.order</field>
+            <field name="model">sale.order</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="sale.view_order_tree"/>
+            <field name="arch" type="xml">
+                <field name="amount_total" position="after">
+                    <field name="client_order_ref" attrs="{'readonly': [('state','not in',('draft','sent'))]}"/>
+                    <field name="kg_invoice_status_1"/>
+
+                    <!--                    <field name="kg_amount_localcurrency" sum="Total" string="Total(Local Currency)" invisible="1"/>-->
+                </field>
+                <field name="user_id" position="after">
+                    <field name="kg_subject"/>
+                </field>
+                <field name="invoice_status" position="replace">
+                    <field name="invoice_status" invisible="1"/>
+                </field>
+
+            </field>
+        </record>
+
+
+        <record id="view_sale_order_inherit_kg_so2po" model="ir.ui.view">
+            <field name="name">Sale Order</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//button[@name='action_done']" position="attributes">
+                        <attribute name="class">btn-warning</attribute>
+                    </xpath>
+                    <xpath expr="//button[@name='action_unlock']" position="attributes">
+                        <attribute name="class">btn-warning</attribute>
+                    </xpath>
+                    <button name="action_confirm" position="after">
+                        <button name="proforma_invoice" type="object" string="Print Proforma" class="btn-info"
+                                attrs="{'invisible':['|',('kg_invoice_status_1', '!=', 'proforma_invoice'),('state', 'not in', ['draft', 'send'])]}"/>
+                        <button name="proforma_invoice_gen_seq" type="object" string="Generate Proforma" class="btn-primary"
+                                attrs="{'invisible':['|',('state', '!=', 'draft'),('kg_invoice_status_1', 'in', ['lpo_created', 'in_stock', 'invoiced','completed','proforma_invoice'])]}"/>
+                    </button>
+
+                    <button name="action_confirm" position="attributes">
+                        <attribute name="string">Confirm Sale</attribute>
+                    </button>
+                    <button name="action_confirm" position="after">
+                        <button name="action_print" id="action_print" data-hotkey="v" string="Print SO"
+                                class="btn-primary" type="object"
+                                attrs="{'invisible': [('state', 'not in', ['sale','done'])]}"/>
+                    </button>
+                    <button id="create_invoice_percentage" position="attributes">
+                        <attribute name="invisible">1</attribute>
+                    </button>
+                    <button id="create_invoice" position="attributes">
+                        <attribute name="invisible">1</attribute>
+                    </button>
+                    <field name="date_order" position="after">
+                        <field name="is_approve" invisible="1"/>
+                        <field name="kg_need_approval"
+                               attrs="{'invisible': [('kg_need_approval', '=', 'no_need_approval')]}" style="color:Red;"
+                               invisible="1"/>
+                    </field>
+
+
+                    <field name="date_order" position="after">
+                        <field name="partner_customer_type"/>
+                    </field>
+                    <field name="name" position="after">
+                        <field name="pro_seq" readonly="1" force_save="1"/>
+                    </field>
+
+
+
+                    <button name="action_confirm" position="after">
+
+                        <button name="kg_action_approve" string="Approve" type="object"
+                                attrs="{'invisible': ['|',('kg_need_approval', '!=', 'need_approval'),('is_approve', '!=', True)]}"
+                                groups="account.group_account_manager"/>
+
+                    </button>
+
+
+
+
+                    <field name="date_order" position="after">
+
+                        <field name="kg_subject" required="1"
+                               attrs="{'readonly': [('state','not in',('draft','sent'))]}"/>
+
+                        <field name="kg_sale_order_type" required="1"
+                               attrs="{'readonly': [('state','not in',('draft','sent'))]}"/>
+                        <field name="kg_remove_automatic_serial"/>
+                        <field name="kg_latest_rev" attrs="{'invisible': [('kg_latest_rev','=',False)]}"/>
+
+
+                    </field>
+
+                    <field name="partner_invoice_id" position="replace">
+
+                        <field name="partner_invoice_id" groups="account.group_delivery_invoice_address"
+                               context="{'default_type':'invoice'}" options='{"always_reload": True}'/>
+
+                    </field>
+
+                    <field name="partner_shipping_id" position="replace">
+                        <field name="partner_shipping_id" groups="account.group_delivery_invoice_address"
+                               context="{'default_type':'delivery'}" options='{"always_reload": True}'/>
+
+                    </field>
+                    <field name="partner_shipping_id" position="after">
+                        <field name="kg_kindattention_partner_id" required="0"
+                               attrs="{'readonly': [('state','not in',('draft','sent'))]}"/>
+                        <field name="bank_id" options="{'no_create': True}"/>
+                    </field>
+                    <field name="payment_term_id" position="after">
+                        <field name="kg_journal_id" domain="[('type','=','sale')]" string="Journal"
+                               attrs="{'readonly': [('state','not in',('draft','sent'))]}"/>
+                    </field>
+
+
+                    <field name="user_id" position="replace">
+                        <field name="user_id" attrs="{'readonly': [('state','not in',('draft','sent'))]}"/>
+                    </field>
+
+                    <field name="team_id" position="replace">
+
+                        <field name="team_id" options="{'no_create': True}"
+                               attrs="{'readonly': [('state','not in',('draft','sent'))]}"/>
+                    </field>
+
+
+
+
+                    <button name="action_view_invoice" position="after">
+
+
+                        <button name="kg_open_revisions" type="object" class="oe_stat_button" icon="fa-pencil-square-o">
+                            <field string="Revisions" name="kg_no_of_revisions" widget="statinfo"/>
+                        </button>
+
+                    </button>
+                    <xpath expr="//form/sheet/group" position="inside">
+                        <field name="invoice_count" invisible="1"/>
+                        <field name="inv_count" invisible="1"/>
+                    </xpath>
+                 <xpath expr="//button[@name='action_view_invoice']" position="replace">
+                    <button name="action_invoice"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-pencil-square-o">
+                        <field name="inv_count" widget="statinfo" string="Invoices"/>
+                    </button>
+                </xpath>
+
+
+
+
+                    <xpath expr="/form/sheet/notebook/page[2]" position="after">
+                        <page string="Related PO" attrs="{'invisible': [('kg_purchase_order_lines','=',[])]}">
+                            <group>
+                                <field name="kg_lpos" readonly="1" invisible="1"/>
+                            </group>
+                            <field name="kg_purchase_order_lines" readonly="1">
+                                <tree>
+                                    <field name="name" readonly="1"/>
+                                    <field name="state" readonly="1"/>
+                                </tree>
+
+                            </field>
+
+                        </page>
+
+                    </xpath>
+
+
+                    <xpath expr="/form/sheet/notebook/page[1]" position="after">
+                        <page string="Terms and Conditions">
+                            <group>
+                                <group>
+                                    <field name="kg_lpo_term_id"
+                                           attrs="{'readonly': [('state','not in',('draft','sent'))]}"/>
+
+                                    <field name="kg_delivery_id"
+                                           attrs="{'readonly': [('state','not in',('draft','sent'))]}"/>
+                                </group>
+                                <group>
+                                    <field name="kg_validity_id"
+                                           attrs="{'readonly': [('state','not in',('draft','sent'))]}"/>
+                                    <field name="kg_warranty_id"
+                                           attrs="{'readonly': [('state','not in',('draft','sent'))]}"/>
+
+                                    <field name="kg_allow_invoice" readonly="1" invisible="1"/>
+
+
+                                </group>
+
+                            </group>
+
+
+                        </page>
+
+                    </xpath>
+                    <xpath expr="/form/sheet/notebook/page[@name='other_information']/group/group[2]"
+                           position="inside">
+                       
+                            <field name="kg_invoice_status_1" readonly="1"/>
+
+                    
+
+                    </xpath>
+                    <xpath expr="/form/sheet/notebook/page[@name='other_information']//group[@name='sale_reporting']"
+                           position="attributes">
+                        <attribute name="string">Reporting</attribute>
+                    </xpath>
+
+
+                    <button name="action_confirm" position="after">
+                        <button name="kg_quick_po" states="sale,done" type="object" string="Quick PO" class="btn-info"/>
+
+                    </button>
+                    <field name="payment_term_id" position="after">
+                        <field name="kg_discount_per" widget='monetary' options="{'currency_id': 'currency_id'}"
+                               attrs="{'readonly': [('state', '!=', 'draft')]}" invisible="1"/>
+                        <field name="kg_discount" widget='monetary' options="{'currency_id': 'currency_id'}"
+                               readonly="1" invisible="1"/>
+
+
+                    </field>
+
+                    <xpath expr="//group[@name='sale_total']/field[@name='tax_totals']" position="before">
+                        <field name="kg_net_discount" widget='monetary' options="{'currency_field': 'currency_id'}"
+                               readonly="1"/>
+
+                    </xpath>
+                    <xpath expr="//group[@name='sale_total']/field[@name='tax_totals']" position="attributes">
+                        <attribute name="invisible">1</attribute>
+
+                    </xpath>
+                    <xpath expr="//group[@name='sale_total']/field[@name='tax_totals']" position="after">
+                        <field name="amount_untaxed"/>
+                        <field name="amount_tax"/>
+                        <field name="amount_total"/>
+                    </xpath>
+
+
+                    <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='product_uom_qty']"
+                           position="after">
+                        <field name="kg_optional" optional="hide"/>
+
+                        <field name="kg_supplier_id" domain="[('supplier_rank','=',True)]"/>
+
+                        <button name="kg_add_to_pricelist" type="object" string="Update Pricelist"/>
+                        <field name="kg_is_it_tranpcharge" invisible="0" optional="hide"/>
+                        <field name="kg_subheading" invisible="0" optional="hide"/>
+                    </xpath>
+
+
+
+
+                    <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='tax_id']"
+                           position="after">
+                        <button name="open_cost_history" type="object" string="Cost history"/>
+
+                    </xpath>
+                    <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='product_id']"
+                           position="before">
+
+
+                        <field name="kg_brand_id" optional="hide"/>
+                        <field name="kg_categ_id" invisible="1"/>
+
+                    </xpath>
+
+                    <xpath expr="//page/field[@name='order_line']/form/group/group/field[@name='product_id']"
+                           position="replace">
+
+
+                        <field name="product_id"
+                               domain="[('categ_id','=',kg_categ_id),('kg_brand_id','=',kg_brand_id)]"/>
+
+                    </xpath>
+
+                    <xpath expr="/form/sheet/notebook/page[1]/field[@name='order_line']/tree" position="attributes">
+                        <attribute name="editable"></attribute>
+                    </xpath>
+                    <xpath expr="/form/sheet/notebook/page[1]/field[@name='order_line']/tree" position="attributes">
+
+                        <attribute name="class">o_column_sortable</attribute>
+
+                    </xpath>
+                    <xpath expr="//page/field[@name='order_line']/form/div[@name='invoice_lines']"
+                           position="attributes">
+
+
+                        <attribute name="invisible">1</attribute>
+                    </xpath>
+                    <xpath expr="//page/field[@name='order_line']/form/group/group/field[@name='product_id']"
+                           position="before">
+                        <field name="sl_no"/>
+                        <field name="kg_brand_id"/>
+                        <field name="kg_categ_id" domain="[('kg_brand_id','=',kg_brand_id)]"/>
+                    </xpath>
+                    <xpath expr="//page/field[@name='order_line']/form/group/group[2]"
+                           position="before">
+                        <group>
+                            <field name="kg_optional" style="text-align:center;"/>
+                            <field name="kg_supplier_id" domain="[('supplier_rank','=',True)]"
+                                   style="text-align:center;"/>
+                            <field name="kg_is_it_tranpcharge"/>
+                            <field name="kg_subheading" style="text-align:center;"/>
+                        </group>
+
+
+                    </xpath>
+
+                <xpath expr="//header/button[@name='action_quotation_send'][1]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                 <xpath expr="//header/button[@name='action_quotation_send'][2]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                 <xpath expr="//header/button[@name='action_quotation_send'][3]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                 <xpath expr="//header/button[@name='action_quotation_send'][4]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                 <xpath expr="//header" position="inside">
+                 <field name="show_send_button" invisible="1"/>
+                    <button name="action_quotation_send" type="object" string="Send by Email"
+                            attrs="{'invisible': [('show_send_button', '=', False)]}"
+                            class="btn-primary"/>
+                 </xpath>
+                </data>
+            </field>
+        </record>
+
+        <record model="ir.actions.server" id="kg_sale_revision">
+            <field name="name">Create Revision</field>
+            <field name="model_id" ref="model_sale_order"/>
+            <field name="binding_model_id" ref="model_sale_order"/>
+            <field name="state">code</field>
+            <field name="code">action = model.create_revisions()</field>
+        </record>
+        <record id="view_sales_order_filter_months" model="ir.ui.view">
+            <field name="name">sale.order.months.search.view</field>
+            <field name="model">sale.order</field>
+            <field name="mode">primary</field>
+            <field name="inherit_id" ref="sale.sale_order_view_search_inherit_sale"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='upselling']" position="after">
+
+                    <filter string="Purchase Order Not Placed" name="purchase_not_placed"
+                            domain="[('kg_purchase_order_lines','=',False)]"/>
+
+                    <filter string="Previous 3Months" name="prev_month"
+                            domain="[('date_order','&gt;=', ((context_today()+datetime.timedelta(days=-90)).strftime('%Y-%m-%d')))]"/>
+
+                </xpath>
+            </field>
+        </record>
+
+
+
+        <record id="quick_po_action" model="ir.actions.server">
+            <field name="name">Quick PO</field>
+            <field name="model_id" ref="model_sale_order"/>
+            <field name="binding_model_id" ref="kg_sale.model_sale_order"/>
+            <field name="state">code</field>
+            <field name="code">action = records.kg_quick_po()</field>
+        </record>
+    </data>
+</odoo>

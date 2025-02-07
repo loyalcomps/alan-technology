@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_bank_stmnt_reconciliation">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <div class="page">
+                    <style>
+                        .table-borderless td,
+                        .table-borderless th {
+                        border: 0;
+                        }
+                    </style>
+
+                    <!--                    <div class="header">-->
+                    <div class="oe_structure"/>
+                    <div class="row">
+                        <center style="font-size:18">
+                            <td width="75%" align="left">
+                                <b>
+                                    <span t-esc="doc.company_id.name"/>
+                                </b>
+                            </td>
+                            <br/>
+                            <td width="75%" align="left">
+                                <t t-if='doc.company_id.zip'>
+                                    PO BOX
+                                    <span t-esc="doc.company_id.zip"/>
+                                </t>
+                            </td>
+                            <br/>
+                            <td width="75%" align="left">
+                                <t t-if='doc.company_id.street'>
+                                    <span t-esc="doc.company_id.street"/>
+                                </t>
+                            </td>
+                            <br/>
+                            <td width="75%" align="left">
+                                <t t-if='doc.company_id.street2'>
+                                    <span t-esc="doc.company_id.street2"/>
+                                </t>
+                            </td>
+                            <br/>
+                            <td width="75%" align="left">
+                                <t t-if='doc.company_id.city'>
+                                    <span t-esc="doc.company_id.city"/>
+                                </t>
+                            </td>
+                            <br/>
+                            <td width="75%" align="left">
+                                <t t-if='doc.company_id.state_id.name'>
+                                    <span t-esc="doc.company_id.state_id.name"/>
+                                </t>
+                            </td>
+                            <br/>
+                            <td width="75%" align="left">
+                                <t t-if='doc.company_id.country_id.name'>
+                                    <span t-esc="doc.company_id.country_id.name"/>
+                                </t>
+                            </td>
+                            <br/>
+                            <td width="75%" align="left">
+                                <t t-if='doc.company_id.vat'>
+                                    TRN:
+                                    <span t-field='doc.company_id.vat'/>
+                                </t>
+                            </td>
+                            <br/>
+                            <td width="75%" align="left">
+                                <b>
+                                    EMIRATES NBD
+                                </b>
+                            </td>
+                            <br/>
+                            Reconciliation Statement
+                            <br/>
+                            <span style="font-size:15px;">
+                                <span t-esc="doc.date_from"
+                                      t-options='{"widget": "date","format": "dd/MM/yyyy"}'/>
+                            </span>
+                            <span style="font-size:15px;">
+                                to
+                            </span>
+                            <span style="font-size:15px;">
+                                <span t-esc="doc.date_to"
+                                      t-options='{"widget": "date","format": "dd/MM/yyyy"}'/>
+                            </span>
+                        </center>
+                    </div>
+                    <div class="header">
+                        <div class="row">
+                            <td align="right">
+                                <div class="row mb-1" align="right">
+                                    <span>
+                                        Page
+                                        <span class="page"/>
+                                    </span>
+                                </div>
+                            </td>
+                        </div>
+                    </div>
+                    <!--                    </center>-->
+                    <!--                </div>-->
+                    <!--            </div>-->
+                    <table style="border-collapse:collapse;width:100%;margin:5pt;border-radius: 5px 5px 5px 5px;border-bottom:0.5px solid #484848;border-top:0.5px solid #484848;border-right:1px solid white #484848;border-left:1px solid white #484848;">
+                        <thead>
+                            <tr width="100%"
+                                style="font-size:15;border-top:1px solid #484848;border-bottom:1px solid #484848;">
+                                <td style="border-bottom:1px solid black" align="center">
+                                    <span>
+                                        Date
+                                    </span>
+                                </td>
+                                <td style="border-bottom:1px solid black;" align="left">
+                                    <b>
+                                        <span>
+                                            Particulars
+                                        </span>
+                                    </b>
+                                </td>
+                                <td style="border-bottom:1px solid black;" align="left">
+                                    <span>
+                                        Vch Type
+                                    </span>
+                                </td>
+                                <td style="border-bottom:1px solid black;" align="left">
+                                    <span>
+                                        Transaction Type
+                                    </span>
+                                </td>
+                                <td style="border-bottom:1px solid black;" align="left">
+                                    <span>
+                                        Instrument No.
+                                    </span>
+                                </td>
+                                <td style="border-bottom:1px solid black;" align="left">
+                                    <span>
+                                        Instrument Date
+                                    </span>
+                                </td>
+                                <td style="border-bottom:1px solid black;" align="right">
+                                    <span>
+                                        Bank Date
+                                    </span>
+                                </td>
+                                <td style="border-bottom:1px solid black;" align="right">
+                                    <b>
+                                        <span>
+                                            Debit
+                                        </span>
+                                    </b>
+                                </td>
+                                <td style="border-bottom:1px solid black;" align="right">
+                                    <b>
+                                        <span>
+                                            Credit
+                                        </span>
+                                    </b>
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-set="tot_count" t-value="0"/>
+                            <t t-foreach="doc.statement_lines" t-as="line">
+                                <tr>
+                                    <td width="5%" align="center">
+                                        <span t-field="line.date"/>
+                                    </td>
+                                    <td width="50%" align="left">
+                                        <span t-field="line.name"/>
+                                    </td>
+                                    <td width="5%" align="center">
+                                        <!--                                    <span t-field="line.date"/>-->
+                                    </td>
+                                    <td width="5%" align="center">
+                                        <!--                                    <span t-field="line.date"/>-->
+                                    </td>
+                                    <td width="5%" align="center">
+                                        <!--                                    <span t-field="line.date"/>-->
+                                    </td>
+                                    <td width="5%" align="center">
+                                        <!--                                    <span t-field="line.date"/>-->
+                                    </td>
+                                    <td width="5%" align="center">
+                                        <span t-field="line.statement_date"/>
+                                    </td>
+                                    <td width="10%" align="right">
+                                        <span t-esc="'{:,.2f}'.format(line.credit)"/>
+                                    </td>
+                                    <td width="10%" align="right">
+                                        <span t-esc="'{:,.2f}'.format(line.debit)"/>
+                                    </td>
+                                    <t t-set="tot_count" t-value="tot_count + line.debit"/>
+                                </tr>
+                            </t>
+                            <tr style="font-size:13;border-left: 1px solid white;border-bottom: solid white;border-top: 2px solid">
+                                <td colspan="7" align="right">
+                                    Balance as per company books:
+                                </td>
+                                <td align="right">
+                                    <strong>
+                                        <span t-esc="'{:,.2f}'.format(doc.gl_balance)"/>
+                                    </strong>
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                            <tr style="font-size:13;border-left: 1px solid white;border-bottom: solid black;border-top: 2px solid">
+                                <td colspan="7" align="right">
+                                    Amounts not reflected in bank:
+                                </td>
+                                <td align="right">
+                                    <strong>
+                                    </strong>
+                                </td>
+                                <td align="right">
+                                    <strong>
+                                        <span t-esc="tot_count"/>
+                                    </strong>
+                                </td>
+                            </tr>
+                            <tr style="font-size:13;border-left: 1px solid white;border-bottom: solid white;border-top: 2px solid">
+                                <td colspan="7" align="right">
+                                    Balance as per bank:
+                                </td>
+                                <td align="right">
+                                    <strong>
+                                        <span t-esc="'{:,.2f}'.format(doc.bank_balance)"/>
+                                    </strong>
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!--                </div>-->
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

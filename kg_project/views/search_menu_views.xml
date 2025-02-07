@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record model="ir.actions.act_window" id="task_dashboard_customers_action_window_completed">
+        <field name="name">Completed</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="domain">[('kg_state', 'in', ('completed','partialy_complete'))]</field>
+        <field name="help" type="html">
+            <p>
+                Odoo's project management allows you to manage the pipeline of your tasks efficiently. You can track progress, discuss on tasks, attach documents, etc.
+            </p>
+          </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="task_dashboard_customers_action_window">
+        <field name="name">Assigned</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="domain">[('kg_state', '=', 'assigned')]</field>
+        <field name="help" type="html">
+            <p>
+                Odoo's project management allows you to manage the pipeline of your tasks efficiently. You can track progress, discuss on tasks, attach documents, etc.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_search" name="Search" parent="project.menu_main_pm" sequence="4"/>
+
+    <menuitem id="project_management_dashboard_assigned" name="Assigned" parent="menu_search"
+              action="task_dashboard_customers_action_window" sequence="2"/>
+    <menuitem id="project_management_dashboard_completed" name="Completed" parent="menu_search"
+              action="task_dashboard_customers_action_window_completed" sequence="3"/>
+    <menuitem action="project.action_view_all_task" id="menu_action_view_task" name="Service Request"
+              parent="menu_search" sequence="1"/>
+</odoo>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="res_partner_form_view_customizes_file" model="ir.ui.view">
+            <field name="name">res.partner.form.view.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='vat']" position="after">
+                    <field name="customer_state"/>
+                    <field name="last_invoice_date" invisble="1"/>
+                    <field name="is_sales_manager" invisble="1"/>
+                    <field name="credit_limit" attrs="{'readonly':[('is_sales_manager','!=',True)]}"/>
+                </xpath>
+
+                <!--                <xpath expr="//group/group/field[@name='property_payment_term_id']" position="attributes">-->
+                <!--                    <attribute name="attrs">{'readonly': [('parent.is_sales_manager', '!=', True)]}</attribute>-->
+                <!--                </xpath>-->
+                <!--                <xpath expr="//field[@name='user_id']" position="attributes">-->
+                <!--                    <attribute name="attrs">{'readonly': [('parent.is_sales_manager', '!=', True)]}</attribute>-->
+                <!--                </xpath>-->
+            </field>
+        </record>
+        <record id="res_company_form_inherit" model="ir.ui.view">
+            <field name="name">res.company.form.inherited</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="arch" type="xml">
+                <notebook colspan="4" position="inside">
+                    <page string="Order Limit">
+                        <group>
+                            <field name="max_order_amount"/>
+                            <field name="max_inactive_days"/>
+                        </group>
+                    </page>
+                </notebook>
+            </field>
+        </record>
+        <record id="payment_term_form_inherit" model="ir.ui.view">
+            <field name="name">account.payment.term.form.inherited</field>
+            <field name="model">account.payment.term</field>
+            <field name="inherit_id" ref="account.view_payment_term_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form/sheet" position="before">
+                    <header>
+
+
+                        <button name="action_approve" string="Approve"
+                                attrs="{'invisible': ['|',('is_approval','=',False),('state', 'in', ['approve','reject'])]}"
+                                type="object"
+                                class="btn-primary" groups="sale_customization.group_directors"/>
+
+                        <button name="action_reject" string="Reject"
+                                attrs="{'invisible': ['|',('is_approval','=',False),('state', 'in', ['reject'])]}"
+                                type="object"
+                                class="btn-primary" groups="sale_customization.group_directors"/>
+
+                        <button name="action_draft" string="Mark As Draft"
+                                attrs="{'invisible': ['|',('is_approval','=',False),('state', 'not in', ['reject'])]}"
+                                type="object"
+                                class="btn-primary" groups="sale_customization.group_directors"/>
+                        <field name="state" widget="statusbar" statusbar_visible="toapprove,approve,reject"/>
+                    </header>
+                </xpath>
+                <xpath expr="//group/group[2]" position="after">
+                    <group>
+                        <field name="is_approval" invisible="1"/>
+                        <field name="is_sales_manager" invisible="1"/>
+                        <field name="is_standard"/>
+                        <!--                    <field name="state" invisible="1" attrs="{'readonly':[('is_approval','!=',True)]}"/>-->
+                        <field name="min_days" attrs="{'readonly':[('is_sales_manager','!=',True)]}"/>
+                        <field name="max_days" attrs="{'readonly':[('is_sales_manager','!=',True)]}"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

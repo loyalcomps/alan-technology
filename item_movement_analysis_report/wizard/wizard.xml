@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_item_movement_analysis_form" model="ir.ui.view">
+        <field name="name">item.movement.analysis.form</field>
+        <field name="model">item.movement.analysis</field>
+        <field name="arch" type="xml">
+            <form string="Select Products and Date">
+                <group>
+                    <group>
+                        <field name="start_date"/>
+                        <field name="product_ids" widget="many2many_tags" required="1"/>
+
+                    </group>
+                    <group>
+                        <field name="end_date"/>
+                    </group>
+
+                </group>
+                <footer>
+                    <button string='Print' name="print_report" type="object" default_focus="1" class="oe_highlight"/>
+                    <button string="Cancel" class="btn-default" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!--Open the wizard on click of menu-->
+    <record id="action_item_wizard_view" model="ir.actions.act_window">
+        <field name="name">Item Movement Analysis</field>
+        <field name="res_model">item.movement.analysis</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_item_movement_analysis_form"/>
+    </record>
+
+    <menuitem
+        id="menu_item_movement_analysis"
+        name="Item Movement Analysis"
+        parent="stock.menu_warehouse_report"
+        sequence="6"
+        action="action_item_wizard_view"
+    />
+</odoo>

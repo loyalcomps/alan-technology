@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="action_statement_overdue_partner" model="ir.actions.server">
+        <field name="name">Out Standing Statement</field>
+        <field name="type">ir.actions.server</field>
+        <field name="model_id" ref="partner_statement.model_res_partner"/>
+        <field name="binding_model_id" ref="partner_statement.model_res_partner"/>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+            action = records.statement_overdue()
+        </field>
+    </record>
+</odoo>

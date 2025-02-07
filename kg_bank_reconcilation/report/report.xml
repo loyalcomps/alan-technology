@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <report id="report_bank_statement_reconciliation"
+            model="kg.bank.reconcilation"
+            report_type="qweb-pdf"
+            string="Bank Statement Reconciliation"
+            name="kg_bank_reconcilation.report_bank_stmnt_reconciliation"
+            file="kg_bank_reconcilation.report_bank_stmnt_reconciliation"
+    />
+
+        <report id="report_bank_statement_reconciliation_week"
+            model="kg.bank.reconcilation"
+            report_type="qweb-pdf"
+            string="Bank Statement Reconciliation Weekwise"
+            name="kg_bank_reconcilation.report_bank_stmnt_reconciliation_week"
+            file="kg_bank_reconcilation.report_bank_stmnt_reconciliation_week"
+    />
+
+    <record id="paper_format_reconcile" model="report.paperformat">
+        <field name="name">Reconcile A4</field>
+        <field name="default" eval="True"/>
+        <field name="format">A4</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">40</field>
+        <field name="margin_bottom">32</field>
+        <field name="margin_left">7</field>
+        <field name="margin_right">7</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">35</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="report_bank_statement_reconciliation" model="ir.actions.report">
+        <field name="paperformat_id" ref="kg_bank_reconcilation.paper_format_reconcile"/>
+    </record>
+</odoo>
+

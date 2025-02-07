@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_kg_supplier_type,access_kg_supplier_type,model_kg_supplier_type,base.group_user,1,1,1,1
+access_purchase_order_group,access_purchase_order_group,model_purchase_order_group,base.group_user,1,1,1,1
+access_kg_merge_details,access_kg_merge_details,model_kg_merge_details,base.group_user,1,1,1,1

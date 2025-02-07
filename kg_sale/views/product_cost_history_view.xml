@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="kg_product_cost_history_tree">
+            <field name="name">kg.product.cost.history</field>
+            <field name="model">kg.product.cost.history</field>
+            <field name="arch" type="xml">
+                <tree string="Cost History" editable="top">
+                    <field name="product_id"/>
+                    <field name="supplier_id" required="1"/>
+                    <field name="user_id" readonly="1"/>
+                    <field name="date" readonly="1"/>
+                    <field name="cost"/>
+
+                </tree>
+            </field>
+        </record>
+
+
+        <record model="ir.actions.act_window" id="action_kg_product_cost_history">
+            <field name="name">Cost History</field>
+
+            <field name="res_model">kg.product.cost.history</field>
+
+            <field name="view_mode">tree,form</field>
+
+        </record>
+
+
+    </data>
+</odoo>

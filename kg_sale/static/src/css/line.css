@@ -1,0 +1,4 @@
+.o_column_sortable table > thead > tr > th:nth-child(2) {
+        width:225px;
+
+}

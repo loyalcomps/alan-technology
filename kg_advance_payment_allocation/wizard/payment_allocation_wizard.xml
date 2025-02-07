@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="payment_allocation_wizard_view_form" model="ir.ui.view">
+        <field name="name">payment.allocation.wizard.form</field>
+        <field name="model">payment.allocation.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Payment Allocation">
+                <group>
+                    <field name="partner_id" label="Partner" readonly="1"/>
+                     <field name="show_parent_child" />
+                </group>
+                <group>
+                    <field name="company_id" readonly="1"/>
+                     <field name="account_id" invisible="1"/>
+
+
+                </group>
+                <separator  colspan="4"/>
+                <group>
+                     <field name="payment_allocation_ids" >
+                             <tree editable="bottom" create="false">
+                                     <field name="name" />
+                                     <field name="move_line_id" invisible="1"  />
+                                     <field name="date"/>
+                                     <field name="memo"/>
+
+                                     <field name="amount"  sum="Total"/>
+
+                             </tree>
+                         </field>
+
+                 </group>
+                 <group>
+
+                     <group>
+                         <field name="balnc_paymnt_amnt" readonly="1"  invisible="1"/>
+                     </group>
+
+
+                 </group>
+
+                <separator  colspan="4"/>
+
+                <group>
+                     <field name="invoice_allocation_ids" >
+                             <tree editable="bottom" create="1">
+
+                                     <field name="name" />
+                                     <field name="inv_date"/>
+                                     <field name="date_due"/>
+                                     <field name = "inv_amount" />
+                                     <field name="move_line_id"  invisible="1" />
+                                     <field name = "partner_id" invisible="1" />
+                                     <field name = "inv_unallocated_amount" />
+                                     <field name="is_invoice_allocate"  widget="boolean_toggle"/>
+                                    <field name="inv_allocate_amount"   sum="Total" force_save="1"  />
+
+                                 </tree>
+                         </field>
+
+                 </group>
+
+
+                <footer>
+                    <button string="Validate" name="validate_payment" type="object"
+                            default_focus="1" class="oe_highlight"/>
+                    <button string="Cancel" class="oe_link" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+<!--    <record id="action_payment_allocation" model="ir.actions.act_window">-->
+<!--        <field name="name">Payment Allocation</field>-->
+<!--        <field name="res_model">payment.allocation.wizard</field>-->
+<!--        <field name="view_mode">form</field>-->
+<!--        <field name="view_id" ref="payment_allocation_wizard_view_form"/>-->
+<!--        <field name="target">new</field>-->
+<!--        <field name="binding_model_id" ref="account.model_account_payment"/>-->
+<!--        -->
+<!--        <field name="binding_view_types">form</field>-->
+<!--    </record>-->
+
+
+</odoo>

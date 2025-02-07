@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_account_move_import,access_account_move_import,model_account_move_import,,1,1,1,1
+access_account_payment_import,access_account_payment_import,model_account_payment_import,,1,1,1,1
+access_import_reconcile,access_import_reconcile,model_import_reconcile,,1,1,1,1
+access_payment_journal,access_payment_journal,model_payment_journal,,1,1,1,1

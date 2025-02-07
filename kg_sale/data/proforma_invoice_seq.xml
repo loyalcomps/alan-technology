@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    <record id="seq_proforma_inv" model="ir.sequence">
+        <field name="name">Proforma Invoice Sequence</field>
+        <field name="code">proforma.inv</field>
+        <field name="prefix">PI</field>
+        <field name="padding">5</field>
+        <field eval="0" name="number_next"/>
+        <field eval="0" name="number_increment"/>
+        <field name="company_id" eval="False"/>
+    </record>
+    </data>
+</odoo>
+
+
+

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="kg_warranty_tree">
+            <field name="name">kg.warranty</field>
+            <field name="model">kg.warranty</field>
+            <field name="arch" type="xml">
+                <tree string="Warranty">
+
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record model="ir.ui.view" id="kg_warranty_form">
+            <field name="name">kg.warranty</field>
+            <field name="model">kg.warranty</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" required="1"/>
+                            </group>
+                            <group>
+
+                            </group>
+                        </group>
+                        <field name="note" placeholder="Description...."/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_kg_warranty">
+            <field name="name">Warranty</field>
+            <field name="res_model">kg.warranty</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem action="action_kg_warranty"
+                  id="action_kg_warranty_id" parent="crm.crm_menu_config"
+                  sequence="12"/>
+    </data>
+</odoo>

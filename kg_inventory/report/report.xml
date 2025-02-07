@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="delivery_proforma_invoice" model="ir.actions.report">
+            <field name="name">Proforma Invoice</field>
+            <field name="model">stock.picking</field>
+            <field name="report_type">qweb-html</field>
+            <field name="report_name">kg_inventory.proforma_invoice_report_pick</field>
+            <field name="report_file">kg_inventory.proforma_invoice_report_pick</field>
+            <field name="binding_model_id" ref="model_stock_picking"/>
+            <field name="binding_type">report</field>
+        </record>
+    </data>
+</odoo>

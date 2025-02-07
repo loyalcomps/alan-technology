@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    <record model="ir.ui.view" id="kg_payment_extension_tree">
+        <field name="name">kg.payment.extension</field>
+        <field name="model">kg.payment.extension</field>
+        <field name="arch" type="xml">
+            <tree string="Payment Extension">
+
+           			<field name="name"/>
+            			<field name="days"/>
+            </tree>
+       </field>
+    </record>
+
+
+
+  <record model="ir.ui.view" id="kg_payment_extension_form">
+        <field name="name">kg.payment.extension</field>
+        <field name="model">kg.payment.extension</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                  <group>
+                      <group>
+                             <field name="name" required="1"/>
+                             <field name="days" required="1"/>
+                      </group>
+                      <group>
+
+                      </group>
+                  </group>
+                <field name="note" placeholder="Description...."/>
+       		    </sheet>
+    		</form>
+  </field>
+ </record>
+<record model="ir.actions.act_window" id="action_kg_payment_extension">
+        <field name="name">Payment Extension</field>
+<!--        <field name="type">ir.actions.act_window</field>-->
+        <field name="res_model">kg.payment.extension</field>
+<!--        <field name="view_type">form</field>-->
+        <field name="view_mode">tree,form</field>
+<!--         <field name="help" type="html">-->
+<!--          <p class="oe_view_nocontent_create">-->
+<!--            Click to add new Payment Extension. -->
+<!--          </p>-->
+<!--        </field>-->
+    </record>
+
+    <menuitem action="action_kg_payment_extension"
+            id="action_kg_payment_extension_id" parent="crm.crm_menu_config"
+            sequence="12"/>
+ </data>
+</odoo>

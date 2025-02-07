@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_purchase_order_group" model="ir.ui.view">
+        <field name="name">Merge Request for Quotations</field>
+        <field name="model">purchase.order.group</field>
+
+
+        <field name="arch" type="xml">
+            <form string="Merge orders">
+                <group>
+                    <separator string="Are you sure you want to merge these orders?"/>
+                    <newline/>
+                    <separator string="Please note that requests will only be merged if:"/>
+                    <newline/>
+                    <separator string="     * They are unconfirmed"/>
+                    <newline/>
+                    <separator string="     * They have the same stock location and the same currency"/>
+                    <newline/>
+                    <separator
+                            string="If multiple Vendors are selected, one merged Request for Quotation per Vendor will be created.  Any Cancelled Requests for Quotation or cancelled Purchase Orders that have been selected will be ignored."/>
+
+                </group>
+
+                <footer>
+                    <button name="merge_orders" string="CONFIRM MERGE" type="object" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_purchase_merge" model="ir.actions.server">
+        <field name="name">Merge Request for Quotations</field>
+        <field name="type">ir.actions.server</field>
+        <field name="model_id" ref="purchase.model_purchase_order"/>
+        <field name="binding_model_id" ref="purchase.model_purchase_order"/>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+            action = records.action_merge_order()
+        </field>
+
+    </record>
+</odoo>

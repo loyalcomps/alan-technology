@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="kg_purchase_product" model="ir.ui.view">
+        <field name="name">kg.purchase.product</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <div name="options" position="inside">
+                <field name="expensed_ok"/>
+                <label for="expensed_ok"/>
+                <field name="attribute_value_ids" widget="many2many_tags" can_create="true" can_write="true"
+                       modifiers="{}"/>
+            </div>
+            <field name="detailed_type" position="after">
+                <field name="od_payroll_item"/>
+            </field>
+            <xpath expr="//page[@name='sales']/group[@name='sale']" position="inside">
+                <group>
+                    <label for="warranty"/>
+                    <div class="o_row">
+                        <field name="warranty" class="oe_inline"/>
+                        <span>Months</span>
+                    </div>
+                </group>
+            </xpath>
+            <field name="property_account_income_id" position="after">
+                <field name="property_stock_account_input"/>
+            </field>
+            <field name="property_account_expense_id" position="after">
+                <field name="property_stock_account_output"/>
+
+            </field>
+        </field>
+    </record>
+</odoo>

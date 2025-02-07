@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record model="ir.ui.view" id="view_task_form2_pjctenh">
+        <field name="name">project.task.form.inherit</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/div[@name='button_box']" position="before">
+                <div class="oe_title">
+                    <h1>
+                        <field name="ticket_number"/>
+                    </h1>
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='user_ids']" position="after">
+                <field name="kg_salesman_id"/>
+                <field name="kg_need_subcontractor"/>
+                <field name="user_id" string="Service Engineer"
+                       class="o_task_user_field"
+                       options="{&quot;no_open&quot;: True}"
+                       attrs="{'invisible': [('kg_need_subcontractor','!=',False)],'required': [('start_email_sent', '=',True)]}"
+                       groups="base.group_no_one"/>
+                <field name="planned_hours"/>
+                <field name="kg_hourly_rate"/>
+            </xpath>
+            <field name="employee_id" position="replace">
+                <field name="user_id"/>
+            </field>
+            <field name="unit_amount" position="before">
+                <field name="date_from"/>
+                <field name="date_to"/>
+            </field>
+            <field name="unit_amount" position="after">
+                <field name="kg_status"/>
+            </field>
+            <field name="stage_id" position="before">
+                <button name="start_send_by_email" type="object" string="Notify"
+                        attrs="{'invisible': ['|',('start_email_sent','!=',False),('kg_state','not in',('draft'))]}"
+                        groups="base.group_no_one"/>
+                <button name="service_assign" type="object" string="Assign"
+                        attrs="{'invisible': ['|',('start_email_sent','!=',True),('kg_state','not in',('draft'))]}"
+                        groups="base.group_no_one"/>
+                <button name="service_partial" type="object" string="Completed Partially"
+                        attrs="{'invisible': [('kg_state','not in',('assigned'))]}"/>
+                <button name="service_complete" type="object" string="Done"
+                        attrs="{'invisible': [('kg_state','not in',('partially_complete','assigned'))]}"/>
+                <button name="done_send_by_email" type="object" string="Send Closing Alert Email"
+                        attrs="{'invisible': ['|',('done_email_sent','!=',False),('is_it_done','=',False)]}"
+                        groups="base.group_no_one"/>
+            </field>
+            <field name="stage_id" position="replace">
+                <field name="kg_state" widget="statusbar"
+                       statusbar_visible="draft,assigned,partially_complete,completed"/>
+            </field>
+            <field name="tag_ids" position="after">
+                <field name="kg_sector" required="1"/>
+                <field name="kg_servicecall_categories"/>
+                <field name="kg_type_of_service"/>
+                <field name="kg_type"/>
+                <field name="service_requested_date"/>
+                <field name="proposed_service_charge" attrs="{'invisible':[('kg_type','=','free')]}"/>
+
+                <field name="date_required" invisible="1"/>
+                <field name="kg_time_from" attrs="{'required':[('date_required','!=',False)]}"
+                       groups="kg_project.group_service_request_manager,kg_project.group_service_engineer"/>
+                <field name="kg_time_to" attrs="{'required':[('date_required','!=',False)]}"
+                       groups="kg_project.group_service_request_manager,kg_project.group_service_engineer"/>
+                <field name="total_worked_hours"
+                       groups="kg_project.group_service_request_manager,kg_project.group_service_engineer"/>
+                <field name="total_cost"
+                       groups="kg_project.group_service_request_manager,kg_project.group_service_engineer"/>
+            </field>
+            <xpath expr="//page[@name='extra_info']/group/group/field[@name='sequence']" position="after">
+                <field name="sale_line_id"/>
+            </xpath>
+            <xpath expr="//page[@name='extra_info']/group/group/field[@name='date_last_stage_update']" position="after">
+                <field name="start_email_sent" groups="base.group_no_one"/>
+                <field name="done_email_sent" groups="base.group_no_one"/>
+                <field name="is_it_done" groups="base.group_no_one"/>
+                <field name="gp_deduction_required" groups="base.group_no_one"/>
+                <field name="project_id" string="Service" groups="base.group_no_one"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!--    <record model="ir.ui.view" id="view_task_form2_pjcten">-->
+    <!--        <field name="name">project.task.form.inherit12</field>-->
+    <!--        <field name="model">project.task</field>-->
+    <!--        <field name="inherit_id" ref="hr_timesheet.view_task_form2_inherited"/>-->
+    <!--        <field name="arch" type="xml">-->
+    <!--            -->
+    <!--        </field>-->
+    <!--    </record>-->
+
+    <record model="ir.ui.view" id="edit_task_Graph">
+        <field name="name">project.task.graph.edit</field>
+        <field name="model">project.task</field>
+        <field name="type">graph</field>
+        <field name="inherit_id" ref="project.view_project_task_graph"/>
+        <field name="arch" type="xml">
+            <field name="project_id" position="replace"/>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_task_assigned">
+        <field name="name">project.task.tree</field>
+        <field name="model">project.task</field>
+        <field name="type">tree</field>
+        <field name="inherit_id" ref="project.view_task_tree2"/>
+        <field name="arch" type="xml">
+            <field name="name" position="attributes">
+                <attribute name="string">Service Description</attribute>
+            </field>
+            <field name="name" position="before">
+                <field name="ticket_number" string="SR Number"/>
+                <field name="service_requested_date" string="Requested Date"/>
+                <field name="partner_id" string="Customer"/>
+                <field name="kg_salesman_id" string="SalesPerson"/>
+            </field>
+            <field name="stage_id" position="replace">
+                <field name="kg_state"/>
+            </field>
+
+        </field>
+    </record>
+
+
+    <record id="project_task_timesheet_inherit_form" model="ir.ui.view">
+        <field name="name">Project</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="hr_timesheet.view_task_form2_inherited"/>
+        <field name="arch" type="xml">
+            <field name="remaining_hours" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="effective_hours" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <xpath expr="//field[@name='effective_hours']" position="before">
+                <field name="kg_effective_hours"/>
+                <field name="kg_remaining_hours"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_assigned_task_tree" model="ir.ui.view">
+        <field name="name">project.task.assigned.tree</field>
+        <field name="model">project.task</field>
+        <field name="arch" type="xml">
+            <tree string="Assigned Tasks">
+                <field name="ticket_number" string="SR Number"/>
+                <field name="service_requested_date" string="Requested Date"/>
+                <field name="partner_id" string="Customer"/>
+                <field name="kg_salesman_id" string="SalesPerson"/>
+                <field name="name" string="Service Description"/>
+                <field name="user_id" string="Service Engineer"
+                       groups="kg_project.group_service_request_manager,kg_project.group_service_engineer"/>
+                <field name="kg_state"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="view_completed_task_tree" model="ir.ui.view">
+        <field name="name">project.task.completed.tree</field>
+        <field name="model">project.task</field>
+        <field name="arch" type="xml">
+            <tree string="Completed Tasks">
+                <field name="ticket_number" string="SR Number"/>
+                <field name="service_requested_date" string="Requested Date"/>
+                <field name="partner_id" string="Customer"/>
+                <field name="kg_salesman_id" string="SalesPerson"/>
+                <field name="name" string="Service Description"/>
+                <field name="user_id" string="Service Engineer"
+                       groups="kg_project.group_service_request_manager,kg_project.group_service_engineer"/>
+                <field name="kg_time_from" string="From"
+                       groups="kg_project.group_service_request_manager,kg_project.group_service_engineer"/>
+                <field name="kg_time_to" string="To"
+                       groups="kg_project.group_service_request_manager,kg_project.group_service_engineer"/>
+                <field name="total_worked_hours" string="Duration"
+                       groups="kg_project.group_service_request_manager,kg_project.group_service_engineer"/>
+                <field name="kg_state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_account_analytic_account_form_inherits" model="ir.ui.view">
+        <field name="name">view.account.analytic.account.form.inherits</field>
+        <field name="model">account.analytic.account</field>
+        <field name="inherit_id" ref="analytic.view_account_analytic_account_form"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="kg_servicecall_categories"/>
+            </field>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_task_form2_inherited12">
+        <field name="name">project.task.form.inherited12</field>
+        <field name="model">account.analytic.line</field>
+        <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="/tree/field[@name='task_id']" position="after">
+                <field name="date_from"/>
+                <field name="date_to"/>
+            </xpath>
+            <xpath expr="/tree/field[@name='unit_amount']" position="replace">
+                <field name="unit_amount"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record model="ir.rule" id="task_view_rule">
+        <field name="name">Project/Task Analysis</field>
+        <field name="model_id" ref="model_project_task"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('user_id','=',user.id)]</field>
+        <field name="groups" eval="[(4,ref('project.group_project_user'))]"/>
+    </record>
+
+    <menuitem action="project.open_task_type_form" id="project.menu_project_config_project" name="Stages"
+              parent="project.menu_project_config" sequence="10" groups="base.group_no_one"/>
+
+</odoo>
+
+
+
+
+

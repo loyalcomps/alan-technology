@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="asset_tree" model="ir.ui.view">
+            <field name="name">project.asset.form</field>
+            <field name="model">project.asset</field>
+            <field name="arch" type="xml">
+                <tree string="Quick PO">
+                    <field name="name" string="Asset Name"/>
+                    <field name="project_id" />
+                </tree>
+            </field>
+        </record>
+        <record id="asset_form" model="ir.ui.view">
+            <field name="name">project.asset.form</field>
+            <field name="model">project.asset</field>
+            <field name="arch" type="xml">
+                <form string="Quick PO">
+                     <sheet>
+                    <group>
+                        <group>
+                            <field name="name" string="Asset Name"/>
+                            <field name="project_id" />
+                        </group>
+                        <group>
+                            <div name="receipt_reminder" colspan="2" class="o_checkbox_optional_field" >
+                                <label for="password"/>
+                                <field name="password"  string="Password" attrs="{'invisible':[('show_psw','=',True)] }" password="True" />
+                                <field name="shw_password" widget="CopyClipboardChar" string="Password" force_save="1" readonly="0" attrs="{'invisible':[('show_psw','=',False)] }" />
+                                <div >
+                                    <field name="show_psw" class="oe_inline" widget="boolean_toggle"/>
+                                </div>
+                        </div>
+<!--                            <field name="password"  string="Password" attrs="{'invisible':[('show_psw','=',True)] }" password="True" />-->
+<!--                            <field name="shw_password" string="Password" force_save="1" readonly="0" attrs="{'invisible':[('show_psw','=',False)] }" />-->
+<!--                            <field name="show_psw" widget="toggle"/>-->
+                            <field name="date"/>
+                        </group>
+                    </group>
+                     </sheet>
+                     <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+                </form>
+            </field>
+        </record>
+        <record id="action_asset" model="ir.actions.act_window">
+            <field name="name">Asset</field>
+            <field name="res_model">project.asset</field>
+<!--            <field name="view_type">form</field>-->
+            <field name="view_mode">tree,form</field>
+        </record>
+    </data>
+</odoo>

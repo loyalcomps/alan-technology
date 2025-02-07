@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_stock_movement_analysis_form" model="ir.ui.view">
+        <field name="name">Stock Move Analysis Report</field>
+        <field name="model">stock.movement.analysis</field>
+        <field name="arch" type="xml">
+            <form string="Report Options">
+                <separator string="Stock Move Analysis"/>
+                <group>
+                    <field name="type" widget="radio" options="{'horizontal': true}"/>
+                    <field name="product_category_id"
+                           attrs="{'invisible': [('type','!=','categories')],'required': [('type','=','categories')]}"/>
+                    <field name="product_id"
+                           attrs="{'invisible': [('type','!=','item')],'required': [('type','=','item')]}"/>
+                    <field name="brand_id"
+                           attrs="{'invisible': [('type','!=','brand')],'required': [('type','=','brand')]}"/>
+                    <field name="date_from" required="1"/>
+                    <field name="date_to" required="1"/>
+                </group>
+                <footer>
+                    <button name="print_report" string="Print" type="object" class="oe_highlight"/>
+                    <button string="Cancel" class="oe_link" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_stock_wizard_view" model="ir.actions.act_window">
+        <field name="name">Stock Movement Analysis</field>
+        <field name="res_model">stock.movement.analysis</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_stock_movement_analysis_form"/>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+            id="menu_stock_movement_analysis"
+            name="Stock Movement Analysis"
+            parent="stock.menu_warehouse_report"
+            action="action_stock_wizard_view"
+    />
+
+</odoo>

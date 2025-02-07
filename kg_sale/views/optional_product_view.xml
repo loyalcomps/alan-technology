@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="kg_optional_product_tree">
+            <field name="name">kg.optional.product</field>
+            <field name="model">kg.optional.product</field>
+            <field name="arch" type="xml">
+                <tree string="Optional Product" editable="top">
+
+                    <field name="optional_product_id" required="1"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record model="ir.actions.act_window" id="action_kg_optional_product">
+            <field name="name">Optional Product</field>
+            <field name="res_model">kg.optional.product</field>
+            <field name="view_mode">tree,form</field>
+
+        </record>
+
+
+    </data>
+</odoo>
