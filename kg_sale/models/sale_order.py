@@ -15,7 +15,9 @@ _logger = logging.getLogger(__name__)
 
 class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
-
+    #
+    # _order = "kg_serial_no asc"
+    #
     kg_optional = fields.Boolean(string="Optional")
     kg_supplier_id = fields.Many2one('res.partner', 'Supplier')
     kg_po_ref = fields.Char(string="PO")
@@ -23,7 +25,7 @@ class SaleOrderLine(models.Model):
     kg_is_it_tranpcharge = fields.Boolean('Other Cost')
     kg_serial_no = fields.Float('S.NO')
     kg_categ_id = fields.Many2one('product.category', 'Category')
-
+    #
     kg_subheading = fields.Boolean(string="Subheading")
 
 
@@ -49,12 +51,21 @@ class SaleOrderLine(models.Model):
         charge (kg_is_it_tranpcharge) and is not optional (kg_optional).
         """
         for line in self:
+            # print("margin tyest")
             if not line.kg_is_it_tranpcharge and not line.kg_optional:
                 currency = line.order_id.pricelist_id.currency_id
                 line.margin = currency.round(line.price_subtotal - (
                         (line.purchase_price or line.product_id.standard_price) * line.product_uom_qty))
+                # print(line.margin,"mmmmmmmmmmmmmmmmm")
 
-
+    #
+    #     @api.multi
+    #     def _prepare_invoice_line(self, qty):
+    #         result = super(SaleOrderLine, self)._prepare_invoice_line(qty)
+    #         if self.kg_is_it_tranpcharge:
+    #             result['kg_is_it_tranpcharge'] = self.kg_is_it_tranpcharge
+    #         return result
+    #
 
     def open_cost_history(self):
         """Opens the cost history action for the selected product.
@@ -103,25 +114,30 @@ class SaleOrderLine(models.Model):
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
-    def _get_branch_domain(self):
-        """Retrieves the domain filter for bank records.
+    # def _get_branch_domain(self):
+    #     """method to get bank domain"""
+    #     company = self.env.company
+    #     partner = company.partner_id
+    #     bank = []
+    #     for rec in partner.bank_ids:
+    #         bank.append(rec.bank_id.id)
+    #     return [('id', 'in', bank)]
 
-       This method fetches the bank IDs associated with the company's partner
-       and returns a domain filter to restrict records based on these bank IDs.
-
-       Returns:
-           list: A domain list that filters records where the 'id' is in the list
-                 of bank IDs linked to the company's partner.
-       """
+    def _get_bank_domain(self):
+        """method to get bank domain"""
         company = self.env.company
-        partner = company.partner_id
-        bank = []
-        for rec in partner.bank_ids:
-            bank.append(rec.bank_id.id)
-        return [('id', 'in', bank)]
+        company.bank_ids.ids
+        return [('id', 'in', company.bank_ids.ids)]
+
+    def get_capital(self,amount):
+        return amount.title()
+
+    def get_converted(self,amount):
+        return self.currency_id.compute(amount, self.env.company.currency_id)
 
     pro_seq = fields.Char(string="Proforma Sequence", copy=False)
-    bank_id = fields.Many2one('res.bank', string='Bank', domain=_get_branch_domain)
+    res_bank_ids = fields.Many2one('res.partner.bank', string='Bank', domain=_get_bank_domain)
+    bank_id = fields.Many2one('res.bank', string='Bank')
     show_send_button = fields.Boolean(string="Show Send Button", compute='_compute_show_send_button')
 
     def _compute_show_send_button(self):
@@ -232,7 +248,21 @@ class SaleOrder(models.Model):
             order.amount_tax = sum(order_lines.filtered(lambda x: not x.kg_optional and not x.kg_is_it_tranpcharge).mapped('price_tax'))
 
 
+    # @api.model
+    # def create(self, vals):
+    #     if vals.get('kg_invoice_status_1') == 'proforma_invoice':
+    #         vals['pro_seq'] = self.env['ir.sequence'].next_by_code('proforma.invoice')
+    #         return super(SaleOrder, self).create(vals)
+    #     print("pro_seq--------",self.pro_seq)
 
+    # def _generate_new_proforma_sequence(self):
+    #     sequence = self.env['ir.sequence'].next_by_code('proforma.invoice')
+    #     return sequence
+    #
+    # def write(self, vals):
+    #     if 'kg_invoice_status_1' in vals and vals['kg_invoice_status_1'] == 'proforma_invoice':
+    #         vals['pro_seq'] = self._generate_new_proforma_sequence()
+    #     return super(SaleOrder, self).write(vals)
 
     def proforma_invoice(self):
         """Generates and returns the proforma invoice report action.
@@ -246,6 +276,7 @@ class SaleOrder(models.Model):
         _logger.info("tested-----------prodffforma")
         return self.env.ref('kg_sale.proforma_invoice_report_actions').report_action(self)
 
+    ## sale order u can invoice only product with service types only
 
     def action_print(self):
         """Generates and returns the Sale Order report action.
@@ -258,7 +289,33 @@ class SaleOrder(models.Model):
            """
         return self.env.ref('kg_sale.report_so_template_alan_bt').report_action(self)
 
-
+    # def kg_create_invoice(self):
+    #     print("======================+++++++++++++")
+    #     sale = self
+    #     lines = sale.order_line
+    #     for line in lines:
+    #         if line.product_id.type != 'service':
+    #             raise UserError(
+    #                 _('you can only invoice from sale order if the items were belonging to a service type,if not you can invoice from DO'))
+    #
+    #         if line.product_id.type == 'service':
+    #             if line.kg_is_it_tranpcharge:
+    #                 raise UserError(_('other cost items cannot invoice from sale order'))
+    #     ctx = dict()
+    #     ctx.update({
+    #         'default_advance_payment_method': 'delivered'
+    #     })
+    #     return {
+    #         'name': 'Invoice Order',
+    #         'view_type': 'form',
+    #         'view_mode': 'form',
+    #         'res_model': 'sale.advance.payment.inv',
+    #         #            'res_id': self.id,
+    #         'target': 'new',
+    #         'type': 'ir.actions.act_window',
+    #         'context': ctx,
+    #     }
+    #
     @api.depends('order_line.margin', 'kg_discount', 'kg_discount_per', 'order_line.kg_is_it_tranpcharge',
                  'order_line.purchase_price', 'order_line.price_unit')
     def _product_margin(self):
@@ -311,9 +368,11 @@ class SaleOrder(models.Model):
                 if record.partner_id.child_ids:
 
                     for partner in record.partner_id.child_ids:
+                        #                        if partner.type == 'invoice':
                         partners_invoice.append(partner.id)
 
-
+                #                        if partner.type == 'delivery':
+                #                            partners_shipping.append(partner.id)
                 if partners_invoice:
                     domain['partner_invoice_id'] = [('id', 'in', partners_invoice)]
                     domain['partner_shipping_id'] = [('id', 'in', partners_invoice)]
@@ -323,13 +382,17 @@ class SaleOrder(models.Model):
                     domain['partner_invoice_id'] = []
                     domain['partner_shipping_id'] = []
                     domain['kg_kindattention_partner_id'] = []
-
+            #                if partners_shipping:
+            #                    domain['partner_shipping_id'] = [('id', 'in', partners_shipping)]
+            #                else:
+            #                    domain['partner_shipping_id'] =  []
             else:
                 domain['partner_invoice_id'] = [('type', '=', 'invoice')]
                 domain['partner_shipping_id'] = [('type', '=', 'delivery')]
                 domain['kg_kindattention_partner_id'] = [('type', 'in', ('delivery', 'invoice'))]
         return {'domain': domain}
 
+    # @api.multi
     def action_check_payment_due(self):
         """Checks if the payment due date has exceeded for the partner's open invoices.
 
@@ -353,6 +416,7 @@ class SaleOrder(models.Model):
         for inv in invoice_ids:
             if inv.move_type == 'out_invoice' and inv.state == 'open' and inv.invoice_date_due:
                 new_due_date = datetime.strptime(inv.invoice_date_due, "%Y-%m-%d") + relativedelta(days=31)
+                # print(new_due_date,"new due date")
                 new_due_date = str(new_due_date)[:10]
                 current_date = datetime.now().strftime("%Y-%m-%d")
                 if new_due_date < current_date and uid != 40:
@@ -399,17 +463,24 @@ class SaleOrder(models.Model):
         if flag == 0:
             self.kg_allow_invoice = 'yes'
         tradelicense = partner_obj.kg_trade_license
+        # property_payment_term_id = partner_obj.property_payment_term_id and partner_obj.property_payment_term_id.id
+        # credit_limit = partner_obj.credit_limit
+        # if not property_payment_term_id or not credit_limit:
+        #     raise UserError(_('credit limit or payment term  not found for the partner'))
 
+        # kg_remarks = self.kg_remarks
+        # if kg_remarks:
         if self.kg_need_approval == 'need_approval':
             raise UserError(_('need approval from finance manager'))
         self.action_check_payment_due()
         customer_id = self.partner_id.id
         users = self.env['res.users'].browse(customer_id)
 
-
+        # if users and self.project_project_id:
+        #     self.project_project_id.message_subscribe(users.ids)
         return result
 
-
+    #
     @api.depends('kg_revisions_line')
     def _compute_revisions(self):
         """Computes the number of revisions for the sale order.
@@ -427,7 +498,20 @@ class SaleOrder(models.Model):
 
             sale.kg_no_of_revisions = nos
 
-
+    #
+    # @api.depends('amount_total', 'currency_id')
+    # def _compute_amount_localcurrency(self):
+    #
+    #     for sale in self:
+    #         rate = sale.currency_id and sale.currency_id.rate or 1
+    #         amount_total = sale.amount_total
+    #         if rate >= 1:
+    #             amount_total = amount_total * rate
+    #         else:
+    #             amount_total = float(amount_total) / float(rate)
+    #
+    #         sale.kg_amount_localcurrency = amount_total
+    #
     @api.depends('order_line')
     def _compute_kg_net_discount(self):
         """Computes the net discount for the sale order.
@@ -450,7 +534,25 @@ class SaleOrder(models.Model):
                     total_discount = total_discount + discount
             self.kg_net_discount = total_discount
 
-
+    # commented in alan addons
+    # # @api.depends('order_line')
+    # # def _compute_service_type(self):
+    # #     for sale in self:
+    # #         lines = sale.order_line
+    # #         for line in lines:
+    # #             prd = self.env['product.product'].search(
+    # #                 [('id', '=', line.product_id.id), ('type', '=', 'service'), ], limit=1)
+    # #             print prd.name
+    # #             for data in prd:
+    # #                 sale.kg_servicecall_categories = data.kg_servicecall_categories
+    # #
+    # kg_servicecall_categories = fields.Selection([
+    #     ('new_installation', 'New Installation'),
+    #     ('amc', 'Annual Maintenance Contract(AMC)'),
+    #     ('rma', 'RMA - Faulty Product Service'),
+    #     ('poc', 'Proof Of Concept(POC)')],
+    #     string='Service Type', compute='_compute_service_type')
+    # kg_optional = fields.Boolean(string="Optional")
     kg_terms_condition_line = fields.One2many('kg.sale.terms.line', 'order_id', string="Terms Line")
     kg_discount_per = fields.Float(string='Discount(%)')
     kg_discount = fields.Float(string='Discount')
@@ -462,7 +564,8 @@ class SaleOrder(models.Model):
     ], string='Type', default='normal')
     kg_revisions_line = fields.One2many('kg.revisions', 'kg_sale_order_id', string="Revisions Line")
     kg_no_of_revisions = fields.Float(compute='_compute_revisions', string='Revisions')
-
+    # kg_amount_localcurrency = fields.Float(compute='_compute_amount_localcurrency', string='Amount(Local Currency)',
+    #                                        store="True")
     kg_subject = fields.Char(string="Subject")
     kg_journal_id = fields.Many2one('account.journal', string="Payment")
     kg_lpos = fields.Char(string="Lpo")
@@ -546,6 +649,14 @@ class SaleOrder(models.Model):
         if not self.kg_warranty_id:
             raise UserError(_('Warranty Required'))
 
+    # @api.model
+    # def default_get(self, fields_list):
+    #     res = super(SaleOrder, self).default_get(fields_list)
+    #     date = datetime.strptime("%Y-%m-%d")
+    #     d1 = datetime.strptime(str(date)[:10], '%Y-%m-%d')
+    #     d1 = d1 + relativedelta(days=7)
+    #     res.update({'validity_date': str(date)[:10]})
+    #     return res
 
     def action_invoice(self):
         """Generates an action for creating invoices related to the sale order.
@@ -559,7 +670,17 @@ class SaleOrder(models.Model):
         """
         invoices = self.mapped('invoice_ids')
         action = self.env['ir.actions.actions']._for_xml_id('account.action_move_out_invoice_type')
-
+        # if len(invoices) > 1:
+        #     action['domain'] = [('id', 'in', invoices.ids)]
+        # elif len(invoices) == 1:
+        #     form_view = [(self.env.ref('account.view_move_form').id, 'form')]
+        #     if 'views' in action:
+        #         action['views'] = form_view + [(state, view) for state, view in action['views'] if view != 'form']
+        #     else:
+        #         action['views'] = form_view
+        #     action['res_id'] = invoices.id
+        # else:
+        #     action = {'type': 'ir.actions.act_window_close'}
 
         action['context'] = {
             'default_kg_so_id': self.id,
@@ -662,7 +783,8 @@ class SaleOrder(models.Model):
         kg_discount = self.kg_discount
         kg_discount_per = self.kg_discount_per
         if kg_discount and kg_discount_per:
-
+            # print(kg_discount,"disssssssssssssssssssssss")
+            # print(kg_discount_per,"disssssssssssssssssssssss perrrrrrrrr")
             raise UserError(_('At a time choose one option discount(%) or discount'))
 
         if self.kg_discount_per > 100:
@@ -671,6 +793,7 @@ class SaleOrder(models.Model):
         for order in self:
             amount_untaxed = amount_tax = 0.0
             for line in order.order_line:
+                # print(line.kg_optional,"opttttttttttttttttttttttttttttttttttttttttttt")
                 if not line.kg_optional and not line.kg_is_it_tranpcharge:
                     amount_untaxed += line.price_subtotal
                     # FORWARDPORT UP TO 10.0
@@ -748,6 +871,7 @@ class SaleOrder(models.Model):
                 'kg_discount_per': obj.kg_discount_per,
                 'kg_discount': obj.kg_discount,
                 'kg_sale_order_id': obj.id,
+                # 'kg_remarks': obj.kg_remarks,
                 'validity_date': obj.validity_date,
                 'note': obj.note,
                 'currency_id': obj.currency_id and obj.currency_id.id,
@@ -764,7 +888,44 @@ class SaleOrder(models.Model):
         rev = self.env['kg.revisions'].create(vals)
         obj.kg_latest_rev = rev.name
 
-
+    #
+    # ****this function not needed for invoice creatio from delivry  done by another method
+    # def action_invoice_create(self, grouped=False, final=False):
+    #     res = super(SaleOrder, self)._create_invoices()
+    #     print(res,"resultttttttttttt")
+    #     invoice_obj = self.env['account.move'].browse(res)
+    #     # invoice_obj = self.env['stock.picking'].browse(res)
+    #     # invoice_obj = res
+    #
+    #     print(invoice_obj,'invoiceeeeeeeeeeee')
+    #     for inv in invoice_obj:
+    #         print("invvvvvvvvvvvvvvv")
+    #         if inv.move_type == 'out_invoice':
+    #             print("outttttttttttttttttt")
+    #             inv.kg_discount_per = self.kg_discount_per
+    #             inv.kg_discount = self.kg_discount
+    #             inv.kg_warranty_id = self.kg_warranty_id and self.kg_warranty_id.id or False
+    #             inv.kg_validity_id = self.kg_validity_id and self.kg_validity_id.id or False
+    #             inv.kg_lpo_term_id = self.kg_lpo_term_id and self.kg_lpo_term_id.id or False
+    #             inv.kg_delivery_id = self.kg_delivery_id and self.kg_delivery_id.id or False
+    #             inv.kg_so_id = self and self.id or False
+    #     return res
+    # commented section in alan addon
+    # # @api.multi
+    # # def _create_analytic_account(self, prefix=None):
+    # #     for order in self:
+    # #         print 'analatyc account 001',order.kg_servicecall_categories
+    # #         name = order.name
+    # #         if prefix:
+    # #             name = prefix + ": " + order.name
+    # #         analytic = self.env['account.analytic.account'].create({
+    # #             'name': name,
+    # #             'code': order.client_order_ref,
+    # #             'company_id': order.company_id.id,
+    # #             'partner_id': order.partner_id.id,
+    # #             'kg_servicecall_categories': order.kg_servicecall_categories
+    # #         })
+    # #         order.project_id = analytic
 
     @api.constrains('partner_id')
     def credit_payment_terms_validation(self):
@@ -802,16 +963,30 @@ class SaleOrder(models.Model):
         tradelicense = partner_obj.kg_trade_license
         property_payment_term_id = partner_obj.property_payment_term_id and partner_obj.property_payment_term_id.id
         credit_limit = partner_obj.credit_limit
-
+        # if not property_payment_term_id or not credit_limit:
+        #     raise UserError(_('credit limit or payment term not found for the partner'))
         return True
 
-
+    # @api.depends('amount_total', 'partner_id')
+    # def _compute_kg_credit_exposure(self):
+    #     for obj in self:
+    #         amount_total = obj.amount_total
+    #         partner_id = obj.partner_id and obj.partner_id.id
+    #         if partner_id:
+    #             credit_limit = obj.partner_id.credit_limit
+    #             if amount_total > credit_limit:
+    #                 obj.kg_remarks = 'Credit Limit Exceeded'
+    #             else:
+    #                 obj.kg_remarks = ''
+    #
+    # kg_remarks = fields.Char(
+    #     'Remark', compute='_compute_kg_credit_exposure')
 
     kg_need_approval = fields.Selection([
         ('need_approval', 'Need Approval From Accounts Department'),
         ('no_need_approval', 'No Approval Needed'),
         ('approved', 'Accounts Department Approved'),
-    ], string='Status', compute='_compute_kg_approval_status')
+    ], string='Status', compute='_compute_kg_approval_status', store=True)
 
     @api.depends('partner_id', 'amount_total')
     def _compute_kg_approval_status(self):
@@ -836,10 +1011,7 @@ class SaleOrder(models.Model):
             partner_id = obj.partner_id and obj.partner_id.id
             if partner_id:
                 credit_limit = obj.partner_id.credit_limit
-                print("amount_total", amount_total)
-                print("credit_limit", credit_limit)
                 if amount_total > credit_limit:
-
                     obj.kg_need_approval = 'need_approval'
                 else:
                     obj.kg_need_approval = 'no_need_approval'

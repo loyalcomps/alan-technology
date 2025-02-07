@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_bank_stmnt_reconciliation_alan">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <div class="page article o_report_layout_standard" style="font-size: 12pt;arial;">
+                    <center>
+            <h3>
+               <strong>Bank Reconcilation Statement</strong>
+            </h3>
+         </center>
+         <br/><br/>
+         <div class="row">
+             <table class="table table-borderless" style="border-collapse: collapse;width:100%">
+                 <tr>
+                     <td width="60%">
+                         <table style="border-collapse: collapse;">
+                             <tr height="1%">
+                                 <td width="20%"><span>Bank</span></td>
+                                 <td  width="2%"  ><span  style="margin-left:2%">:</span></td>
+                                 <td><span style="margin-left:2%" t-field="o.journal_id.name" /></td>
+                             </tr>
+                              <tr>
+                                 <td width="20%"><span>Date From</span></td>
+                                 <td  width="2%"><span style="margin-left:2%">:</span></td>
+                                 <td><span  style="margin-left:2%" t-field="o.date_from" t-field-options="{&quot;format&quot;:&quot;dd/MM/yyyy&quot;}"/></td>
+                             </tr>
+                              <tr>
+                                 <td width="20%"><span>Date To</span></td>
+                                 <td  width="2%"><span  style="margin-left:2%">:</span></td>
+                                 <td><span style="margin-left:2%" t-field="o.date_to" t-field-options="{&quot;format&quot;:&quot;dd/MM/yyyy&quot;}" /></td>
+                             </tr>
+                         </table>
+                     </td>
+                     <td  width="40%">
+                         <table style="border-collapse: collapse;">
+                             <tr>
+                                 <td width="50%"><span>Book Balance</span></td>
+                                 <td width="2%"><span  style="margin-left:2%">:</span></td>
+                                 <td><span  style="margin-left:2%" t-esc="'{:,.2f}'.format(o.gl_balance)"></span></td>
+                             </tr>
+                             <tr>
+                                 <td><span>Bank Balance</span></td>
+                                 <td width="2%"><span  style="margin-left:2%">:</span></td>
+                                 <td><span  style="margin-left:2%"  t-esc="'{:,.2f}'.format(o.bank_balance)"></span></td>
+                             </tr>
+                             <tr>
+                                 <td><span>Reconciled Balance</span></td>
+                                 <td width="2%"><span  style="margin-left:2%">:</span></td>
+                                 <td><span  style="margin-left:2%"><span  style="margin-left:2%"  t-esc="'{:,.2f}'.format(o.get_reconcile())"></span></span></td>
+                             </tr>
+                             <tr>
+                                 <td><span>Unreconciled Balance</span></td>
+                                 <td width="1%"><span  style="margin-left:2%">:</span></td>
+                                 <td><span  style="margin-left:2%"><span  style="margin-left:2%"  t-esc="'{:,.2f}'.format(o.get_unreconcile())"></span></span></td>
+                             </tr>
+                         </table>
+                     </td>
+                 </tr>
+             </table>
+<!--            <div style="background-color:red" name="reference" >-->
+<!--               Bank-->
+<!--               <span style="padding-left:39px;" />-->
+<!--               :-->
+
+<!--              <b> <span t-field="o.journal_id.name" /></b>-->
+
+<!--               <br />-->
+<!--               Date From-->
+<!--               <span style="padding-left:0px;" />-->
+<!--               :-->
+<!--               <span t-field="o.date_from" t-field-options="{&quot;format&quot;:&quot;dd/MM/yyyy&quot;}" />-->
+<!--               <br />-->
+
+<!--                              Date To-->
+<!--               <span style="padding-left:20px;" />-->
+<!--               :-->
+<!--               <span t-field="o.date_to" t-field-options="{&quot;format&quot;:&quot;dd/MM/yyyy&quot;}" />-->
+<!--               <br />-->
+<!--            </div>-->
+
+<!--                <div name="reference" class="col-sm-3">-->
+<!--&lt;!&ndash;                    <span t-field="o.gl_balance" />&ndash;&gt;-->
+<!--               <span /> Book Balance<span />:<b></b>-->
+
+
+<!--               <br />-->
+<!--               <span /> Bank Balance-->
+<!--               <span />-->
+<!--               :-->
+<!--&lt;!&ndash;              <b> <span t-field="o.bank_balance" /></b>&ndash;&gt;-->
+<!--               <br />-->
+<!--                    <span/>         Reconciled Balance-->
+<!--               <span/>-->
+<!--               :-->
+<!--&lt;!&ndash;               <b><span t-field="o.reconciled_balance" /></b>&ndash;&gt;-->
+<!--               <br />-->
+<!--                <span /> Unreconciled Balance-->
+<!--               :-->
+<!--&lt;!&ndash;              <b><span t-field="o.unconciled_balance" /></b>&ndash;&gt;-->
+<!--               <br />-->
+<!--            </div>-->
+
+         </div>
+
+ <br/>
+
+ <table class="table table-condensed" style="border-right:1px solid black;border-left:1px solid black;border-top:1px solid black;border-bottom:1px solid black">
+            <thead>
+               <tr>
+                   <th class="text-center" style="border-right:1px solid black">Sl#</th>
+
+
+                  <th class="text-center" style="border-right:1px solid black">Date</th>
+                  <th class="text-center" style="border-right:1px solid black">Reference</th>
+                  <th class="text-center" style="border-right:1px solid black">Partner</th>
+                                    <th class="text-center" style="border-right:1px solid black">Debit</th>
+                                                      <th class="text-center" style="border-right:1px solid black">Credit</th>
+
+
+
+               </tr>
+            </thead>
+            <tbody>
+               <t t-set="count" t-value="0" />
+
+               <tr t-foreach="o.statement_lines" t-as="line">
+
+                     <t t-set="count" t-value="count + 1" />
+
+                        <td class="text-center" style="border-right:1px solid black;border-bottom:1px solid black">
+                           <span t-esc="count" />
+                        </td>
+
+
+
+
+                   <td class="text-left" style="border-right:1px solid black;border-bottom:1px solid black">
+                        <span t-field="line.date" />
+                     </td>
+
+                   <td class="text-left" style="border-right:1px solid black;border-bottom:1px solid black">
+
+                       <span t-field="line.ref" />
+<!--						    <t t-if="line.od_short_ref">-->
+<!--                        <span t-field="line.od_short_ref" /></t>-->
+
+<!--						    <t t-if="not line.od_short_ref">-->
+<!--                        </t>-->
+                     </td>
+
+                                               <td class="text-left" style="border-right:1px solid black;border-bottom:1px solid black">
+                        <span t-field="line.partner_id" />
+                     </td>
+
+                                                    <td align="center" class="text-right" style="border-right:1px solid black;border-bottom:1px solid black">
+                        <t t-if ="line.debit"><span t-esc="'{:,.2f}'.format(line.debit)" /></t>
+                     </td>
+
+                 <td  align="center" class="text-right" style="border-right:1px solid black;border-bottom:1px solid black">
+                       <t t-if ="line.credit">
+                        <span t-esc="'{:,.2f}'.format(line.credit)" />
+                         <!-- <span t-field="line.credit" /> -->
+                     </t>
+                     </td>
+
+
+
+
+             </tr>
+
+
+
+
+
+
+
+
+
+            </tbody>
+         </table>
+
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

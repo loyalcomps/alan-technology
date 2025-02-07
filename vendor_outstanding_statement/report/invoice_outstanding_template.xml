@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="invoice_outstanding">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <t t-foreach="docs" t-as="o">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        <div align="center">
+                            <br/>
+                            <h2>Vendors' Outstanding Invoice Report</h2>
+                        </div>
+                        <br/>
+                        <table border="1" class="table table-condensed" style="border-style:solid">
+                            <tr style="height:30%">
+                                <td width="50%" style="border: 1px solid black" align="center">
+                                    <strong>Vendor Name</strong>
+                                </td>
+                                <td width="50%" style="border: 1px solid black" align="center">
+                                    <strong>To Date</strong>
+                                </td>
+                            </tr>
+                            <tr style="height:30%">
+                                <td width="50%" style="border: 1px solid black" align="center">
+                                    <span t-esc="customer"/>
+                                </td>
+                                <td width="50%" style="border: 1px solid black" align="center">
+                                    <t t-if="end_date">
+                                        <span t-esc="datetime.datetime.strptime(str(end_date), '%Y-%m-%d').strftime('%d/%m/%Y')"/>
+
+                                    </t>
+                                </td>
+                                <!--                        <span  t-esc="datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%d/%m/%Y')"/></td>-->
+                            </tr>
+                        </table>
+                        <br/>
+
+                        <table class="table table-condensed">
+                            <thead>
+                                <tr style="text-align:left; color: black;">
+                                    <th>Date</th>
+                                    <th>Number</th>
+                                    <th>Journal</th>
+                                    <th>Due Date</th>
+                                    <th style="text-align:right">Amount Due</th>
+                                </tr>
+                            </thead>
+                            <tbody class="sale_tbody">
+                                <t t-foreach="lines_to_display" t-as="line">
+                                    <tr>
+                                        <td>
+                                            <t t-if="line['date']">
+                                                <span t-esc="datetime.datetime.strptime(str(line['date']), '%Y-%m-%d').strftime('%d/%m/%Y')"/>
+
+                                            </t>
+                                        </td>
+                                        <td>
+                                            <span t-esc="line['name']"/>
+                                        </td>
+                                        <td>
+                                            <span t-esc="line['journal']"/>
+                                        </td>
+
+                                        <td>
+                                            <t t-if="line['due_date']">
+                                                <span t-esc="datetime.datetime.strptime(str(line['due_date']), '%Y-%m-%d').strftime('%d/%m/%Y')"/>
+
+                                            </t>
+                                            <!--                                            <span t-esc="datetime.datetime.strptime(line['due_date'], '%Y-%m-%d').strftime('%d/%m/%Y')"/>-->
+                                        </td>
+                                        <td style="text-align:right;">
+                                            <span t-esc="'%.2f'%(line['balance'])"/>
+                                        </td>
+
+                                    </tr>
+                                </t>
+                                <tr style="border-top:1px solid black;">
+                                    <td style="border-top:1px solid black;" colspan="4" align="right">
+                                        <strong>Total Outstanding Amount:</strong>
+                                    </td>
+                                    <td style="border-top:1px solid black;text-align:right;">
+                                        <strong>
+                                            <span t-esc="'%.2f'%(total_amount_due)"/>
+                                        </strong>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

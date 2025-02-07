@@ -9,7 +9,7 @@
             <field name="arch" type="xml">
                  <field name="amount_total" position="after">
                     <field name="margin"/>
-                </field> 
+                </field>
 
                 <field name="user_id" position="after">
                     <field name="kg_subject"/>
@@ -93,7 +93,7 @@
                     <button name="action_confirm" position="after">
 
                         <button name="kg_action_approve" string="Approve" type="object"
-                                attrs="{'invisible': ['|',('kg_need_approval', '!=', 'need_approval'),('is_approve', '!=', True)]}"
+                                attrs="{'invisible': [('kg_need_approval', '!=', 'need_approval')]}"
                                 groups="account.group_account_manager"/>
 
                     </button>
@@ -221,10 +221,10 @@
                     </xpath>
                     <xpath expr="/form/sheet/notebook/page[@name='other_information']/group/group[2]"
                            position="inside">
-                       
+
                             <field name="kg_invoice_status_1" readonly="1"/>
 
-                    
+
 
                     </xpath>
                     <xpath expr="/form/sheet/notebook/page[@name='other_information']//group[@name='sale_reporting']"
@@ -285,6 +285,7 @@
                            position="before">
 
 
+                        <field name="kg_serial_no" invisible="1"/>
                         <field name="kg_brand_id" optional="hide"/>
                         <field name="kg_categ_id" invisible="1"/>
 
@@ -294,7 +295,7 @@
                            position="replace">
 
 
-                        <field name="product_id"
+                        <field name="product_id" options="{'no_create': True}"
                                domain="[('categ_id','=',kg_categ_id),('kg_brand_id','=',kg_brand_id)]"/>
 
                     </xpath>
@@ -302,8 +303,10 @@
                     <xpath expr="/form/sheet/notebook/page[1]/field[@name='order_line']/tree" position="attributes">
                         <attribute name="editable"></attribute>
                     </xpath>
+                    <!--                    <xpath expr="//form[1]/sheet[1]/notebook[1]/page[@name='order_lines']/field[@name='order_line']/tree[1]/field[@name='product_uom_qty']" position="attributes">-->
                     <xpath expr="/form/sheet/notebook/page[1]/field[@name='order_line']/tree" position="attributes">
 
+                        <!--                            <attribute name="style">width: 100%;</attribute>-->
                         <attribute name="class">o_column_sortable</attribute>
 
                     </xpath>
@@ -368,6 +371,7 @@
             <field name="inherit_id" ref="sale.sale_order_view_search_inherit_sale"/>
             <field name="arch" type="xml">
                 <xpath expr="//filter[@name='upselling']" position="after">
+                    <!--                    <separator/>-->
 
                     <filter string="Purchase Order Not Placed" name="purchase_not_placed"
                             domain="[('kg_purchase_order_lines','=',False)]"/>

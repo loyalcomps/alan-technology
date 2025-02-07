@@ -18,6 +18,7 @@ class PurchaseOrder(models.Model):
                                        string="Merged To", readonly="1")
     kg_sale_order_id = fields.Many2many('sale.order', string='Sale Order')
 
+    sale_order = fields.Many2one('sale.order', string='Origin')
     kg_po_order_type = fields.Selection([
         ('normal', 'Normal'),
         ('urgent', 'Urgent'),
@@ -54,7 +55,20 @@ class PurchaseOrder(models.Model):
             self.partner_id.vendor = False
 
 
-
+    # @api.depends('partner_signature')
+    # def _compute_check_signature(self):
+    #     """In this function computes the value of the boolean field check signature
+    #     which is used to hide/unhide the validate button in the current document"""
+    #     if self.env['ir.config_parameter'].sudo().get_param('purchase.purchase_document_approve'):
+    #
+    #         if self.partner_signature:
+    #
+    #             self.check_signature = False
+    #
+    #         else:
+    #             self.check_signature = True
+    #     else:
+    #         self.check_signature = False
 
     def amount_to_text(self, amount_total):
         """Converts a numeric amount to its corresponding text representation.
@@ -179,48 +193,26 @@ class PurchaseOrder(models.Model):
 
 
 
-class AccountMove(models.Model):
-    _inherit = "account.move"
+# class AccountMove(models.Model):
+#     _inherit = "account.move"
 
 
-    def write(self, vals):
-        """Updates the record and checks the payment state based on invoicing status.
-
-        This method is an override of the `write` method, which updates the fields of
-        the current record (`AccountMove`). After the record is updated, it checks if
-        the invoice has an origin (i.e., linked to a purchase order). If a purchase order
-        is found, it compares the total quantity ordered with the total quantity invoiced.
-
-        Depending on the comparison:
-        - If the total ordered quantity is greater than the invoiced quantity,
-         the `payment_state` of the purchase order is set to 'partial_invoiced'.
-        - If the total ordered quantity matches the invoiced quantity,
-         the `payment_state` is set to 'full_invoiced'.
-
-        Args:
-           vals (dict): A dictionary of fields and their values to update.
-
-        Returns:
-           bool: The result of the `write` operation, which indicates whether
-                 the record was successfully updated.
-
-        Raises:
-           Depends on the field values passed in `vals` and the logic of the `write` method.
-        """
-        res = super(AccountMove, self).write(vals)
-
-        for rec in self:
-
-            if rec.invoice_origin:
-                purchase_order = self.env['purchase.order'].search([('name', '=', rec.invoice_origin)],limit=1)
-                if purchase_order:
-                    total_qty_ordered = sum(purchase_order.order_line.mapped('product_qty'))
-                    total_qty_invoiced = sum(purchase_order.order_line.mapped('qty_invoiced'))
-                    if total_qty_ordered > total_qty_invoiced:
-                        purchase_order.payment_state = 'partial_invoiced'
-                    else:
-                        purchase_order.payment_state = 'full_invoiced'
-        return res
+#     def write(self, vals):
+#         res = super(AccountMove, self).write(vals)
+#         # print(self[0].move_type)
+#         # print(res)
+#         if res.move_type == 'in_invoice':
+#             print(err)
+#             if self.invoice_origin and  len(self.invoice_origin)>0:
+#                 purchase_order = self.env['purchase.order'].search([('name', '=', self.invoice_origin[0])])
+#                 if len(purchase_order)==1:
+#                     total_qty_ordered = sum(purchase_order.order_line.mapped('product_qty'))
+#                     total_qty_invoiced = sum(purchase_order.order_line.mapped('qty_invoiced'))
+#                     if total_qty_ordered > total_qty_invoiced:
+#                         purchase_order.payment_state = 'partial_invoiced'
+#                     else:
+#                         purchase_order.payment_state = 'full_invoiced'
+#         print(er)
 
 
 

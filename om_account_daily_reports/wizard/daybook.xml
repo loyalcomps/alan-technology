@@ -35,7 +35,7 @@
         <field name="view_id" ref="account_report_daybook_view"/>
         <field name="target">new</field>
     </record>
-
+<!-- 
     <menuitem
             id="menu_daybook"
             name="Day Book"
@@ -43,6 +43,6 @@
             parent="om_account_daily_reports.menu_finance_daily_reports"
             action="action_account_daybook_menu"
             groups="account.group_account_user,account.group_account_manager"
-    />
+    /> -->
 
 </odoo>

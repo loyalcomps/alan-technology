@@ -18,6 +18,7 @@ class Task(models.Model):
 
     def start_send_by_email(self):
         self.start_email_sent = True
+        self.start_email_sent_1 = True
         return True
 
     def service_assign(self):
@@ -37,10 +38,12 @@ class Task(models.Model):
 
     def done_send_by_email(self):
         self.done_email_sent = True
+        self.done_email_sent_1 = True
         return True
 
     def done(self):
         self.is_it_done = True
+        self.is_it_done_1 = True
         return True
 
     @api.depends('project_id')
@@ -88,14 +91,27 @@ class Task(models.Model):
             total_hr = 0
             for data in rec.timesheet_ids:
                 if data.date_from and data.date_to:
-                    start_date = fields.Datetime.from_string(data.date_from)
-                    end_date = fields.Datetime.from_string(data.date_to)
-                    dif_tot = relativedelta(end_date, start_date)
-                    duration = duration + dif_tot
-                    dif_minut = (duration.days * 24 * 60) + (duration.hours * 60) + (duration.minutes)
-                    total_hr = (dif_minut / 60) + (dif_minut % 60) / float(100)
+                    delta = data.date_to - data.date_from
+                    total_hr += delta.total_seconds() / 3600.0
             rec.kg_effective_hours = total_hr
             rec.kg_remaining_hours = rec.planned_hours - total_hr
+
+    # @api.depends('timesheet_ids.unit_amount')
+    # def _hours_worked(self):
+    #     for rec in self:
+    #         now = fields.Datetime.from_string(fields.Datetime.now())
+    #         duration = relativedelta(now, now)
+    #         total_hr = 0
+    #         for data in rec.timesheet_ids:
+    #             if data.date_from and data.date_to:
+    #                 start_date = fields.Datetime.from_string(data.date_from)
+    #                 end_date = fields.Datetime.from_string(data.date_to)
+    #                 dif_tot = relativedelta(end_date, start_date)
+    #                 duration = duration + dif_tot
+    #                 dif_minut = (duration.days * 24 * 60) + (duration.hours * 60) + (duration.minutes)
+    #                 total_hr = (dif_minut / 60) + (dif_minut % 60) / float(100)
+    #         rec.kg_effective_hours = total_hr
+    #         rec.kg_remaining_hours = rec.planned_hours - total_hr
 
     @api.depends('kg_hourly_rate', 'total_worked_hours')
     def _get_compute_cost(self):
@@ -110,6 +126,7 @@ class Task(models.Model):
     ticket_number = fields.Char(required=True, copy=False, readonly=True, index=True,
                                 default=lambda self: ('New'), string='Ticket No.')
     start_email_sent = fields.Boolean('Start Alert')
+    start_email_sent_1 = fields.Boolean('Start Alert')
     kg_effective_hours = fields.Float(compute='_hours_worked', store=True, string='Worked Hours1',
                                    help="Computed using the sum of the task work done.")
     planned_hours = fields.Float(string='Initially Planned Hours',
@@ -119,12 +136,14 @@ class Task(models.Model):
     gp_deduction_required = fields.Boolean('GP Deduction')
     sale_line_id = fields.Many2one('sale.order.line', 'Order Line')
     done_email_sent = fields.Boolean('Done Alert')
+    done_email_sent_1 = fields.Boolean('Done Alert')
     kg_need_subcontractor = fields.Boolean('Need Third Party')
     kg_sub_contractor_id = fields.Many2one('res.partner', 'Sub Contractor')
     kg_hourly_rate = fields.Float(string="Hourly Rate")
     kg_time_from = fields.Datetime(string="From")
     kg_time_to = fields.Datetime(string="To")
     is_it_done = fields.Boolean(string="Completed")
+    is_it_done_1 = fields.Boolean(string="Completed")
     total_worked_hours = fields.Float(related='kg_effective_hours', string="Total Worked Hours")
     total_cost = fields.Float(compute='_get_compute_cost', string="Total Cost", store="True")
     date_required = fields.Boolean(compute=_get_material_status, store=True)
@@ -236,18 +255,24 @@ class AccountLine(models.Model):
     @api.depends('date_from', 'date_to')
     def _compute_duration(self):
         for data in self:
-            # data.unit_amount = 0.0
             if data.date_from and data.date_to:
-                start_date = fields.Datetime.from_string(data.date_from)
-                end_date = fields.Datetime.from_string(data.date_to)
-                dif_tot = relativedelta(end_date, start_date)
-                dif_minut = dif_tot.hours * 60 + dif_tot.minutes
-                diff1 = end_date - start_date
-                total_minut = int(diff1.days) * 24 * 60 + dif_minut
-                total_hr = (total_minut / 60) + (total_minut % 60) / float(100)
-                t1 = datetime.strptime(str(data.date_from), '%Y-%m-%d %H:%M:%S')
-                t2 = datetime.strptime(str(data.date_to), '%Y-%m-%d %H:%M:%S')
-                t3 = t2 - t1
-                data.unit_amount = total_hr
-            else:
-                data.unit_amount = 0.0
+                delta = data.date_to - data.date_from
+                if data.date_to < data.date_from:
+                    raise ValidationError('Start time should be less than end time.')
+                data.unit_amount = delta.total_seconds() / 3600.0
+        # for data in self:
+        #     # data.unit_amount = 0.0
+        #     if data.date_from and data.date_to:
+        #         start_date = fields.Datetime.from_string(data.date_from)
+        #         end_date = fields.Datetime.from_string(data.date_to)
+        #         dif_tot = relativedelta(end_date, start_date)
+        #         dif_minut = dif_tot.hours * 60 + dif_tot.minutes
+        #         diff1 = end_date - start_date
+        #         total_minut = int(diff1.days) * 24 * 60 + dif_minut
+        #         total_hr = (total_minut / 60) + (total_minut % 60) / float(100)
+        #         t1 = datetime.strptime(str(data.date_from), '%Y-%m-%d %H:%M:%S')
+        #         t2 = datetime.strptime(str(data.date_to), '%Y-%m-%d %H:%M:%S')
+        #         t3 = t2 - t1
+        #         data.unit_amount = total_hr
+        #     else:
+        #         data.unit_amount = 0.0

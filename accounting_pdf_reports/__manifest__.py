@@ -34,6 +34,7 @@
         'wizard/journal_audit.xml',
         'report/report.xml',
         'report/report_partner_ledger.xml',
+        'report/payment_receipt.xml',
         'report/report_general_ledger.xml',
         'report/report_trial_balance.xml',
         'report/report_financial.xml',

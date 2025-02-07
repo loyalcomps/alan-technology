@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <report id="action_print_vendor_outstanding_statement"
+        model="res.partner"
+        report_type="qweb-pdf"
+        menu="True"
+        string="Vendor Outstanding Statement"
+        name="vendor_outstanding_statement.invoice_outstanding"
+        file="vendor_outstanding_statement.invoice_outstanding"
+    />
+
+
+    <menuitem
+        id="menu_customer_invoice_outstanding_report"
+        name="Vendor Outstanding Report"
+        parent="account.menu_finance_reports"
+        sequence="6"
+        action="vendor_outstanding_statement.vendor_outstanding_statement_wizard_action"
+    />
+</odoo>

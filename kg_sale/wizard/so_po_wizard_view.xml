@@ -9,7 +9,7 @@
 
                     <group>
                         <group>
-                            <field name="supplier_id" required="1"/>
+                            <field name="supplier_id" context="{'get_name_only':True}"  domain="[('supplier_rank','&gt;', 0)]" required="1"/>
 <!--                                   context="{'search_default_supplier':1, 'default_supplier':1, 'default_customer':0}"-->
 <!--                                   domain="[('supplier','=',True)]" required="1"/>-->
 

@@ -19,11 +19,11 @@
         <xpath expr="//div[@name='div_sched_date']/t[2]/p" position="replace">
             <p t-field="o.scheduled_date" style="border-top:1px solid black"/>
         </xpath>
-<!--        <xpath expr="//div[@class='row mt32 mb32']" position="after">-->
-<!--            <br/>-->
-<!--            <br/>-->
-<!--            <br/>-->
-<!--        </xpath>-->
+        <xpath expr="//div[@class='row mt32 mb32']" position="after">
+            <br/>
+            <br/>
+            <br/>
+        </xpath>
         <xpath expr="//div[@class='page']" position="before">
             <br/>
         </xpath>

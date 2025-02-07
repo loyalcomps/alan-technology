@@ -49,11 +49,11 @@ class ReportController(ReportController):
         return super().report_routes(reportname, docids, converter, **data)
 
     @route()
-    def report_download(self, data, context=None, token=None):
+    def report_download(self, data, context=None):
         requestcontent = json.loads(data)
         url, report_type = requestcontent[0], requestcontent[1]
-        if report_type == "xlsx":
-            try:
+        try:
+            if report_type == "xlsx":
                 reportname = url.split("/report/xlsx/")[1].split("?")[0]
                 docids = None
                 if "/" in reportname:
@@ -95,10 +95,10 @@ class ReportController(ReportController):
                         "Content-Disposition", content_disposition(filename)
                     )
                 return response
-            except Exception as e:
-                _logger.exception("Error while generating report %s", reportname)
-                se = _serialize_exception(e)
-                error = {"code": 200, "message": "Odoo Server Error", "data": se}
-                return request.make_response(html_escape(json.dumps(error)))
-        else:
-            return super().report_download(data, context=context, token=token)
+            else:
+                return super().report_download(data, context)
+        except Exception as e:
+            # _logger.exception("Error while generating report %s", reportname)
+            se = _serialize_exception(e)
+            error = {"code": 200, "message": "Odoo Server Error", "data": se}
+            return request.make_response(html_escape(json.dumps(error)))

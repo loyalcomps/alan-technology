@@ -21,6 +21,7 @@ class PaymentAllocation(models.TransientModel):
     move_line_id = fields.Many2one('account.move.line', related='invoice_allocation_ids.move_line_id.move_id')
     payment_type = fields.Selection([('inbound', 'Receive Money'), ('outbound', 'Send Money')], string="Payment Type",
                                     required=False)
+    show_reference = fields.Boolean(copy=False)
 
     @api.onchange('show_parent_child')
     def onchange_show_parent_child(self):
@@ -32,7 +33,6 @@ class PaymentAllocation(models.TransientModel):
 
 
         for data in self:
-
             if data.show_parent_child:
                 inv_vals = [(5, 0, 0)]
                 partner = self.env['res.partner'].search(
@@ -43,7 +43,6 @@ class PaymentAllocation(models.TransientModel):
                         invoice = self.env['account.move'].search([('partner_id', '=', p.id), (
                             'amount_residual', '>', 0.0), ('state', 'in', ['posted']),
                                                                    ('move_type', 'in', ['out_invoice'])])
-
                         for inv in invoice:
                             val = 0
                             for line in inv.line_ids:
@@ -201,7 +200,6 @@ class PaymentAllocation(models.TransientModel):
                             'amount_residual', '>', 0.0), ('state', 'in', ['posted']),
                                                                    ('move_type', 'in', ['out_invoice'])])
                         for inv in invoice:
-
                             val = 0
                             for line in inv.line_ids:
                                 if line.credit == 0:
@@ -275,7 +273,6 @@ class PaymentAllocation(models.TransientModel):
                         pay_vals.append((0, 0, vals))
                     data.payment_allocation_ids = pay_vals
                 else:
-
                     for p in partner:
                         invoice = self.env['account.move'].search([('partner_id', '=', p.id), (
                             'amount_residual', '>', 0.0), ('state', 'in', ['posted']),
@@ -283,8 +280,6 @@ class PaymentAllocation(models.TransientModel):
                         for inv in invoice:
                             val = 0
                             for line in inv.line_ids:
-
-
                                 if line.credit == 0:
                                     val = line.id
                                     vals = {'inv_amount': inv.amount_total,
@@ -355,7 +350,6 @@ class PaymentAllocation(models.TransientModel):
                                     }
                             pay_vals.append((0, 0, vals))
                         data.payment_allocation_ids = pay_vals
-
 
     def get_matching_dict(self, debit_move_dict, credit_move_dict):
         matching_list = []
@@ -458,11 +452,9 @@ class PaymentAllocation(models.TransientModel):
                     credit_move_dict['is_full_reconcile'] = True
                 else:
                     credit_move_dict['is_full_reconcile'] = False
-
         matching_list = self.get_matching_dict(debit_move_dict, credit_move_dict)
         for rec_val in matching_list:
             rec = self.env['account.partial.reconcile'].create(rec_val)
-
 
 class DebitLines(models.TransientModel):
     _name = "payment.allocation.wizard.debit.lines"
@@ -481,6 +473,8 @@ class DebitLines(models.TransientModel):
     is_invoice_allocate = fields.Boolean(string="Allocate")
 
     balance_amount = fields.Float('Balance')
+    bill_ref = fields.Char("Bill Reference")
+
 
     @api.onchange('is_invoice_allocate')
     def onchange_is_invoice_allocate(self):

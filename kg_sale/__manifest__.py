@@ -51,7 +51,8 @@
         'report/emirates_islamic_checq.xml',
         'report/invoice_template_new.xml',
         'report/proforma_invoice_template.xml',
-        'report/refund_invoice_new.xml'
+        'report/refund_invoice_new.xml',
+        'report/invoice_template_sa.xml',
 
     ],
     'assets': {

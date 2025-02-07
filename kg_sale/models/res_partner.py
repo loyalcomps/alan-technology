@@ -19,17 +19,24 @@ from datetime import timedelta, tzinfo, time, date, datetime
 from dateutil.relativedelta import relativedelta
 
 
+# from monthdelta import monthdelta
 
+class KGResBankInherit(models.Model):
+    _inherit = "res.partner.bank"
+
+    bank_iban_number = fields.Char(string="IBAN Number")
+    swift_code = fields.Char(string="Swift Code")
+    branch = fields.Char(string="Branch")
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'
-
 
 
     total_quotation = fields.Integer('Total Quotation', compute='total_invoice_and_quotation')
     total_invoice = fields.Integer('Total Invoices', compute='total_invoice_and_quotation')
     total_quotation_amt = fields.Monetary('Total Quotation Amt', compute='total_invoice_and_quotation')
 
+    # total_invoice_amt = fields.Monetary('Total Invoice Amt', compute='total_invoice_and_quotation')
 
     def total_invoice_and_quotation(self):
         """Computes the total number of quotations and invoices for the partner.
@@ -58,6 +65,7 @@ class ResPartner(models.Model):
         self.total_invoice = False
         self.total_quotation_amt = False
 
+        # retrieve all children partners and prefetch 'parent_id' on them
         all_partners = self.with_context(active_test=False).search([('id', 'child_of', self.ids)])
         all_partners.read(['parent_id'])
 
@@ -237,8 +245,10 @@ class ResPartner(models.Model):
     kg_payment_extension_remarks = fields.Char(string="Remarks")
     kg_tr_no = fields.Char(string="TR NO")
     kg_size_id = fields.Many2one('kg.size', string="Company Size")
+    # kg_ind_id = fields.Many2one('kg.industry.master', string="Industry")
     kg_department_id = fields.Many2one('hr.department', string='Serving Department')
     kg_account_manager_id = fields.Many2one('res.users', string='Account Manager')
+    # kg_supplier_type_id = fields.Many2one('kg.supplier.type', string='Supplier Type')
     kg_rating = fields.Selection([
         ('bad', 'Bad'),
         ('medium', 'Medium'),
@@ -275,6 +285,7 @@ class ResPartner(models.Model):
 
         return action
 
+    #
     def view_quotes(self):
         """Opens the quotations view filtered for the current partner.
 
@@ -302,7 +313,9 @@ class ResPartner(models.Model):
 
         return action
 
-
+    #
+    #
+    #
     def view_invoices(self):
         """Opens the invoices view filtered for the current partner.
 

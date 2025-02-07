@@ -9,7 +9,7 @@
                         <div class="col-xs-12">
                             <div class="row">
                                 <center>
-                                    <h2 style="padding-bottom:5px;">
+                                    <h2 style="padding-bottom:5px;font-family:Arial, sans-serif;">
                                         <strong>DELIVERY NOTE</strong>
                                     </h2>
                                 </center>
@@ -17,17 +17,12 @@
                         </div>
                         <br/>
                         <br/>
-                        <table class="table table-borderless" style="font-size:18px;">
+
+                        <table class="table table-borderless" style="font-size:16px;width:48%;float:left;">
                             <tr>
                                 <td style="padding: 0px;">
                                     <t t-if="o.name">
                                         <b>TO:</b>
-                                    </t>
-                                </td>
-                                <td style="padding: 0px;padding-left: 180px;">
-                                    <strong>NO:</strong>
-                                    <t t-if="o.name">
-                                        <span t-field="o.name"/>
                                     </t>
                                 </td>
                             </tr>
@@ -35,25 +30,15 @@
                                 <td style="padding: 0px;text-transform: uppercase">
                                     <t t-if="o.partner_id.name">
                                         <b>
-                                            <span t-field="o.partner_id.name"/>
+                                            <span t-field="o.partner_id.name"/>,
                                         </b>
-                                        ,
                                     </t>
                                 </td>
-                                <td style="padding: 0px;"/>
-
                             </tr>
                             <tr style="padding: 0px;">
                                 <td style="padding: 0px">
                                     <t t-if="o.partner_id.street">
                                         <span t-field="o.partner_id.street"/>,
-                                    </t>
-                                </td>
-                                <td style="padding: 0px;padding-left: 180px;">
-                                    <t t-if="o.partner_id.street">
-                                        <strong>Date:</strong>
-                                        <span t-field="o.scheduled_date"
-                                              t-options='{"widget": "date","format": "dd-MM-yyyy"}'/>
                                     </t>
                                 </td>
                             </tr>
@@ -64,9 +49,8 @@
                                         <span t-field="o.partner_id.zip"/>,
                                     </t>
                                 </td>
-                                <td style="padding: 0px;"/>
                             </tr>
-                            <tr>
+                            <tr style="padding: 0px;">
                                 <td style="padding: 0px;">
                                     <t t-if="o.partner_id.state_id">
                                         <span t-field="o.partner_id.state_id"/>,
@@ -75,32 +59,53 @@
                                         <span t-field="o.partner_id.country_id"/>,
                                     </t>
                                 </td>
-                                <td style="padding: 0px;padding-left: 180px;">
-                                    <br/>
+                            </tr>
+                            <tr style="padding: 0px;">
+                                <td style="padding: 0px;">
+                                    <t t-if="o.partner_id.phone">
+                                        <span t-field="o.partner_id.phone"/>
+                                    </t>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table class="table table-borderless"
+                               style="font-size:16px;width:48%;float:left;margin-left: 4%;">
+                            <tr>
+                                <td style="padding: 0px;">
+                                    <strong>NO:</strong>
+                                    <t t-if="o.name">
+                                        <span t-field="o.name"/>
+                                    </t>
+                                </td>
+                            </tr>
+                            <tr style="padding: 0px;">
+                                <td style="padding: 0px;">
+                                    <strong>Date:</strong>
+                                    <t t-if="o.scheduled_date">
+                                        <span t-field="o.scheduled_date"
+                                              t-options='{"widget": "date","format": "dd-MM-yyyy"}'/>
+                                    </t>
+                                </td>
+                            </tr>
+                            <tr style="padding: 0px;">
+                                <td style="padding: 0px;">
                                     <t t-if="o.origin">
                                         <strong>Sales Order No:</strong>
                                         <span t-field="o.origin"/>
                                     </t>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr style="padding: 0px;">
                                 <td style="padding: 0px;">
-                                    <t t-if="o.partner_id.phone">
-                                        <span t-field="o.partner_id.phone"/>
-                                    </t>
-                                </td>
-                                <td style="padding: 0px;padding-left: 180px;">
-                                    <br/>
-                                    <t t-if="o.kg_po_ref">
-                                        <strong>LPO Ref:</strong>
-                                        <span t-field="o.kg_po_ref"/>
+                                    <t t-if="o.client_order_do_ref">
+                                        <strong>Customer Reference:</strong>
+                                        <span t-field="o.client_order_do_ref"/>
                                     </t>
                                 </td>
                             </tr>
-                            <tr>
-                                <td/>
-                                <td style="padding: 0px;padding-left: 180px;">
-                                    <br/>
+                            <tr style="padding: 0px;">
+                                <td style="padding: 0px;">
                                     <t t-if="o.partner_id.parent_id.kg_tr_no">
                                         <strong>TR No:</strong>
                                         <span t-field="o.partner_id.parent_id.kg_tr_no"/>
@@ -108,11 +113,15 @@
                                 </td>
                             </tr>
                         </table>
-                        <p style="font-size:18px;">
+
+                        <div style="clear: both;"></div>
+
+                        <p style="font-size:16px;text-align:left; display:block;">
                             <b>Please receive the following items:</b>
                         </p>
+
                         <table class="table table-condensed"
-                               style="border:1px solid black; border-collapse: collapse;">
+                               style="border:1px solid black; border-collapse: collapse;font-size:16px;">
                             <thead>
                                 <tr style="border-bottom:.5px;">
                                     <th class="text-center"
@@ -139,9 +148,18 @@
                                         <span t-esc="count"/>
                                     </td>
                                     <!---->
+                                    <t t-set="serial_numbers" t-value="''"/>
+                                    <t t-foreach="move_line.move_line_ids" t-as="m_line">
+                                        <t t-if="m_line.lot_id.name">
+                                            <t t-set="serial_numbers"
+                                               t-value="serial_numbers+' '+m_line.lot_id.name+','"/>
+                                        </t>
+                                    </t>
                                     <td style="border-left:1px solid black;border-right:1px solid black;border-bottom:1px solid black;text-transform: uppercase"
                                         class="text-center">
-                                        <span t-field="move_line.name"/>
+                                        <span t-field="move_line.sale_line_id.name"/>
+                                        <t t-if="serial_numbers">[<span t-esc="serial_numbers"/>]
+                                        </t>
                                     </td>
                                     <td style="border-left:1px solid black;border-right:1px solid black;border-bottom:1px solid black;width:2%;text-align:right;padding-right:10px">
                                         <span t-field="move_line.product_qty"/>
@@ -149,8 +167,8 @@
                                     <t t-set="totalqty" t-value="totalqty+move_line.product_qty"/>
                                 </tr>
                                 <tr>
-                                    <td colspan="1"/>
-                                    <td colspan="1" style="padding:5px;padding-left: 700px;">
+                                    <!-- <td colspan="1"/> -->
+                                    <td colspan="2" align="right">
                                         <strong>Total :</strong>
                                     </td>
                                     <td class="text-right" style="text-align:right;padding-right:10px">
@@ -172,7 +190,7 @@
                         <br/>
                         <br/>
                         <br/>
-                        <table class="table table-borderless table-condensed table-hover'" width="100%">
+                        <table class="table table-borderless table-condensed table-hover'" width="100%" style="font-family:Arial, sans-serif;">
                             <!--                            <tr width="100%" align="left">-->
 
                             <tr width="100%" align="left">

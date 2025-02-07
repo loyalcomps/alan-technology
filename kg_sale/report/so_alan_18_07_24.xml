@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_sale_order_confirmed">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <div class="header">
+                    <div class="row">
+                        <br/>
+                        <br/>
+                        <div name="left-upper-side" class="col-8">
+                            <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="min-height: 100px;" alt="Logo"/>
+                            <br/>
+                        </div>
+                        <div name="com_addr" align="left" class="row col-6">
+                                    <strong>
+                                    <br/>
+                                    Tel:
+                                    <span t-field="o.company_id.phone"/>
+                                    <br/>
+                                    Email:
+                                    <span t-field="o.company_id.email"/>
+                                    <br/>
+                                    Web:
+                                    <span t-field="o.company_id.website"/>
+                                    <br/>
+                                    PO Box:
+                                    <t t-if="o.company_id.zip"><span t-field="o.company_id.zip"/>,
+                                    </t>
+                                    <t t-if="o.company_id.state_id"><span t-field="o.company_id.state_id"/>,
+                                    </t>
+                                    <t t-if="o.company_id.country_id">
+                                        <span t-field="o.company_id.country_id"/>
+                                    </t>
+                                </strong>
+                                </div>
+                           <!--  </div>
+                        </strong> -->
+                    </div>
+                </div>
+                <!--                <t t-call="web.basic_layout">-->
+                <div class="page article o_report_layout_standard" style="font-size:14px">
+                    <div class="oe_structure"/>
+                    <center>
+                        <h2 style="font-family: Arial, Helvetica, sans-serif;">
+                            <strong>Sales Order</strong>
+                        </h2>
+                    </center>
+                    <br/>
+                    <br/>
+                    <div class="row">
+                        <br/>
+                        <table class="table table-borderless table-condensed table-hover'                            style='width:100%;'">
+                            <tr width="100%" align="left">
+                                <td rowspan="7" width="40%">
+                                    <strong>To:</strong>
+                                    <br/>
+                                    <t t-if="o.partner_id">
+                                        <span t-field="o.partner_id"/>
+                                        ,
+                                        <br/>
+                                    </t>
+                                    <t t-if="o.partner_id.street">
+                                        <span t-field="o.partner_id.street"/>
+                                        ,
+                                        <br/>
+                                    </t>
+                                    <t t-if="o.partner_id.street2">
+                                        <span t-field="o.partner_id.street2"/>
+                                        ,
+                                        <br/>
+                                    </t>
+                                    <t t-if="o.partner_id.city">
+                                        <span t-field="o.partner_id.city"/>
+                                        ,
+                                        <br/>
+                                    </t>
+                                    <t t-if="o.partner_id.zip">
+                                        Po Box:
+                                        <span t-field="o.partner_id.zip"/>
+                                        ,
+                                        <br/>
+                                    </t>
+                                    <t t-if="o.partner_id.state_id">
+                                        <span t-field="o.partner_id.state_id"/>
+                                        ,
+                                    </t>
+                                    <t t-if="o.partner_id.country_id">
+                                        <span t-field="o.partner_id.country_id"/>
+                                        ,
+                                        <br/>
+                                    </t>
+                                    <t t-if="o.partner_id.phone">
+                                        <span t-field="o.partner_id.phone"/>
+                                    </t>
+                                </td>
+                            </tr>
+                            <tr width="100%" align="left">
+                                <td width="40%" style="padding-right:300px;border-bottom:1px solid Black;">
+                                    <span>Sales Order:</span>
+                                    <strong>
+                                        <span t-field="o.name"/>
+                                    </strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="40%" style="border-bottom:1px solid Black;">
+                                    <span>Date:</span>
+                                    <strong>
+                                        <span t-field="o.date_order"/>
+                                    </strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="40%" style="border-bottom:1px solid Black;">
+                                    <span>LPO No :</span>
+                                    <strong>
+                                        <span t-field="o.client_order_ref"/>
+                                    </strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="40%" style="border-bottom:1px solid Black;">
+                                    <span>Sales Person:</span>
+                                    <strong>
+                                        <span t-field="o.user_id"/>
+                                    </strong>
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td width="40%">
+                                    <span>Payment Term:</span>
+                                    <strong>
+                                        <span t-field="o.payment_term_id"/>
+                                    </strong>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <br/>
+                    <br/>
+                    <t t-set="t_purchase_price" t-value="0"/>
+                    <t t-set="t_price_subtotal" t-value="0"/>
+                    <t t-set="t_price_unit" t-value="0"/>
+                    <t t-set="t_price_total" t-value="0"/>
+                    <t t-set="t_price_unit" t-value="0"/>
+                    <t t-set="t_price_subt" t-value="0"/>
+
+                    <t t-set="total_cost_order_individual" t-value="0"/>
+                    <t t-set="total_cost_order" t-value="0"/>
+                    <t t-set="total_unit_price_individual" t-value="0"/>
+                    <t t-set="total_unit_price" t-value="0"/>
+                    <t t-set="total_order_margin" t-value="0"/>
+
+
+                    <table class="table table-condensed" style="border:1px solid black;border-collapse: collapse;">
+                        <thead style="border-bottom:1px solid black;">
+
+                            <tr>
+
+                                <th class="text-center" style="border-right:1px solid black;padding:10px;">Item #
+                                </th>
+
+                                <th class="text-center" style="border-right:1px solid black;padding:10px;">Vendor
+                                </th>
+
+                                <th class="text-center" style="border-right:1px solid black;padding:10px;">Item Code
+                                </th>
+
+                                <th width="25" class="text-center" style="border-right:1px solid black;padding:10px; width:25%;">
+                                    Description
+                                </th>
+
+                                <th class="text-center" style="border-right:1px solid black;padding:10px;">Qty</th>
+
+                                <th class="text-center" style="border-right:1px solid black;padding:10px;">
+                                    Supplier
+                                </th>
+
+                                <th class="text-center" style="border-right:1px solid black;padding:10px;">VAT(%)
+                                </th>
+
+                                <th class="text-left" style="border-right:1px solid black;padding:5px;">Buying
+                                    Price
+                                </th>
+
+                                <th class="text-center" style="border-right:1px solid black;padding:10px;">
+                                    Total(<span t-field="o.currency_id"/>)
+                                </th>
+
+                                <th class="text-left" style="border-right:1px solid black;padding:5px;">Selling
+                              Price
+                                </th>
+
+                                <th class="text-center" style="border-right:1px solid black;padding:10px;">
+                                    Total(<span t-field="o.currency_id"/>)
+                                </th>
+
+
+                                <t t-if="o.kg_discount or o.kg_discount_per">
+                                    <th class="text-center" style="border-right:1px solid black;padding:10px;">
+                                        Discount
+                                    </th>
+                                </t>
+
+                                <th class="text-center" style="border-right:1px solid black;padding:10px;">Margin
+                                </th>
+
+                            </tr>
+                        </thead>
+                        <tbody style="display: table-row-group;">
+
+                            <t t-set="count" t-value="0"/>
+
+                            <tr t-foreach="o.order_line" t-as="line">
+                                <t t-set="dis" t-value="(line.discount/100) * (line.product_uom_qty * line.price_unit)"/>
+                                <t t-set="count" t-value="count + 1"/>
+
+                                <td class="text-center" style="border-right:1px solid black;border-bottom:.5px solid black;text-align:center;">
+                                    <span t-esc="count"/>
+                                </td>
+
+                                <td class="text-left" style="border-right:1px solid black;border-bottom:.5px solid black;">
+
+                                    <span t-field="line.kg_brand_id"/>
+
+                                </td>
+
+                                <td class="text-left" style="border-right:1px solid black;border-bottom:.5px black;">
+
+                                    <span t-field="line.product_id.default_code"/>
+
+                                </td>
+
+                                <td class="text-left" style="border-right:1px solid black;border-bottom:.5px solid black;width: 25%;text-align:left;">
+
+                                    <span t-field="line.name"/>
+
+                                </td>
+
+                                <td class="text-center" style="border-right:1px solid black;border-bottom:.5px solid black;text-align:center;">
+
+                                    <span t-field="line.product_uom_qty"/>
+
+                                </td>
+
+                                <td class="text-center" style="border-right:1px solid black;border-bottom:.5px solid black;text-align:center;">
+
+                                    <span t-field="line.kg_supplier_id"/>
+
+                                </td>
+
+                                <td class="text-center" style="border-right:1px solid black;border-bottom:.5px solid black;text-align:center;">
+
+                                    <t t-esc="'{0:,.0f}'.format(line.tax_id.amount)"/>%
+                                </td>
+
+                                <td class="text-center" style="border-right:1px solid black;border-bottom:.5px solid black;text-align:center;">
+
+                                    <span t-field="line.purchase_price"/>
+                                </td>
+                                <t t-set="total_cost_order_individual" t-value="total_cost_order_individual+line.purchase_price"/>
+                                <td class="text-center" style="border-right:1px solid black;border-bottom:.5px solid black;text-align:center;">
+
+
+                                    <t t-set="total_cost" t-value="line.purchase_price*line.product_uom_qty"/>
+                                    <t t-esc="'{0:,.2f}'.format(total_cost)"/>
+
+                                </td>
+                                <t t-set="total_cost_order" t-value="total_cost_order+total_cost"/>
+
+                                <td class="text-center" style="border-right:1px solid black;border-bottom:.5px solid black;text-align:center;">
+
+                                    <span t-field="line.price_unit"/>
+
+                                </td>
+                                <t t-set="total_unit_price_individual" t-value="total_unit_price_individual+line.price_unit"/>
+                                <td class="text-center" style="border-right:1px solid black;border-bottom:.5px solid black;text-align:center;">
+
+                                    <t t-set="total_selling_price" t-value="(line.price_unit*line.product_uom_qty)-dis"/>
+                                    <t t-esc="'{0:,.2f}'.format(total_selling_price)"/>
+                                </td>
+                                <t t-set="total_unit_price" t-value="total_unit_price+total_selling_price"/>
+
+
+                                <t t-if="o.kg_discount or o.kg_discount_per">
+                                    <td class="text-center" style="border-right:1px solid black;border-bottom:.5px solid black;text-align:center;">
+
+                                        <!--                                <t t-set="discount" t-value="o.amount_total - o.amount_tax+o.amount_tax"/>-->
+                                        <!--                                 <t t-esc="'{0:,.2f}'.format(discount)" />-->
+                                    </td>
+                                </t>
+
+                                <td class="text-center" style="border-right:1px solid black;border-bottom:.5px solid black;text-align:center;">
+
+                                    <t t-set="total_margin" t-value="total_selling_price - total_cost"/>
+                                    <t t-esc="'{0:,.2f}'.format(total_margin)"/>
+                                </td>
+                                <t t-set="total_order_margin" t-value="total_order_margin+total_margin"/>
+                            </tr>
+
+
+                            <tr>
+
+                                <td colspan="6">
+                                    <strong>Total</strong>
+                                </td>
+                                <td style="border-left:1px solid white">
+                                    <span class="text-left" style="text-align:left;">
+                                        <strong>
+                                            <t t-esc="'{0:,.2f}'.format(o.amount_tax)"/>
+                                        </strong>
+                                    </span>
+                                </td>
+                                <td style="border-left:1px solid white">
+                                    <span class="text-left" style="text-align:left;">
+                                        <strong>
+                                            <t t-esc="'{0:,.2f}'.format(total_cost_order_individual)"/>
+                                        </strong>
+                                    </span>
+                                </td>
+                                <td style="border-left:1px solid white">
+                                    <span class="text-left" style="text-align:left;">
+                                        <strong>
+                                            <t t-esc="'{0:,.2f}'.format(total_cost_order)"/>
+                                        </strong>
+                                    </span>
+                                </td>
+                                <td style="border-left:1px solid white">
+                                    <span class="text-left" style="text-align:left;">
+                                        <strong>
+                                            <t t-esc="'{0:,.2f}'.format(total_unit_price_individual)"/>
+                                        </strong>
+                                    </span>
+                                </td>
+                                <td style="border-left:1px solid white">
+                                    <span class="text-left" style="text-align:left;">
+                                        <strong>
+                                            <t t-esc="'{0:,.2f}'.format(total_unit_price)"/>
+                                        </strong>
+                                    </span>
+                                </td>
+
+
+                                <t t-if="o.kg_discount or o.kg_discount_per">
+                                    <td class="text-center" style="border-right:1px solid black;border-left:1px solid white">
+
+                                        <t t-set="discount" t-value="o.amount_total - o.amount_untaxed-o.amount_tax"/>
+                                        <t t-esc="'{0:,.2f}'.format(discount)"/>
+                                    </td>
+                                </t>
+                                <td style="border-left:1px solid white">
+                                    <span class="text-left" style="text-align:left;">
+                                        <strong>
+                                            <t t-esc="'{0:,.2f}'.format(total_order_margin)"/>
+                                        </strong>
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="oe_structure"/>
+                <div class="footer">
+                    <div class="row" style="border-top:1px solid black">
+                        <div class="col col-md-auto" align="center">
+                            <div class="col-xs-4" align="center" style="font-size:20px">
+                                <br/>
+                                <strong style="font-size:12px">IT Solutions provider since 1990...</strong>
+                                <br/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+        <!--        </t>-->
+    </template>
+</odoo>

@@ -46,6 +46,7 @@
                      <field name="invoice_allocation_ids" >
                              <tree editable="bottom" create="1">
 
+                                    <field name="bill_ref" attrs="{'column_invisible':[('parent.show_reference','=',False)]}" />
                                      <field name="name" />
                                      <field name="inv_date"/>
                                      <field name="date_due"/>

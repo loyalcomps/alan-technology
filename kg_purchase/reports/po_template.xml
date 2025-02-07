@@ -23,60 +23,61 @@
                         <td rowspan="7" width="40%">
                             <strong style="padding-bottom: 10px">To:</strong>
                             <br/>
-                            <t t-if="o.partner_id">
-                                <strong>
-                                    <span style="padding-bottom: 10px" t-field="o.partner_id"/>
-                                </strong>
-                                ,
-                                <br/>
-                            </t>
-                            <t t-if="o.partner_id.street">
-                                <span style="padding-bottom: 10px" t-field="o.partner_id.street"/>
-                                ,
-                                <br/>
-                            </t>
-                            <t t-if="o.partner_id.street2">
-                                <span style="padding-bottom: 10px" t-field="o.partner_id.street2"/>
-                                ,
-                                <br/>
-                            </t>
-                            <t t-if="o.partner_id.city">
-                                <span style="padding-bottom: 10px" t-field="o.partner_id.city"/>
-                                ,
-                                <br/>
-                            </t>
-                            <t t-if="o.partner_id.zip">
-                                Po Box:
-                                <span style="padding-bottom: 10px" t-field="o.partner_id.zip"/>
-                                ,
-                                <br/>
-                            </t>
-                            <t t-if="o.partner_id.state_id">
-                                <span style="padding-bottom: 10px" t-field="o.partner_id.state_id"/>
-                                ,
-                            </t>
-                            <t t-if="o.partner_id.country_id">
-                                <span style="padding-bottom: 10px" t-field="o.partner_id.country_id"/>
-                                ,
-                                <br/>
-                            </t>
-                            <t t-if="o.partner_id.phone">
-                                <span style="padding-bottom: 10px" t-field="o.partner_id.phone"/>
-                            </t>
-                            <t t-if="o.partner_id.kg_tr_no">
-                                TR NO:
-                                <span t-field="o.partner_id.kg_tr_no"/>
-                            </t>
+                            <div style="margin-top: 10px;">
+                                <t t-if="o.partner_id">
+                                    <strong style="padding-bottom: 10px; padding-top:10pt">
+                                        <span style="padding-bottom: 10px; padding-top:10pt" t-field="o.partner_id"/>
+                                    </strong>
+                                    <br/>
+                                </t>
+                                <t t-if="o.partner_id.street">
+                                    <span style="padding-bottom: 10px" t-field="o.partner_id.street"/>
+
+                                    <br/>
+                                </t>
+                                <t t-if="o.partner_id.street2">
+                                    <span style="padding-bottom: 10px" t-field="o.partner_id.street2"/>
+
+                                    <br/>
+                                </t>
+                                <t t-if="o.partner_id.city">
+                                    <span style="padding-bottom: 10px" t-field="o.partner_id.city"/>
+                                    <br/>
+                                </t>
+                                <t t-if="o.partner_id.zip">
+                                    Po Box:
+                                    <span style="padding-bottom: 10px" t-field="o.partner_id.zip"/>
+
+                                    <br/>
+                                </t>
+                                <t t-if="o.partner_id.state_id">
+                                    <span style="padding-bottom: 10px" t-field="o.partner_id.state_id"/>
+
+                                </t>
+                                <t t-if="o.partner_id.country_id">
+                                    <span style="padding-bottom: 10px" t-field="o.partner_id.country_id"/>
+
+                                    <br/>
+                                </t>
+                                <t t-if="o.partner_id.phone">
+                                    <span style="padding-bottom: 10px" t-field="o.partner_id.phone"/>
+                                </t>
+                                <t t-if="o.partner_id.kg_tr_no">
+                                    TR NO:
+                                    <span t-field="o.partner_id.kg_tr_no"/>
+                                </t>
+                            </div>
                         </td>
                     </tr>
                     <tr width="100%" align="left">
-                        <td style="padding-bottom: 15px;padding-left: 350px;">
+                        <td style="padding-bottom: 15px; padding-left: 350px;">
                             <t t-if="o.name">
                                 NO:
                                 <span t-field="o.name"/>
                             </t>
                         </td>
                     </tr>
+
                     <tr>
                         <td style="padding-bottom: 15px;padding-left: 350px;">
                             <t t-if="o.date_order">
@@ -195,8 +196,8 @@
                         <div style="text-align:left;">
                             Amount in words:
                             <span t-esc="o.currency_id.amount_to_text(o.amount_total)"
-                                  style="text-transform: uppercase"/>
-                            ONLY
+                                  />
+                            Only
                         </div>
                     </div>
                 </div>
@@ -206,7 +207,7 @@
                         <tr>
                             Delivery:
                             <span t-field="o.date_order"
-                                  t-field-options="{&quot;format&quot;:&quot;dd/MM/yyyy&quot;}"/>
+                                  t-options='{"widget": "datetime", "date_only": True ,"format": "dd/MM/yyyy"}'/>
                             <br/>
                             <br/>
                             Payment:
@@ -232,19 +233,19 @@
                                         <br/>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td style="padding-top:2px;">
-                                        <br/>
-                                        <t t-if="o.company_id.sudo().company_seal">
-                                            <span>
-                                                <img t-att-src="image_data_uri(o.sudo().company_id.company_seal)"
-                                                     style="max-height: 2cm; max-width: 7cm;"/>
-                                            </span>
-                                        </t>
-                                        <br/>
-                                        <strong>Company Seal</strong>
-                                    </td>
-                                </tr>
+<!--                                <tr>-->
+<!--                                    <td style="padding-top:2px;">-->
+<!--                                        <br/>-->
+<!--                                        <t t-if="o.company_id.sudo().company_seal">-->
+<!--                                            <span>-->
+<!--                                                <img t-att-src="image_data_uri(o.sudo().company_id.company_seal)"-->
+<!--                                                     style="max-height: 2cm; max-width: 7cm;"/>-->
+<!--                                            </span>-->
+<!--                                        </t>-->
+<!--                                        <br/>-->
+<!--                                        <strong>Company Seal</strong>-->
+<!--                                    </td>-->
+<!--                                </tr>-->
                             </table>
                         </tr>
                     </tbody>

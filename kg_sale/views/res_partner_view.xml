@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
+    <record id="kg_res_partner_bank_views_inherit" model="ir.ui.view">
+            <field name="name">kg.res.partner.bank.form.inherit</field>
+            <field name="model">res.partner.bank</field>
+            <field name="inherit_id" ref="base.view_partner_bank_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='acc_number']" position="after">
+                    <field name="bank_iban_number"/>
+                    <field name="swift_code"/>
+                    <field name="branch"/>
+                </xpath>
+            </field>
+        </record>
 
     <record model="ir.ui.view" id="res_partner_view_inherit_form_id">
         <field name="name">res.partner</field>

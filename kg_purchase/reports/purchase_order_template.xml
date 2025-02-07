@@ -1,48 +1,209 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template id="purchase_order_template" inherit_id="purchase.report_purchaseorder_document">
-        <xpath expr="//div[@id='informations']" position="inside">
-            <div t-if="o.name" class="col-xs-3">
-                <strong>Our Order Reference:</strong>
-                <p t-field="o.name"/>
+       <!--  <xpath expr="//t[@t-set='address']" position="replace">
+            <div class="row">
+                <div class="col-6" align="left">
+                    <div t-field="o.partner_id"
+                         t-options='{"widget": "contact", "fields": ["address", "name", "phone", "vat"], "no_marker": True, "phone_icons": True}'/>
+                </div>
+                <t t-if="o.dest_address_id">
+                    <div class="col-6" style="margin-left:160pt;">
+                        <strong>Shipping address:</strong>
+                        <div t-field="o.dest_address_id"
+                             t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'
+                             name="purchase_shipping_address"/>
+                    </div>
+                </t>
             </div>
-        </xpath>
-        <xpath expr="//div[@id='total']" position="after">
-            <b>Signature</b>
-            <img style="max-height: 100px;" t-if="o.create_uid.kg_sign_signature"
-                 t-att-src="image_data_uri(o.create_uid.kg_sign_signature)" alt="Logo"/>
-        </xpath>
-        <xpath expr="//th[@name='th_amount']" position="replace">
-            <th name="th_amount" class="text-end">
-                <strong>Net Price</strong>
-            </th>
-        </xpath>
-        <xpath expr="//div[@id='total']" position="before">
-            <table class="table table-condensed">
+        </xpath>  -->
+<!--        <xpath expr="//t[@t-call='web.external_layout']" position="replace">-->
+<!--           &lt;!&ndash;  <div t-if="o.name" class="col-3">-->
+<!--                <strong>Our Order Reference:</strong>-->
+<!--                <p t-field="o.name"/>-->
+<!--            </div> &ndash;&gt;-->
+<!--            <t>-->
+<!--                -->
+<!--            </t>-->
+<!--&lt;!&ndash;              <div t-if="o.payment_term_id" class="col-3">&ndash;&gt;-->
+<!--&lt;!&ndash;                <strong>Payment Term:</strong>&ndash;&gt;-->
+<!--&lt;!&ndash;                <p t-field="o.payment_term_id.name"/>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+<!--        </xpath>-->
+        <xpath expr="//t[@t-set='address']" position="replace">
+            <table width="100%" class="table-borderless" style="margin-top:-5%">
                 <tr>
-                    <td style="padding-left:900px;">
-                        <strong>Total Without Taxes</strong>
+                    <td width="49%">
+                        <t t-if="o.partner_id">
+                                            <b>
+                                                <span t-esc="o.partner_id.name"/>
+                                            </b>
+                                            <br/>
+                                        </t>
+                                        <t t-if="o.partner_id.street">
+                                            <span t-field="o.partner_id.street"/>
+                                            <br/>
+                                        </t>
+                                        <t t-if="o.partner_id.street2">
+                                            <span t-field="o.partner_id.street2"/>
+                                            <br/>
+                                        </t>
+                                         <t t-if="o.partner_id.city">
+                                            <span t-field="o.partner_id.city"/><br/>
+                                        </t>
+                                         <t t-if="o.partner_id.state_id">
+                                            <span t-field="o.partner_id.state_id.name"/><br/>
+                                        </t>
+                                         <t t-if="o.partner_id.country_id">
+                                            <span t-field="o.partner_id.country_id.name"/><br/>
+                                        </t>
+                                        <t t-if="o.partner_id.zip">
+                                            Po Box:
+                                            <span t-field="o.partner_id.zip"/><br/>
+                                        </t>
+
+                                        <t t-if="o.partner_id.vat">
+                                            TRN NO:
+                                        <span t-field="o.partner_id.vat"/>
+                                        </t>
                     </td>
-                    <td class="text-right">
-                        <span t-field="o.amount_untaxed"
-                              t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td  style="padding-left:900px" class="border-black">Taxes</td>
-                    <td class="text-right">
-                        <span t-field="o.amount_tax"
-                              t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                    <td width="50%" >
+                        <t t-if="o.company_id.company_details">
+                        <strong style="margin-left:35%"><u>Ship To:</u></strong>
+                        <div style="margin-left:35%;margin-top:1%" t-field="o.company_id.company_details"
+                            
+                             name="purchase_shipping_address"/>
+                         </t>
                     </td>
                 </tr>
             </table>
         </xpath>
+        <xpath expr="//div[@id='informations']" position="inside">
+           <!--  <div t-if="o.name" class="col-3">
+                <strong>Our Order Reference:</strong>
+                <p t-field="o.name"/>
+            </div> -->
+              <div t-if="o.payment_term_id" class="col-3">
+                <strong>Payment Term:</strong>
+                <p t-field="o.payment_term_id.name"/>
+            </div>
+            <div t-if="o.company_id.vat" class="col-3">
+                <strong>TRN:</strong>
+                <p t-field="o.company_id.vat"/>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[@t-if='o.user_id']" position="replace">
+           <div t-if="o.date_order" class="col-3 bm-2">
+                    <strong>Order Date:</strong>
+                    <p t-field="o.date_order" class="m-0"/>
+           </div>
+        </xpath>
+        <xpath expr="//div[@id='informations']/div[3]" position="replace">
+            <div t-if="o.kg_sale_order_id" class="col-3 bm-2">
+                <strong>SO NO:</strong>
+                <p t-field="o.kg_sale_order_id.name" class="m-0"/>
+            </div>
+        </xpath>
+        <xpath expr="//div[@id='informations']/div[4]" position="replace">
+
+        </xpath>
+         <xpath expr="//div[@id='informations']/div[@t-if='o.partner_ref']" position="replace">
+
+        </xpath>
+        <xpath expr="//span[@t-field='line.price_subtotal']" position="replace">
+            <span t-field="line.price_subtotal" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;}"/>
+        </xpath>
+        <xpath expr="//th[@name='th_quantity']" position="replace">
+            <th name="th_quantity" class="text-left"><span style="margin-left:-40%"><strong>Qty</strong></span></th>
+        </xpath>
+
+
+
+        <xpath expr="//div[@id='total']" position="after">
+            <br/>
+           <div style="text-align:left;">
+                            Amount in words:
+                            <span t-esc="o.currency_id.amount_to_text(o.amount_total).title()"/>
+                            Only
+           </div>
+            <br/>
+<!--            <br/>-->
+            <table class="table-borderless" style="border-spacing: 0; border-collapse: collapse;">
+    <tr><td width="20%" colspan="3" style="padding: 0; margin: 0;"><span style="font-weight:bold">Authorized By</span></td></tr>
+    <tr><td width="20%" style="padding: 0; margin: 0;"><span >Name</span></td><td width="3%" style="padding: 0; margin: 0;">:</td><td style="padding: 0; margin: 0;"><span t-esc="o.create_uid.partner_id.name"></span></td></tr>
+    <tr><td width="20%" style="padding: 0; margin: 0;">Designation</td><td width="3%" style="padding: 0; margin: 0;">:</td><td style="padding: 0; margin: 0;"><span t-esc="o.create_uid.partner_id.function"></span></td></tr>
+    <tr><td width="20%" style="padding: 0; margin: 0;">Contact</td><td width="3%" style="padding: 0; margin: 0;">:</td><td style="padding: 0; margin: 0;"><span t-esc="o.create_uid.partner_id.phone"></span></td></tr>
+    <tr><td width="20%" style="padding: 0; margin: 0;vertical-align:top">Signature</td><td width="5%" style="padding: 0; margin: 0;vertical-align:top">:</td><td width="50%" style="padding: 0; margin: 0;vertical-align:top"><img style="max-height: 150px; max-width: 150px;" t-if="o.create_uid.kg_sign_signature" t-att-src="image_data_uri(o.create_uid.kg_sign_signature)" alt="Signature"/></td></tr>
+</table>
+
+        </xpath>
+        <xpath expr="//th[@name='th_description']" position="replace">
+           <th name="th_description" width="35%"><strong>Description</strong></th>
+        </xpath>
+        <xpath expr="//th[@name='th_amount']" position="replace">
+            <th name="th_amount" class="text-left">
+                <strong>Net Price(<t t-esc="o.currency_id.symbol"/>)</strong>
+            </th>
+        </xpath>
+        <xpath expr="//th[@name='th_description']" position="before">
+            <th name="th_si" class="text-left">
+                <strong>Sl.No</strong>
+            </th>
+        </xpath>
+        <xpath expr="//thead" position="inside">
+            <t t-set="count" t-value="0"/>
+        </xpath>
+<!--        <xpath expr="//p[@t-field='o.date_approve']" position="replace">-->
+<!--            <p t-field="o.date_approve" t-options="{&quot;widget&quot;: &quot;date&quot;,&quot;format&quot;: &quot;dd-MM-yyyy&quot;}" class="m-0"/>-->
+<!--        </xpath>-->
+        <xpath expr="//p[@t-field='o.date_order']" position="replace">
+            <p t-field="o.date_order" t-options="{&quot;widget&quot;: &quot;date&quot;,&quot;format&quot;: &quot;dd-MM-yyyy&quot;}" class="m-0"/>
+        </xpath>
+         <xpath expr="//span[@t-field='line.price_subtotal']" position="replace">
+
+            <!-- <span t-esc="'%.2f'%(line.price_subtotal)"/> -->
+            <span t-esc="'{0:,.2f}'.format(line.price_subtotal)"/>
+        </xpath>
+         <!-- <xpath expr="//span[@t-field='line.date_planned']" position="replace"> -->
+            <!-- <p t-field="line.date_planned" t-options="{&quot;widget&quot;: &quot;date&quot;,&quot;format&quot;: &quot;dd-MM-yyyy&quot;}" class="m-0"/> -->
+        <!-- </xpath>
+         <xpath expr="//th[@name='th_date_req']" position="replace"> -->
+            <!-- <td id="product">
+                <t t-set="count" t-value="count+1"/>
+                <span t-esc="count"/>
+            </td> -->
+        <!-- </xpath> -->
+        <xpath expr="//td[@id='product']" position="before">
+            <td id="product">
+                <t t-set="count" t-value="count+1"/>
+                <span t-esc="count"/>
+            </td>
+        </xpath>
+<!--        <xpath expr="//div[@id='total']" position="before">-->
+<!--            <table class="table table-condensed">-->
+<!--                <tr>-->
+<!--                    <td align="right">-->
+<!--                        <strong>Total Without Taxes</strong>-->
+<!--                    </td>-->
+<!--                    <td align="right">-->
+<!--                        <span t-field="o.amount_untaxed" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>-->
+<!--                    </td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <td align="right">Taxes</td>-->
+<!--                    <td class="text-right" align="right">-->
+<!--                        <span t-field="o.amount_tax" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>-->
+<!--                    </td>-->
+<!--                </tr>-->
+<!--            </table>-->
+<!--        </xpath>-->
     </template>
     <template id="external_layout_standard_custom" inherit_id="web.external_layout_standard">
         <xpath expr="//div[1]/div[1]" position="after">
             <div align="right">
-                A trusted partner for all your IT solutions
-            </div>
+                    A trusted partner for all your IT solutions
+                </div>
         </xpath>
         <xpath expr="//div/div[hasclass('text-muted')]" position="replace">
             <div>
@@ -69,4 +230,153 @@
             </div>
         </xpath>
     </template>
+
+        <template id="web.external_layout_standard">
+        <div t-attf-class="header o_company_#{company.id}_layout" t-att-style="report_header_style">
+            <div class="row">
+
+                <div class="col-3 mb4">
+                    <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height: 70px;"
+                         alt="Logo"/>
+                </div>
+                <div class="col-9 text-end" style="margin-top:22px;" t-field="company.report_header" name="moto"/>
+            </div>
+            <div t-if="company.logo or company.report_header" class="row zero_min_height">
+                <div class="col-12">
+                    <div style="border-bottom: 1px solid black;"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-8"/>
+
+                <div class="col-4" name="company_address" style="margin-left:6.5t;">
+                    <ul class="list-unstyled">
+                        <li t-if="company.is_company_details_empty">
+                            <t t-if="o">
+                            <t t-if="o._name=='purchase.order'">
+                                <strong><u>Bill To:</u></strong>
+                            </t>
+                            </t>
+                            <t t-esc="company.partner_id"
+                               t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}' style="font-size:100px"/>
+                        </li>
+                        <li t-else="">
+                            <t t-if="o">
+                            <t t-if="o._name=='purchase.order'">
+                                <strong><u>Bill To:</u></strong>
+                            </t>
+                            </t>
+                            <t t-esc="company.company_details" style="font-size:100px;margin-top:1%"/>
+                        </li>
+                        <li t-if="forced_vat">
+                            <t t-esc="company.country_id.vat_label or 'Tax ID'"/>:
+                            <span t-esc="forced_vat"/>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <div t-attf-class="article o_report_layout_standard o_company_#{company.id}_layout {{  'o_report_layout_background' if company.layout_background in ['Geometric', 'Custom']  else  '' }}"
+             t-attf-style="background-image: url({{ 'data:image/png;base64,%s' % company.layout_background_image.decode('utf-8') if company.layout_background_image and company.layout_background == 'Custom' else '/base/static/img/bg_background_template.jpg' if company.layout_background == 'Geometric' else ''}});"
+             t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id"
+             t-att-data-oe-lang="o and o.env.context.get('lang')">
+            <div class="pt-5">
+                <!-- This div ensures that the address is not cropped by the header. -->
+                <t t-call="web.address_layout"/>
+            </div>
+            <t t-out="0"/>
+        </div>
+
+        <div t-attf-class="footer o_standard_footer o_company_#{company.id}_layout">
+            <div class="text-center" style="border-top: 1px solid black;">
+                <ul class="list-inline mb4">
+                    <div t-field="company.report_footer"/>
+                </ul>
+
+                <div t-if="report_type == 'pdf'" class="text-muted">
+                    Page:
+                    <span class="page"/>
+                    /
+                    <span class="topage"/>
+                </div>
+                <div t-if="report_type == 'pdf' and display_name_in_footer" class="text-muted">
+                    <span t-field="o.name"/>
+                </div>
+            </div>
+        </div>
+    </template>
+
+
+
+    <template id="ne_exteranl_layout">
+        <div t-attf-class="header o_company_#{o.company_id.id}_layout" t-att-style="report_header_style">
+            <div class="row">
+                <div class="col-3 mb4">
+                    <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 70px;"
+                         alt="Logo"/>
+                </div>
+                <div class="col-9 text-end" style="margin-top:22px;" t-field="o.company_id.report_header" name="moto"/>
+            </div>
+            <div align="right">
+                    A trusted partner for all your IT solutions
+                </div>
+            <div t-if="o.company_id.logo or o.company_id.report_header" class="row zero_min_height">
+                <div class="col-12">
+                    <div style="border-bottom: 1px solid black;"/>
+                </div>
+            </div>
+            <div class="row">
+                <div  name="company_address" style="width:50%">
+                    <ul class="list-unstyled">
+                        <li t-if="o.company_id.is_company_details_empty">
+                            <t t-esc="o.company_id.partner_id"
+                               t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'/>
+                        </li>
+                        <li t-else="">
+                            <t t-esc="o.company_id.company_details"/>
+                        </li>
+                        <li t-if="forced_vat">
+                            <t t-esc="o.company_id.country_id.vat_label or 'Tax ID'"/>:
+                            <span t-esc="forced_vat"/>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div t-attf-class="article o_report_layout_standard o_company_#{o.company_id.id}_layout {{  'o_report_layout_background' if o.company_id.layout_background in ['Geometric', 'Custom']  else  '' }}"
+             t-attf-style="background-image: url({{ 'data:image/png;base64,%s' % o.company_id.layout_background_image.decode('utf-8') if o.company_id.layout_background_image and o.company_id.layout_background == 'Custom' else '/base/static/img/bg_background_template.jpg' if o.company_id.layout_background == 'Geometric' else ''}});"
+             t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id"
+             t-att-data-oe-lang="o and o.env.context.get('lang')">
+            <div class="pt-5">
+                <!-- This div ensures that the address is not cropped by the header. -->
+                <t t-call="web.address_layout"/>
+            </div>
+            <t t-out="0"/>
+        </div>
+
+        <div t-attf-class="footer o_standard_footer o_company_#{o.company_id.id}_layout">
+            <div class="text-center" style="border-top: 1px solid black;">
+                <ul class="list-inline mb4">
+                    <div t-field="o.company_id.report_footer"/>
+                </ul>
+
+                <div t-if="report_type == 'pdf'" class="text-muted">
+                    Page:
+                    <span class="page"/>
+                    /
+                    <span class="topage"/>
+                </div>
+                <div t-if="report_type == 'pdf' and display_name_in_footer" class="text-muted">
+                    <span t-field="o.name"/>
+                </div>
+            </div>
+        </div>
+    </template>
+
+
+
+
 </odoo>

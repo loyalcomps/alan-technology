@@ -8,13 +8,11 @@
                         <br/>
                         <br/>
                         <div name="left-upper-side" class="col-8">
-                            <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)"
-                                 style="max-height: 45px;" alt="Logo"/>
+                            <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="min-height: 100px;max-height: 100px;" alt="Logo"/>
                             <br/>
                         </div>
-                        <strong>
-                            <div class="row" align="right">
-                                <div name="com_addr" class="col-xs-6" style="font-size:12px">
+                        <div name="com_addr" align="left" class="row col-6">
+                                    <strong>
                                     <br/>
                                     Tel:
                                     <span t-field="o.company_id.phone"/>
@@ -30,31 +28,32 @@
                                     </t>
                                     <t t-if="o.company_id.state_id"><span t-field="o.company_id.state_id"/>,
                                     </t>
+                                    <br/>
                                     <t t-if="o.company_id.country_id">
                                         <span t-field="o.company_id.country_id"/>
                                     </t>
+                                </strong>
                                 </div>
-                            </div>
-                        </strong>
+                           <!--  </div>
+                        </strong> -->
                     </div>
                 </div>
                 <!--                <t t-call="web.basic_layout">-->
-                <div class="page article o_report_layout_standard" style="font-size:12px">
+                <div class="page article o_report_layout_standard" style="font-size:14px">
                     <div class="oe_structure"/>
                     <center>
-                        <h3>
-                            <strong style="font-size:15px">Sales Order</strong>
-                        </h3>
+                        <h2 style="font-family: Arial, Helvetica, sans-serif;">
+                            <strong>Sales Order</strong>
+                        </h2>
                     </center>
                     <br/>
                     <br/>
                     <div class="row">
                         <br/>
-                        <table class="table table-borderless table-condensed table-hover'
-                           style='width:100%;'">
+                        <table class="table table-borderless table-condensed table-hover'                            style='width:100%;'">
                             <tr width="100%" align="left">
                                 <td rowspan="7" width="40%">
-                                    <strong>To:</strong>
+                                    <strong><u>To:</u></strong>
                                     <br/>
                                     <t t-if="o.partner_id">
                                         <span t-field="o.partner_id"/>
@@ -98,7 +97,7 @@
                             </tr>
                             <tr width="100%" align="left">
                                 <td width="40%" style="padding-right:300px;border-bottom:1px solid Black;">
-                                    Sales Order:
+                                    <span>Sales Order:</span>
                                     <strong>
                                         <span t-field="o.name"/>
                                     </strong>
@@ -106,7 +105,7 @@
                             </tr>
                             <tr>
                                 <td width="40%" style="border-bottom:1px solid Black;">
-                                    Date:
+                                    <span>Date:</span>
                                     <strong>
                                         <span t-field="o.date_order"/>
                                     </strong>
@@ -114,7 +113,7 @@
                             </tr>
                             <tr>
                                 <td width="40%" style="border-bottom:1px solid Black;">
-                                    LPO No :
+                                    <span>LPO No :</span>
                                     <strong>
                                         <span t-field="o.client_order_ref"/>
                                     </strong>
@@ -122,7 +121,7 @@
                             </tr>
                             <tr>
                                 <td width="40%" style="border-bottom:1px solid Black;">
-                                    Sales Person:
+                                    <span>Sales Person:</span>
                                     <strong>
                                         <span t-field="o.user_id"/>
                                     </strong>
@@ -130,7 +129,8 @@
 
                             </tr>
                             <tr>
-                                <td width="40%">Payment Term:
+                                <td width="40%">
+                                    <span>Payment Term:</span>
                                     <strong>
                                         <span t-field="o.payment_term_id"/>
                                     </strong>
@@ -154,8 +154,7 @@
                     <t t-set="total_order_margin" t-value="0"/>
 
 
-                    <table class="table table-condensed"
-                           style="border:1px solid black;border-collapse: collapse;">
+                    <table class="table table-condensed" style="border:1px solid black;border-collapse: collapse;">
                         <thead style="border-bottom:1px solid black;">
 
                             <tr>
@@ -169,8 +168,7 @@
                                 <th class="text-center" style="border-right:1px solid black;padding:10px;">Item Code
                                 </th>
 
-                                <th width="40" class="text-center"
-                                    style="border-right:1px solid black;padding:10px; width:40%;">
+                                <th width="25" class="text-center" style="border-right:1px solid black;padding:10px; width:25%;">
                                     Description
                                 </th>
 
@@ -183,7 +181,7 @@
                                 <th class="text-center" style="border-right:1px solid black;padding:10px;">VAT(%)
                                 </th>
 
-                                <th class="text-center" style="border-right:1px solid black;padding:10px;">Buying
+                                <th class="text-left" style="border-right:1px solid black;padding:5px;">Buying
                                     Price
                                 </th>
 
@@ -191,8 +189,8 @@
                                     Total(<span t-field="o.currency_id"/>)
                                 </th>
 
-                                <th class="text-center" style="border-right:1px solid black;padding:10px;">Selling
-                                    Price
+                                <th class="text-left" style="border-right:1px solid black;padding:5px;">Selling
+                              Price
                                 </th>
 
                                 <th class="text-center" style="border-right:1px solid black;padding:10px;">
@@ -216,107 +214,99 @@
                             <t t-set="count" t-value="0"/>
 
                             <tr t-foreach="o.order_line" t-as="line">
-                                <t t-set="dis"
-                                   t-value="(line.discount/100) * (line.product_uom_qty * line.price_unit)"/>
+                                 <t t-if="not line.display_type">
+                                <t t-set="dis" t-value="(line.discount/100) * (line.product_uom_qty * line.price_unit)"/>
                                 <t t-set="count" t-value="count + 1"/>
 
-                                <td class="text-center"
-                                    style="border-right:1px solid black;border-bottom:.5px solid black;text-align:center;">
+                                <td class="text-center" style="border-right:1px solid black;border-bottom:1px solid black;text-align:center;">
                                     <span t-esc="count"/>
                                 </td>
 
-                                <td class="text-left"
-                                    style="border-right:1px solid black;border-bottom:.5px solid black;">
+                                <td class="text-left" style="border-right:1px solid black;border-bottom:1px solid black;">
 
                                     <span t-field="line.kg_brand_id"/>
 
                                 </td>
 
-                                <td class="text-left"
-                                    style="border-right:1px solid black;border-bottom:.5px black;">
+                                <td class="text-left" style="border-right:1px solid black;border-bottom:1px  solid black;">
 
                                     <span t-field="line.product_id.default_code"/>
 
                                 </td>
 
-                                <td class="text-left"
-                                    style="border-right:1px solid black;border-bottom:.5px solid black;width: 40%;text-align:left;">
+                                <td class="text-left" style="border-right:1px solid black;border-bottom:1px solid black;width: 25%;text-align:left;">
 
                                     <span t-field="line.name"/>
 
                                 </td>
 
-                                <td class="text-center"
-                                    style="border-right:1px solid black;border-bottom:.5px solid black;text-align:center;">
+                                <td class="text-center" style="border-right:1px solid black;border-bottom:1px solid black;text-align:center;">
 
                                     <span t-field="line.product_uom_qty"/>
 
                                 </td>
 
-                                <td class="text-center"
-                                    style="border-right:1px solid black;border-bottom:.5px solid black;text-align:center;">
+                                <td class="text-center" style="border-right:1px solid black;border-bottom:1px solid black;text-align:center;">
 
                                     <span t-field="line.kg_supplier_id"/>
 
                                 </td>
 
-                                <td class="text-center"
-                                    style="border-right:1px solid black;border-bottom:.5px solid black;text-align:center;">
+                                <td class="text-center" style="border-right:1px solid black;border-bottom:1px solid black;text-align:center;">
 
-                                    <t t-esc="'{0:,.0f}'.format(line.tax_id.amount)"/>%
+                                    <span><t t-esc="'{0:,.0f}'.format(line.tax_id.amount)"/>%</span>
                                 </td>
 
-                                <td class="text-center"
-                                    style="border-right:1px solid black;border-bottom:.5px solid black;text-align:center;">
+                                <td class="text-center" style="border-right:1px solid black;border-bottom:1px solid black;text-align:center;">
 
                                     <span t-field="line.purchase_price"/>
                                 </td>
-                                <t t-set="total_cost_order_individual"
-                                   t-value="total_cost_order_individual+line.purchase_price"/>
-                                <td class="text-center"
-                                    style="border-right:1px solid black;border-bottom:.5px solid black;text-align:center;">
+                                <t t-set="total_cost_order_individual" t-value="total_cost_order_individual+line.purchase_price"/>
+                                <td class="text-center" style="border-right:1px solid black;border-bottom:1px solid black;text-align:center;">
 
 
                                     <t t-set="total_cost" t-value="line.purchase_price*line.product_uom_qty"/>
-                                    <t t-esc="'{0:,.2f}'.format(total_cost)"/>
+                                    <span><t t-esc="'{0:,.2f}'.format(total_cost)"/></span>
 
                                 </td>
                                 <t t-set="total_cost_order" t-value="total_cost_order+total_cost"/>
 
-                                <td class="text-center"
-                                    style="border-right:1px solid black;border-bottom:.5px solid black;text-align:center;">
+                                <td class="text-center" style="border-right:1px solid black;border-bottom:1px solid black;text-align:center;">
 
                                     <span t-field="line.price_unit"/>
 
                                 </td>
-                                <t t-set="total_unit_price_individual"
-                                   t-value="total_unit_price_individual+line.price_unit"/>
-                                <td class="text-center"
-                                    style="border-right:1px solid black;border-bottom:.5px solid black;text-align:center;">
+                                <t t-set="total_unit_price_individual" t-value="total_unit_price_individual+line.price_unit"/>
+                                <td class="text-center" style="border-right:1px solid black;border-bottom:1px solid black;text-align:center;">
 
-                                    <t t-set="total_selling_price"
-                                       t-value="(line.price_unit*line.product_uom_qty)-dis"/>
-                                    <t t-esc="'{0:,.2f}'.format(total_selling_price)"/>
+                                    <t t-set="total_selling_price" t-value="(line.price_unit*line.product_uom_qty)-dis"/>
+                                    <span><t t-esc="'{0:,.2f}'.format(total_selling_price)"/></span>
                                 </td>
                                 <t t-set="total_unit_price" t-value="total_unit_price+total_selling_price"/>
 
 
                                 <t t-if="o.kg_discount or o.kg_discount_per">
-                                    <td class="text-center"
-                                        style="border-right:1px solid black;border-bottom:.5px solid black;text-align:center;">
+                                    <td class="text-center" style="border-right:1px solid black;border-bottom:1px solid black;text-align:center;">
 
                                         <!--                                <t t-set="discount" t-value="o.amount_total - o.amount_tax+o.amount_tax"/>-->
                                         <!--                                 <t t-esc="'{0:,.2f}'.format(discount)" />-->
                                     </td>
                                 </t>
 
-                                <td class="text-center"
-                                    style="border-right:1px solid black;border-bottom:.5px solid black;text-align:center;">
+                                <td class="text-center" style="border-right:1px solid black;border-bottom:1px solid black;text-align:center;">
 
                                     <t t-set="total_margin" t-value="total_selling_price - total_cost"/>
-                                    <t t-esc="'{0:,.2f}'.format(total_margin)"/>
+                                    <span><t t-esc="'{0:,.2f}'.format(total_margin)"/></span>
                                 </td>
                                 <t t-set="total_order_margin" t-value="total_order_margin+total_margin"/>
+                                 </t>
+                                <t t-else="">
+                                      <tr>
+                                            <td colspan="12" style="background-color: lightgray;border-right:1px solid black;border-bottom:1px solid black;border-top:1px solid black;border-left:1px solid black;" class="text-left">
+                                                <span t-field="line.name"/>
+                                            </td>
+                                        </tr>
+                                </t>
                             </tr>
 
 
@@ -363,11 +353,9 @@
 
 
                                 <t t-if="o.kg_discount or o.kg_discount_per">
-                                    <td class="text-center"
-                                        style="border-right:1px solid black;border-left:1px solid white">
+                                    <td class="text-center" style="border-right:1px solid black;border-left:1px solid white">
 
-                                        <t t-set="discount"
-                                           t-value="o.amount_total - o.amount_untaxed-o.amount_tax"/>
+                                        <t t-set="discount" t-value="o.amount_total - o.amount_untaxed-o.amount_tax"/>
                                         <t t-esc="'{0:,.2f}'.format(discount)"/>
                                     </td>
                                 </t>

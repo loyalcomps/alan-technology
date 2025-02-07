@@ -7,7 +7,8 @@
         <field name="arch" type="xml">
             <field name="date_order" position="after">
                 <field name="kg_po_order_type" required="1" string="Type"/>
-                <field name="kg_sale_order_id" readonly="1" widget="many2many_tags"/>
+                <field name="kg_sale_order_id" readonly="1" invisible="1" widget="many2many_tags"/>
+                <field name="sale_order" readonly="1" force_save="1"/>
             </field>
 
             <xpath expr="/form/header//field[@name='state']" position="after">

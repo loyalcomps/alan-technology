@@ -2,7 +2,7 @@
 <odoo>
     <data>
 
-        <menuitem id="menu_finance_legal_statement"
+      <!--   <menuitem id="menu_finance_legal_statement"
                   name="Financial Reports"
                   sequence="10"
                   parent="account.menu_finance_reports"/>
@@ -10,7 +10,7 @@
         <menuitem id="menu_finance_partner_reports"
                   name="Partner Reports"
                   sequence="20"
-                  parent="account.menu_finance_reports"/>
+                  parent="account.menu_finance_reports"/> -->
 
         <menuitem id="menu_finance_audit_reports"
                   name="Audit Reports"

@@ -153,7 +153,7 @@
                                     <b>Service Engineer</b>
                                 </td>
                                 <td style="border-top: 1px solid #ddd;font-size: 14px">
-                                    <span t-field="o.engineer_id"/>
+                                    <span t-field="o.user_id.partner_id.name"/>
                                 </td>
                                 <td style="border-top: 1px solid #ddd">
                                     <b>Scheduled Date &amp; Time</b>
@@ -168,7 +168,7 @@
                                     <b>Contact Number</b>
                                 </td>
                                 <td style="border-top: 1px solid #ddd;font-size: 14px">
-                                    <span t-field="o.engineer_id.partner_id.mobile"/>
+                                    <span t-field="o.user_id.partner_id.mobile"/>
                                 </td>
                                 <td style="border-top: 1px solid #ddd">
                                     <b>Service Charges</b>
@@ -183,7 +183,7 @@
                                     <b>Email ID</b>
                                 </td>
                                 <td style="border-top: 1px solid #ddd;font-size: 14px">
-                                    <span t-field="o.engineer_id.partner_id.email"/>
+                                    <span t-field="o.user_id.partner_id.email"/>
                                 </td>
                                 <td style="border-top: 1px solid #ddd">
 

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record id="action_menu_move_line_form" model="ir.ui.view">
+        <field name="name">portal.employee</field>
+        <field name="model">account.move.line</field>
+        <field name="arch" type="xml">
+            <form string="Portal Employee">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="portal_employee_view_tree" model="ir.ui.view">
+        <field name="name">portal.employee.tree</field>
+        <field name="model">account.move.line</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_menu_move_line" model="ir.actions.act_window">
+        <field name="name">menu_move_line</field>
+        <field name="view_mode">tree</field>
+        <field name="domain">[('display_type', 'not in', ('line_section', 'line_note'))]</field>
+        <field name="res_model">account.move.line</field>
+    </record>
+
+    <menuitem
+            id="menu_move_line"
+            name="Move Line"
+            parent="account.menu_finance_reports"
+            sequence="6"
+            action="vendor_outstanding_statement.action_menu_move_line"
+    />
+</odoo>

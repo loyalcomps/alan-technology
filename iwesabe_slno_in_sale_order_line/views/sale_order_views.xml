@@ -8,9 +8,9 @@
             <xpath expr="//field[@name='order_line']/tree/field[@name='sequence']" position="after">
                 <field name="sl_no"/>
             </xpath>
-            <xpath expr="//field[@name='order_line']/tree/field[@name='sequence']" position="attributes">
+           <!--  <xpath expr="//field[@name='order_line']/tree/field[@name='sequence']" position="attributes">
                 <attribute name="invisible">1</attribute>
-            </xpath>
+            </xpath> -->
         </field>
     </record>
 </odoo>

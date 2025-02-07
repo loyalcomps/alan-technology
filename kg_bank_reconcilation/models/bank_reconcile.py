@@ -13,6 +13,13 @@ class BankReconcilation(models.Model):
     _description = 'Bank Reconcilation Form'
     _order = "date_to desc,id desc"
 
+
+    def get_reconcile(self):
+        return sum(self.statement_lines.mapped('debit')) - sum(self.statement_lines.mapped('credit'))
+
+    def get_unreconcile(self):
+        return sum(self.statement_lines_open.mapped('debit')) - sum(self.statement_lines_open.mapped('credit'))
+        
     @api.onchange('journal_id', 'date_from', 'date_to')
     def _get_lines(self):
         if self.journal_id:

@@ -141,7 +141,9 @@ class KGSoPoWizard(models.TransientModel):
             'partner_id': partner_id,
             'order_line': line_vals_array,
             'kg_sale_order_id': sale_order_id,
-            'payment_term_id': payment_term_id
+            'payment_term_id': payment_term_id,
+            'origin':self.sale_order_id.name,
+            'sale_order':self.sale_order_id.id,
         }
         purchase_order_obj = self.env['purchase.order'].create(vals)
 

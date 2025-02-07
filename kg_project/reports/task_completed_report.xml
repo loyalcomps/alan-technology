@@ -98,7 +98,7 @@
                                     <b>Contact Person</b>
                                 </td>
                                 <td style="border-top: 1px solid #ddd;font-size: 14px">
-                                    <span t-if="o.partner_id" t-field="o.partner_id.child_ids[0].name"/>
+                                    <span t-if="o.partner_id.child_ids" t-field="o.partner_id.child_ids[0].name"/>
                                 </td>
                                 <td style="border-top: 1px solid #ddd">
                                     <b>Service Type</b>
@@ -190,7 +190,7 @@
                                         <span t-field="line.name"/>
                                     </td>
                                     <td style="border:1px solid black;text-align:center;">
-                                        <span t-field="o.engineer_id"/>
+                                        <span t-field="o.user_id.partner_id.name"/>
                                     </td>
                                     <td style="border:1px solid black;text-align:center;">
                                         <span t-field="line.date_from"/>

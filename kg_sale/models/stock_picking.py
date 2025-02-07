@@ -14,6 +14,7 @@ from odoo.tools.misc import formatLang
 class Picking(models.Model):
     _inherit = "stock.picking"
 
+    # kg_note = fields.Text(string='Note')
 
     kg_sale_order_type = fields.Selection(related='sale_id.kg_sale_order_type')
 
@@ -58,6 +59,7 @@ class Picking(models.Model):
             'view_mode': 'tree,form',
             'res_model': 'account.move',
             'domain': [('invoice_origin', '=', self.name)],
+            # 'context': {'default_kg_so_id': 'sale_id.id'},
             'context': {'create': False},
             'target': 'current'
         }
@@ -71,13 +73,13 @@ class Picking(models.Model):
         invoice with the sale order. The invoice is then created and linked to the
         picking and sale order.
 
-        The method also updates the sale order's invoice status depending on the 
-        delivery quantity and the total sale order quantity, and links the 
+        The method also updates the sale order's invoice status depending on the
+        delivery quantity and the total sale order quantity, and links the
         `kg_po_ref` (purchase order reference) if available to the invoice.
 
         Process:
         1. It checks if the picking is of type 'outgoing'.
-        2. Loops through the move lines of the picking and creates the corresponding 
+        2. Loops through the move lines of the picking and creates the corresponding
         invoice lines.
         3. Creates an invoice based on the picking details.
         4. Updates the sale order's invoice status based on the invoiced and delivered quantities.
@@ -93,11 +95,19 @@ class Picking(models.Model):
                 for move_ids_without_package in picking_id.move_ids_without_package:
                     sale_line = move_ids_without_package.sale_line_id
 
+                    cost = 0
+                    layer = self.env['stock.valuation.layer'].search([('stock_move_id','=',move_ids_without_package.id)])
+                    if len(layer) == 1:
+                        cost = layer.unit_cost
+                    if cost == 0:
+                        cost = move_ids_without_package.sale_line_id.purchase_price if move_ids_without_package.sale_line_id.purchase_price != 0 else move_ids_without_package.product_id.standard_price
+
                     vals = (0, 0, {
                         'name': move_ids_without_package.description_picking,
                         'product_id': move_ids_without_package.product_id.id,
                         'price_unit': move_ids_without_package.sale_line_id.price_unit,
-
+                        'cost':cost,
+                        'sale_line_id':move_ids_without_package.sale_line_id.id,
                         'account_id': move_ids_without_package.product_id.property_account_income_id.id if move_ids_without_package.product_id.property_account_income_id
                         else move_ids_without_package.product_id.categ_id.property_account_income_categ_id.id,
 
@@ -105,13 +115,29 @@ class Picking(models.Model):
                         'quantity': move_ids_without_package.quantity_done,
                         'description': move_ids_without_package.description,
                         'sale_line_ids': [(6, 0, [sale_line.id])]
-
                     })
                     invoice_line_list.append(vals)
+                service_lines = self.sale_id.order_line.filtered(lambda l: l.product_id.detailed_type == 'service')
+                for line in service_lines:
+                    vals = (0, 0, {
+                        'name': line.name,
+                        'product_id': line.product_id.id,
+                        'price_unit': line.price_unit,
+                        'cost': line.purchase_price,
+                        'sale_line_id': line.id,
+                        'account_id': line.product_id.property_account_income_id.id if line.product_id.property_account_income_id
+                        else line.product_id.categ_id.property_account_income_categ_id.id,
+
+                        'tax_ids': line.tax_id.ids,
+                        'quantity': line.product_uom_qty,
+                    })
+                    invoice_line_list.append(vals)                
                 invoice = picking_id.env['account.move'].create({
                     'move_type': 'out_invoice',
                     'invoice_origin': picking_id.name,
-                    'invoice_user_id': current_user,
+                    # 'invoice_user_id': current_user,
+                    'ref': picking_id.kg_sale_order_id.client_order_ref,
+                    'invoice_user_id': picking_id.kg_sale_order_id.user_id.id,
                     'narration': picking_id.name,
                     'partner_id': picking_id.partner_id.id,
                     'currency_id': picking_id.env.user.company_id.currency_id.id,
@@ -119,15 +145,20 @@ class Picking(models.Model):
                     'kg_bank_id': self.sale_id.bank_id.id,
                     'payment_reference': picking_id.name,
                     'picking_id': picking_id.id,
-                    'invoice_line_ids': invoice_line_list
+                    'invoice_line_ids': invoice_line_list,
+                    'kg_lpo_term_id': self.sale_id.kg_lpo_term_id.id,
+                    'kg_validity_id': self.sale_id.kg_validity_id.id,
+                    'kg_delivery_id': self.sale_id.kg_delivery_id.id,
+                    'kg_warranty_id': self.sale_id.kg_warranty_id.id,
                 })
                 picking_id.update({'kg_invoice_id': invoice.id})
                 so = picking_id.kg_sale_order_id
                 so.update({'invoice_ids': [(4, invoice.id)]})
-                picking_id.kg_invoice_status='original'
                 delivery_qty = sum(self.sale_id.picking_ids.filtered(lambda p: p.state == 'done').mapped(
                     'move_line_ids_without_package').mapped('qty_done'))
-                sale_qty = sum(self.sale_id.order_line.mapped('product_uom_qty'))
+                delivery_lines = self.sale_id.order_line.filtered(lambda l: l.product_id.detailed_type != 'service')
+                sale_qty = sum(delivery_lines.mapped('product_uom_qty'))
+                # sale_qty = sum(self.sale_id.order_line.mapped('product_uom_qty'))
                 if sale_qty == delivery_qty:
                     self.sale_id.kg_invoice_status_1 = 'invoiced'
                 else:

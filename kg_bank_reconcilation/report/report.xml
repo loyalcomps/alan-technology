@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <report id="report_bank_statement_reconciliation"
+
+        <report id="report_bank_statement_reconciliation_alan"
+            model="kg.bank.reconcilation"
+            report_type="qweb-pdf"
+            string="Bank Statement Reconciliation"
+            name="kg_bank_reconcilation.report_bank_stmnt_reconciliation_alan"
+            file="kg_bank_reconcilation.report_bank_stmnt_reconciliation_alan"
+    />
+    
+  <!--   <report id="report_bank_statement_reconciliation"
             model="kg.bank.reconcilation"
             report_type="qweb-pdf"
             string="Bank Statement Reconciliation"
@@ -14,7 +23,7 @@
             string="Bank Statement Reconciliation Weekwise"
             name="kg_bank_reconcilation.report_bank_stmnt_reconciliation_week"
             file="kg_bank_reconcilation.report_bank_stmnt_reconciliation_week"
-    />
+    /> -->
 
     <record id="paper_format_reconcile" model="report.paperformat">
         <field name="name">Reconcile A4</field>

@@ -15,6 +15,7 @@
         'security/ir.model.access.csv',
         'security/security.xml',
         'views/bank_statement_view.xml',
+        'report/bank_statement_reconciliation_alan.xml',
         'report/bank_statement_reconciliation_template.xml',
         'report/report_bank_stmnt_reconciliation_week.xml',
         'report/report.xml',

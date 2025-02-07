@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="purchase_order_template" inherit_id="purchase.report_purchaseorder_document">
+        <xpath expr="//div[@id='informations']" position="inside">
+            <div t-if="o.name" class="col-xs-3">
+                <strong>Our Order Reference:</strong>
+                <p t-field="o.name"/>
+            </div>
+        </xpath>
+        <xpath expr="//div[@id='total']" position="after">
+            <b>Signature</b>
+            <img style="max-height: 100px;" t-if="o.create_uid.kg_sign_signature"
+                 t-att-src="image_data_uri(o.create_uid.kg_sign_signature)" alt="Logo"/>
+        </xpath>
+        <xpath expr="//th[@name='th_amount']" position="replace">
+            <th name="th_amount" class="text-end">
+                <strong>Net Price</strong>
+            </th>
+        </xpath>
+        <xpath expr="//div[@id='total']" position="before">
+            <table class="table table-condensed">
+                <tr>
+                    <td style="padding-left:900px;">
+                        <strong>Total Without Taxes</strong>
+                    </td>
+                    <td class="text-right">
+                        <span t-field="o.amount_untaxed"
+                              t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td  style="padding-left:900px" class="border-black">Taxes</td>
+                    <td class="text-right">
+                        <span t-field="o.amount_tax"
+                              t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                    </td>
+                </tr>
+            </table>
+        </xpath>
+    </template>
+    <template id="external_layout_standard_custom" inherit_id="web.external_layout_standard">
+        <xpath expr="//div[1]/div[1]" position="after">
+            <div align="right">
+                A trusted partner for all your IT solutions
+            </div>
+        </xpath>
+        <xpath expr="//div/div[hasclass('text-muted')]" position="replace">
+            <div>
+                <span text-align="left" style="padding-right:100px">
+                    Phone:
+                    <span t-field="company.phone"/>
+                    .
+                </span>
+                <span text-align="center">
+                    Email:
+                    <span t-field="company.email"/>
+                    .
+                </span>
+                <span text-align="right" style="padding-left:100px">
+                    Website:
+                    <span t-field="company.website"/>
+                </span>
+
+                <br/>
+                Page:
+                <span class="page"/>
+                /
+                <span class="topage"/>
+            </div>
+        </xpath>
+    </template>
+</odoo>

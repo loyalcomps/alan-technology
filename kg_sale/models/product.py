@@ -17,20 +17,37 @@ _logger = logging.getLogger(__name__)
 class ProductProduct(models.Model):
     _inherit = "product.product"
 
+    #
+    # kg_department_id = fields.Many2one('hr.department', string='Department')
+    # kg_part_no = fields.Char(string='Part number')
+    # kg_brand_id = fields.Many2one('kg.product.brand', string='Brand')
+    # kg_optional_line = fields.One2many('kg.optional.product', 'product_id', string="Optional Line")
+    # kg_product_cost_history_line = fields.One2many('kg.product.cost.history', 'product_id', string="Cost History Line")
+    # kg_servicecall_categories = fields.Selection([
+    #     ('new_installation', 'New Installation'),
+    #     ('amc', 'Annual Maintenance Contract(AMC)'),
+    #     ('rma', 'RMA - Faulty Product Service'),
+    #     ('poc', 'Proof Of Concept(POC)')],
+    #     string='Service Type', default='new_installation')
+    # active = fields.Boolean(string='Active', default=True)
 
+    # @api.multi
+    # def optional_product(self):
+    #     action = self.env.ref('kg_so_enhancement.action_kg_optional_product').read()[0]
+    #     product_id = self.id
+    #     domain = []
+    #     domain.append(('product_id', '=', product_id))
+    #     action['domain'] = domain
+    #
+    #     action['context'] = {
+    #
+    #         'default_product_id': product_id
+    #     }
+    #
+    #     return action
+    #
 
     def open_cost_history(self):
-        """Opens the product cost history view for the current product.
-
-        This method retrieves the action for opening the product cost history
-        view and filters the records by the current product ID. It sets the
-        `domain` and `context` parameters to ensure the cost history is displayed
-        specifically for the product linked to the current record.
-
-        Returns:
-            dict: An action dictionary that opens the product cost history view
-                  filtered for the current product.
-        """
         action = self.env.ref('kg_sale.action_kg_product_cost_history').read()[0]
         product_id = self.id
         domain = []

@@ -9,6 +9,11 @@
                 <xpath expr="//sheet//field[@name='phone']" position="after">
                     <field name="company_seal"/>
                 </xpath>
+                <xpath expr="//page[@name='general_info']" position="after">
+                    <page string="Report Header"  name="report_header">
+                        <field name="company_details"/>
+                    </page>
+                </xpath>
             </data>
         </field>
     </record>

@@ -33,12 +33,12 @@
         <field name="binding_type">report</field>
     </record>
 
-    <menuitem id="menu_partner_ledger"
+   <!--  <menuitem id="menu_partner_ledger"
               name="Partner Ledger"
               sequence="5"
               parent="menu_finance_partner_reports"
               action="action_account_partner_ledger_menu"
-              groups="account.group_account_invoice"/>
+              groups="account.group_account_invoice"/> -->
 
      <!-- Add to Partner Print button -->
     <record id="action_partner_report_partnerledger" model="ir.actions.act_window">

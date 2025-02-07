@@ -2,10 +2,10 @@
 <odoo>
     <data>
 
-        <menuitem id="menu_finance_daily_reports"
+      <!--   <menuitem id="menu_finance_daily_reports"
                   name="Daily Reports"
                   sequence="35"
-                  parent="account.menu_finance_reports"/>
+                  parent="account.menu_finance_reports"/> -->
 
     </data>
 </odoo>

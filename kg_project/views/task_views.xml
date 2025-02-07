@@ -18,7 +18,7 @@
                 <field name="user_id" string="Service Engineer"
                        class="o_task_user_field"
                        options="{&quot;no_open&quot;: True}"
-                       attrs="{'invisible': [('kg_need_subcontractor','!=',False)],'required': [('start_email_sent', '=',True)]}"
+                       attrs="{'invisible': [('kg_need_subcontractor','!=',False)],'required': [('start_email_sent_1', '=',True)]}"
                        groups="base.group_no_one"/>
                 <field name="planned_hours"/>
                 <field name="kg_hourly_rate"/>
@@ -34,19 +34,22 @@
                 <field name="kg_status"/>
             </field>
             <field name="stage_id" position="before">
+                 <field name="start_email_sent_1" invisible="1"/>
+                 <field name="is_it_done_1" invisible="1"/>
+                 <field name="done_email_sent_1" invisible="1"/>
                 <button name="start_send_by_email" type="object" string="Notify"
-                        attrs="{'invisible': ['|',('start_email_sent','!=',False),('kg_state','not in',('draft'))]}"
-                        groups="base.group_no_one"/>
+                        attrs="{'invisible': ['|',('start_email_sent_1','!=',False),('kg_state','not in',('draft'))]}"
+                        />
                 <button name="service_assign" type="object" string="Assign"
-                        attrs="{'invisible': ['|',('start_email_sent','!=',True),('kg_state','not in',('draft'))]}"
-                        groups="base.group_no_one"/>
+                        attrs="{'invisible': ['|',('start_email_sent_1','!=',True),('kg_state','not in',('draft'))]}"
+                        />
                 <button name="service_partial" type="object" string="Completed Partially"
                         attrs="{'invisible': [('kg_state','not in',('assigned'))]}"/>
                 <button name="service_complete" type="object" string="Done"
                         attrs="{'invisible': [('kg_state','not in',('partially_complete','assigned'))]}"/>
                 <button name="done_send_by_email" type="object" string="Send Closing Alert Email"
-                        attrs="{'invisible': ['|',('done_email_sent','!=',False),('is_it_done','=',False)]}"
-                        groups="base.group_no_one"/>
+                        attrs="{'invisible': ['|',('done_email_sent_1','!=',False),('is_it_done_1','=',False)]}"
+                        />
             </field>
             <field name="stage_id" position="replace">
                 <field name="kg_state" widget="statusbar"
@@ -65,7 +68,7 @@
                        groups="kg_project.group_service_request_manager,kg_project.group_service_engineer"/>
                 <field name="kg_time_to" attrs="{'required':[('date_required','!=',False)]}"
                        groups="kg_project.group_service_request_manager,kg_project.group_service_engineer"/>
-                <field name="total_worked_hours"
+                <field name="total_worked_hours" widget="timesheet_uom" 
                        groups="kg_project.group_service_request_manager,kg_project.group_service_engineer"/>
                 <field name="total_cost"
                        groups="kg_project.group_service_request_manager,kg_project.group_service_engineer"/>
@@ -75,6 +78,7 @@
             </xpath>
             <xpath expr="//page[@name='extra_info']/group/group/field[@name='date_last_stage_update']" position="after">
                 <field name="start_email_sent" groups="base.group_no_one"/>
+               
                 <field name="done_email_sent" groups="base.group_no_one"/>
                 <field name="is_it_done" groups="base.group_no_one"/>
                 <field name="gp_deduction_required" groups="base.group_no_one"/>
@@ -137,8 +141,8 @@
                 <attribute name="invisible">1</attribute>
             </field>
             <xpath expr="//field[@name='effective_hours']" position="before">
-                <field name="kg_effective_hours"/>
-                <field name="kg_remaining_hours"/>
+                <field name="kg_effective_hours" widget="timesheet_uom"/>
+                <field name="kg_remaining_hours" widget="timesheet_uom"/>
             </xpath>
         </field>
     </record>
@@ -177,7 +181,7 @@
                        groups="kg_project.group_service_request_manager,kg_project.group_service_engineer"/>
                 <field name="kg_time_to" string="To"
                        groups="kg_project.group_service_request_manager,kg_project.group_service_engineer"/>
-                <field name="total_worked_hours" string="Duration"
+                <field name="total_worked_hours" widget="timesheet_uom" string="Duration"
                        groups="kg_project.group_service_request_manager,kg_project.group_service_engineer"/>
                 <field name="kg_state"/>
             </tree>
@@ -205,7 +209,7 @@
                 <field name="date_to"/>
             </xpath>
             <xpath expr="/tree/field[@name='unit_amount']" position="replace">
-                <field name="unit_amount"/>
+                <field name="unit_amount" widget="timesheet_uom"/>
             </xpath>
         </field>
     </record>

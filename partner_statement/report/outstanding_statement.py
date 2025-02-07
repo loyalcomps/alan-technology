@@ -58,7 +58,7 @@ class OutstandingStatement(models.AbstractModel):
                 ON pr.debit_move_id = l2.id
                 WHERE l2.date <= %(date_end)s
             ) as pc ON pc.credit_move_id = l.id
-            WHERE l.partner_id IN %(partners)s AND aa.account_type = %(account_type)s
+            WHERE l.partner_id IN %(partners)s  AND aa.account_type = %(account_type)s
                                 AND (
                                   (pd.id IS NOT NULL AND
                                       pd.max_date <= %(date_end)s) OR
