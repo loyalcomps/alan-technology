@@ -13,14 +13,12 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-
 class AccountInvoice(models.Model):
     _inherit = 'account.move'
 
     picking_id = fields.Many2one('stock.picking', string='Picking')
-    kg_sale_order_id = fields.Many2one('sale.order',string='Sale Order')
+    kg_sale_order_id = fields.Many2one('sale.order', string='Sale Order')
     kg_bank_id = fields.Many2one('res.bank', string='Bank')
-
 
     def _search_default_journal(self):
         if self.payment_id and self.payment_id.journal_id:
@@ -60,10 +58,8 @@ class AccountInvoice(models.Model):
             return None
         return journal
 
-
-    def get_capital(self,text):
+    def get_capital(self, text):
         return text.title()
-
 
     @api.model
     def _get_view(self, view_id=None, view_type='form', **options):
@@ -131,7 +127,7 @@ class AccountInvoice(models.Model):
     kg_discount_per = fields.Float(string='Discount(%)')
     kg_discount = fields.Float(string='Discount')
     kg_discount_acc_id = fields.Many2one('account.account', 'Discount Account')
-    number = fields.Char( store=True, copy=False)
+    number = fields.Char(store=True, copy=False)
     kg_terms_condition_line = fields.One2many('kg.invoice.terms.line', 'invoice_id', string="Terms Line")
 
     kg_warranty_id = fields.Many2one('kg.warranty', string="Warranty")
@@ -146,7 +142,6 @@ class AccountInvoice(models.Model):
     kg_another_ref = fields.Char(string='P.Ref')
     kg_amount_words = fields.Char(string="Amount(words)")
     kg_department_id = fields.Many2one('hr.department', string="Department")
-
 
     @api.constrains('number')
     def _check_constriant(self):
@@ -300,32 +295,153 @@ class AccountInvoice(models.Model):
 class AccountInvoiceLine(models.Model):
     _inherit = 'account.move.line'
 
-
     kg_is_it_tranpcharge = fields.Boolean('Other Cost')
     kg_provision_acc_id = fields.Many2one('account.account', string="Pro.Tranportation")
 
     cost = fields.Float(string='Cost')
-    total_cost = fields.Float('Total Cost',compute='compute_cost', store=True, domain=[('move_type', '=', 'out_invoice')])
+    total_cost = fields.Float('Total Cost', compute='compute_cost', store=True,
+                              domain=[('move_type', '=', 'out_invoice')])
     profit = fields.Monetary('Profit', compute='compute_cost', store=True, domain=[('move_type', '=', 'out_invoice')])
     sale_line_id = fields.Many2one('sale.order.line')
-    
-    @api.depends('cost', 'quantity','price_unit','price_subtotal','total_cost')
+
+    @api.depends('cost', 'quantity', 'price_unit', 'price_subtotal', 'total_cost')
     def compute_cost(self):
         for rec in self:
+            cost = 0
+            if rec.cost == 0:
+                invoice_rec = self.move_id
+                print("invoice", invoice_rec)
+                sale_rec = invoice_rec.kg_so_id
+                if sale_rec:
+                    delivery_recs = sale_rec.picking_ids
+                    print("delivery", delivery_recs)
+                    # if delivery_rec_rec:
+                    for d_rec in delivery_recs:
+                        if d_rec.state == 'done':
+                            valuation_recs = self.env['stock.valuation.layer'].sudo().search([('reference', '=', d_rec.name)])
+                            print("valuation", valuation_recs)
+
+                            if valuation_recs:
+                                cost = sum(valuation_recs.mapped('unit_cost'))
+            if cost:
+                rec.cost = cost
+
+                # invoice -> so -> delivery (done) -> sum of all unit value
             rec.total_cost = rec.cost * rec.quantity
-            rec.profit =  rec.price_subtotal - rec.total_cost
+            rec.profit = rec.price_subtotal - rec.total_cost
+
+    def recompute_cost(self):
+        recs = self.sudo().search([('move_id.move_type', 'in', ['in_invoice', 'out_refund', 'in_receipt']), ('cost', '=', 0)], limit=1000000,
+                                  order='id asc')
+        for rec in recs:
+            rec.compute_cost()
+        recs = self.env['account.invoice.report'].sudo().search([('move_type', 'in', ['in_invoice', 'out_refund', 'in_receipt']), ('total_cost', '=', 0), ('price_subtotal', '>',0)], limit=1000000,
+                                  order='id asc')
+        for rec in recs:
+            rec.compute_cost()
 
 
 class AccountInvoiceReport(models.Model):
     _inherit = "account.invoice.report"
-    
+
     total_cost = fields.Float('Total Cost')
     profit = fields.Float('Profit')
 
+    def compute_cost(self):
+        for rec in self:
+            cost = 0
+            if rec.total_cost == 0:
+                invoice_rec = self.move_id
+                print("invoice", invoice_rec)
+                sale_rec = invoice_rec.kg_so_id
+                if sale_rec:
+                    delivery_recs = sale_rec.picking_ids
+                    print("delivery", delivery_recs)
+                    # if delivery_rec_rec:
+                    for d_rec in delivery_recs:
+                        if d_rec.state == 'done':
+                            valuation_recs = self.env['stock.valuation.layer'].sudo().search([('reference', '=', d_rec.name)])
+                            print("valuation", valuation_recs)
+
+                            if valuation_recs:
+                                cost = sum(valuation_recs.mapped('unit_cost'))
+            if cost:
+                rec.total_cost = cost
 
     def _select(self):
-        return super()._select() +",line.total_cost * (CASE WHEN move.move_type IN ('in_invoice','out_refund','in_receipt') THEN -1 ELSE 1 END) as total_cost, (line.price_subtotal - line.total_cost) * (CASE WHEN move.move_type IN ('in_invoice','out_refund','in_receipt') THEN -1 ELSE 1 END) as profit"
-
+        res = super()._select()
+        res = res + ",line.total_cost as total_cost, (line.price_subtotal - line.cost) as profit"
+        print("resssssssssssssssssssssssssssssssssssssssssssssss\n", res)
+        return res
+    # #
+    # @api.model
+    # def _select(self):
+    #     profit_value = 100
+    #     cost = 100
+    #
+    #
+    #     return '''
+    #         SELECT
+    #             line.id,
+    #             line.move_id,
+    #             line.product_id,
+    #             line.account_id,
+    #             line.journal_id,
+    #             line.company_id,
+    #             line.company_currency_id,
+    #             line.partner_id AS commercial_partner_id,
+    #             account.account_type AS user_type,
+    #             move.state,
+    #             move.move_type,
+    #             move.partner_id,
+    #             move.invoice_user_id,
+    #             move.fiscal_position_id,
+    #             move.payment_state,
+    #             move.invoice_date,
+    #             move.invoice_date_due,
+    #             uom_template.id                                             AS product_uom_id,
+    #             template.categ_id                                           AS product_categ_id,
+    #             line.quantity / NULLIF(COALESCE(uom_line.factor, 1) / COALESCE(uom_template.factor, 1), 0.0) *
+    #                 (CASE WHEN move.move_type IN ('in_invoice','out_refund','in_receipt') THEN -1 ELSE 1 END)
+    #                                                                          AS quantity,
+    #             -line.balance * currency_table.rate                         AS price_subtotal,
+    #             line.price_total * (CASE WHEN move.move_type IN ('in_invoice','out_refund','in_receipt') THEN -1 ELSE 1 END)
+    #                                                                          AS price_total,
+    #             -COALESCE(
+    #                (line.balance / NULLIF(line.quantity, 0.0)) *
+    #                (CASE WHEN move.move_type IN ('in_invoice','out_refund','in_receipt') THEN -1 ELSE 1 END)
+    #                * (NULLIF(COALESCE(uom_line.factor, 1), 0.0) / NULLIF(COALESCE(uom_template.factor, 1), 0.0)),
+    #                0.0) * currency_table.rate                               AS price_average,
+    #             COALESCE(partner.country_id, commercial_partner.country_id) AS country_id,
+    #             line.currency_id                                            AS currency_id,
+    #             {profit_value}                                              AS profit,
+    #             line.cost                                                   AS total_cost
+    #     '''.format(profit_value=profit_value, cost=cost)
+    #
+    # @api.model
+    # def _from(self):
+    #     return '''
+    #         FROM account_move_line line
+    #             LEFT JOIN res_partner partner ON partner.id = line.partner_id
+    #             LEFT JOIN product_product product ON product.id = line.product_id
+    #             LEFT JOIN account_account account ON account.id = line.account_id
+    #             LEFT JOIN product_template template ON template.id = product.product_tmpl_id
+    #             LEFT JOIN uom_uom uom_line ON uom_line.id = line.product_uom_id
+    #             LEFT JOIN uom_uom uom_template ON uom_template.id = template.uom_id
+    #             INNER JOIN account_move move ON move.id = line.move_id
+    #             LEFT JOIN res_partner commercial_partner ON commercial_partner.id = move.commercial_partner_id
+    #             JOIN {currency_table} ON currency_table.company_id = line.company_id
+    #     '''.format(
+    #         currency_table=self.env['res.currency']._get_query_currency_table({'multi_company': True, 'date': {'date_to': fields.Date.today()}}),
+    #     )
+    #
+    # @api.model
+    # def _where(self):
+    #     return '''
+    #         WHERE move.move_type IN ('out_invoice', 'out_refund', 'in_invoice', 'in_refund', 'out_receipt', 'in_receipt')
+    #             AND line.account_id IS NOT NULL
+    #             AND line.display_type = 'product'
+    #     '''
 
 
 class KgInvoiceTermsLine(models.Model):
