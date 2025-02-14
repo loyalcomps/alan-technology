@@ -307,37 +307,38 @@ class AccountInvoiceLine(models.Model):
     @api.depends('cost', 'quantity', 'price_unit', 'price_subtotal', 'total_cost')
     def compute_cost(self):
         for rec in self:
-            cost = rec.cost if rec.cost and rec.cost >0 else 0
-            if rec.cost in [0, None, False]:
-                invoice_rec = self.move_id
+            rec.total_cost = rec.cost * rec.quantity
+            rec.profit = rec.price_subtotal - rec.total_cost
+    def remove_cost_check(self):
+        recs = self.sudo().search([('is_cost_checked', '=', True)])
+        for rec in recs:
+            rec.is_cost_checked = False
+
+    def recompute_cost(self):
+        recs = self.sudo().search(
+            [('is_cost_checked', '=', False), ('price_subtotal', '>', 0),
+             ('move_type', '=', 'out_invoice')], limit=1200)
+        for rec in recs:
+            try:
+                cost = 0
+                invoice_rec = rec.move_id
                 sale_rec = invoice_rec.kg_so_id
                 if sale_rec:
                     delivery_recs = sale_rec.picking_ids
                     for d_rec in delivery_recs:
                         if d_rec.state == 'done':
                             valuation_recs = self.env['stock.valuation.layer'].sudo().search(
-                                [('reference', '=', d_rec.name)])
+                                [('reference', '=', d_rec.name), ('product_id', '=', rec.product_id.id)])
 
                             if valuation_recs:
                                 cost = sum(valuation_recs.mapped('unit_cost'))
 
-            rec.sudo().write(
-                {
-                    'cost': cost,
-                    'total_cost': cost * rec.quantity,
-                    'profit': rec.price_subtotal - (cost * rec.quantity),
-                    'is_cost_checked' : True
-                }
-            )
-
-    def recompute_cost(self):
-        recs = self.sudo().search(
-            [('is_cost_checked', '=', False), ('cost', 'in', [0, None, False]), ('price_subtotal', '>', 0),
-             ('move_id.move_type', '=', 'out_invoice')], limit=500)
-
-        for rec in recs:
-            try:
-                rec.compute_cost()
+                rec.sudo().write(
+                    {
+                        'cost': cost,
+                        'is_cost_checked': True
+                    }
+                )
             except Exception as e:
                 _logger.error("Error in recompute_cost: %s", e)
 
