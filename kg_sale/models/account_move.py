@@ -316,7 +316,7 @@ class AccountInvoiceLine(models.Model):
 
     def recompute_cost(self):
         recs = self.sudo().search(
-            [('is_cost_checked', '=', False), ('price_subtotal', '>', 0),
+            [('is_cost_checked', '=', False),
              ('move_type', '=', 'out_invoice')], limit=1200)
         for rec in recs:
             try:
@@ -331,7 +331,13 @@ class AccountInvoiceLine(models.Model):
                                 [('reference', '=', d_rec.name), ('product_id', '=', rec.product_id.id)])
 
                             if valuation_recs:
-                                cost = sum(valuation_recs.mapped('unit_cost'))
+                                # cost = sum(valuation_recs.mapped('unit_cost'))
+                                for v_rec in valuation_recs:
+                                    if v_rec.unit_cost:
+                                        cost += v_rec.unit_cost
+                                    else:
+                                        cost += rec.product_id.standard_price
+
 
                 rec.sudo().write(
                     {
