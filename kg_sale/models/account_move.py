@@ -308,7 +308,11 @@ class AccountInvoiceLine(models.Model):
     def compute_cost(self):
         for rec in self:
             rec.total_cost = rec.cost * rec.quantity
-            rec.profit = rec.price_subtotal - rec.total_cost
+            profit = rec.price_subtotal - rec.total_cost
+            if rec.move_type == 'out_refund':
+                rec.profit = - profit
+            else:
+                rec.profit = profit
     def remove_cost_check(self):
         recs = self.sudo().search([('is_cost_checked', '=', True)])
         for rec in recs:
@@ -317,7 +321,8 @@ class AccountInvoiceLine(models.Model):
     def recompute_cost(self):
         recs = self.sudo().search(
             [('is_cost_checked', '=', False),
-             ('move_type', '=', 'out_invoice')], limit=1200)
+             ('move_type', 'in', ['out_invoice', 'out_refund'])], limit=1200)
+
         for rec in recs:
             try:
                 cost = 0
