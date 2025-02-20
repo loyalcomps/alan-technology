@@ -405,7 +405,8 @@ class AccountInvoiceReport(models.Model):
 
     def _select(self):
         res = super()._select()
-        res = res + ",(line.cost * line.quantity) as total_cost, (line.price_subtotal - line.total_cost) as profit"
+        # res = res + ",(line.cost * line.quantity) as total_cost, (line.price_subtotal - line.total_cost) as profit"
+        res = res + ",line.total_cost as total_cost, line.profit as profit"
         return res
 
 
