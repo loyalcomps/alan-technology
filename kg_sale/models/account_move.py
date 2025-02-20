@@ -331,17 +331,30 @@ class AccountInvoiceLine(models.Model):
                 if sale_rec:
                     delivery_recs = sale_rec.picking_ids
                     for d_rec in delivery_recs:
-                        if d_rec.state == 'done' and d_rec.picking_type_code == 'outgoing':
-                            valuation_recs = self.env['stock.valuation.layer'].sudo().search(
-                                [('reference', '=', d_rec.name), ('product_id', '=', rec.product_id.id)])
-
-                            if valuation_recs:
-                                # cost = sum(valuation_recs.mapped('unit_cost'))
-                                for v_rec in valuation_recs:
-                                    if v_rec.unit_cost:
-                                        cost += v_rec.unit_cost
-                                    else:
-                                        cost += rec.product_id.standard_price
+                        if d_rec.state == 'done':
+                            if rec.move_state=='out_refund' and d_rec.picking_type_code == 'incoming':
+                                valuation_recs = self.env['stock.valuation.layer'].sudo().search(
+                                    [('reference', '=', d_rec.name), ('product_id', '=', rec.product_id.id)])
+    
+                                if valuation_recs:
+                                    # cost = sum(valuation_recs.mapped('unit_cost'))
+                                    for v_rec in valuation_recs:
+                                        if v_rec.unit_cost:
+                                            cost += v_rec.unit_cost
+                                        else:
+                                            cost += rec.product_id.standard_price
+                            if rec.move_state=='out_invoice' and d_rec.picking_type_code == 'outgoing':
+                                valuation_recs = self.env['stock.valuation.layer'].sudo().search(
+                                    [('reference', '=', d_rec.name), ('product_id', '=', rec.product_id.id)])
+    
+                                if valuation_recs:
+                                    # cost = sum(valuation_recs.mapped('unit_cost'))
+                                    for v_rec in valuation_recs:
+                                        if v_rec.unit_cost:
+                                            cost += v_rec.unit_cost
+                                        else:
+                                            cost += rec.product_id.standard_price
+                                
 
 
                 rec.sudo().write(
