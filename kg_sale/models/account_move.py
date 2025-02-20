@@ -332,7 +332,7 @@ class AccountInvoiceLine(models.Model):
                     delivery_recs = sale_rec.picking_ids
                     for d_rec in delivery_recs:
                         if d_rec.state == 'done':
-                            if rec.move_state=='out_refund' and d_rec.picking_type_code == 'incoming':
+                            if rec.move_type=='out_refund' and d_rec.picking_type_code == 'incoming':
                                 valuation_recs = self.env['stock.valuation.layer'].sudo().search(
                                     [('reference', '=', d_rec.name), ('product_id', '=', rec.product_id.id)])
     
