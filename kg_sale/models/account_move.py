@@ -334,7 +334,7 @@ class AccountInvoiceLine(models.Model):
                 if sale_rec:
                     delivery_recs = sale_rec.picking_ids
                     if delivery_recs:
-                        delivery_recs = delivery_recs.filtered(lambda a: a.picking_type_code == 'outgoing' and a.state == 'done' and kg_invoice_id and kg_invoice_id == invoice_rec.id)
+                        delivery_recs = delivery_recs.filtered(lambda a: a.picking_type_code == 'outgoing' and a.state == 'done' and a.kg_invoice_id and a.kg_invoice_id == invoice_rec.id)
                         
                         for d_rec in delivery_recs:
                             
