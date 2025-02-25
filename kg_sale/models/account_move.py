@@ -312,7 +312,10 @@ class AccountInvoiceLine(models.Model):
             rec.total_cost = rec.cost * rec.quantity
             profit = rec.price_subtotal - rec.total_cost
             if rec.move_type == 'out_refund':
-                rec.profit = - profit
+                if profit < 0:
+                    rec.profit = profit
+                else:
+                    rec.profit = -profit
             else:
                 rec.profit = profit
     def remove_cost_check(self):
@@ -320,40 +323,95 @@ class AccountInvoiceLine(models.Model):
         for rec in recs:
             rec.is_cost_checked = False
 
-    def recompute_cost(self):
+    def recompute_invoice_cost(self):
         recs = self.sudo().search(
             [('is_cost_checked', '=', False),
-             ('move_type', 'in', ['out_invoice', 'out_refund'])], limit=1200)
+             ('move_type', 'in', ['out_invoice'])], limit=1200)
 
         for rec in recs:
             try:
                 cost = 0
                 invoice_rec = rec.move_id
-                sale_rec = invoice_rec.kg_so_id
-                if sale_rec:
-                    delivery_recs = sale_rec.picking_ids
-                    for d_rec in delivery_recs:
-                        if d_rec.state == 'done':
-                            valuation_recs = self.env['stock.valuation.layer'].sudo().search(
-                                [('reference', '=', d_rec.name), ('product_id', '=', rec.product_id.id)])
-
-                            if valuation_recs:
-                                # cost = sum(valuation_recs.mapped('unit_cost'))
-                                for v_rec in valuation_recs:
-                                    if v_rec.unit_cost:
-                                        cost += v_rec.unit_cost
-                                    else:
-                                        cost += rec.product_id.standard_price
-
-
+                if invoice_rec and invoice_rec.kg_do_id:
+                      delivery_rec = invoice_rec.kg_do_id
+                      if delivery_rec and delivery_rec.state == 'done':
+                          
+                              
+                        valuation_recs = self.env['stock.valuation.layer'].sudo().search(
+                            [('reference', '=', delivery_rec.name), ('product_id', '=', rec.product_id.id)])
+                
+                        if valuation_recs:
+                            # cost = sum(valuation_recs.mapped('unit_cost'))
+                            for v_rec in valuation_recs:
+                                if v_rec.unit_cost:
+                                    cost += v_rec.unit_cost
+                                else:
+                                    cost += rec.product_id.standard_price
                 rec.sudo().write(
-                    {
-                        'cost': cost,
-                        'is_cost_checked': True
-                    }
-                )
+                      {
+                          'cost': cost,
+                          'is_cost_checked': True
+                      }
+                  )
+                
+                
+                
+
+                # sale_rec = invoice_rec.kg_so_id
+                # if sale_rec:
+                #     delivery_recs = sale_rec.picking_ids
+                #     if delivery_recs:
+                #         delivery_recs = delivery_recs.filtered(lambda a: a.picking_type_code == 'outgoing' and a.state == 'done' and a.kg_invoice_id and a.kg_invoice_id == invoice_rec.id)
+                        
+                #         for d_rec in delivery_recs:
+                            
+                #             valuation_recs = self.env['stock.valuation.layer'].sudo().search(
+                #                 [('reference', '=', d_rec.name), ('product_id', '=', rec.product_id.id)])
+    
+                #             if valuation_recs:
+                #                 # cost = sum(valuation_recs.mapped('unit_cost'))
+                #                 for v_rec in valuation_recs:
+                #                     if v_rec.unit_cost:
+                #                         cost += v_rec.unit_cost
+                #                     else:
+                #                         cost += rec.product_id.standard_price
+                  
             except Exception as e:
                 _logger.error("Error in recompute_cost: %s", e)
+                
+    def recompute_credit_note_cost(self):
+        recs = self.sudo().search(
+            [('is_cost_checked', '=', False),
+             ('move_type', 'in', ['out_refund'])], limit=1200)
+
+        for rec in recs:
+            try:
+                cost = 0
+                invoice_rec = rec.move_id
+                if invoice_rec and invoice_rec.kg_do_id:
+                      delivery_rec = invoice_rec.kg_do_id
+                      if delivery_rec and delivery_rec.state == 'done':
+                          
+                              
+                        valuation_recs = self.env['stock.valuation.layer'].sudo().search(
+                            [('reference', '=', delivery_rec.name), ('product_id', '=', rec.product_id.id)])
+                
+                        if valuation_recs:
+                            # cost = sum(valuation_recs.mapped('unit_cost'))
+                            for v_rec in valuation_recs:
+                                if v_rec.unit_cost:
+                                    cost += v_rec.unit_cost
+                                else:
+                                    cost += rec.product_id.standard_price
+                rec.sudo().write(
+                      {
+                          'cost': cost,
+                          'is_cost_checked': True
+                      }
+                  )
+            except Exception as e:
+                _logger.error("Error in recompute_cost: %s", e)
+
 
 
 class AccountInvoiceReport(models.Model):
@@ -364,7 +422,8 @@ class AccountInvoiceReport(models.Model):
 
     def _select(self):
         res = super()._select()
-        res = res + ",(line.cost * line.quantity) as total_cost, (line.price_subtotal - line.total_cost) as profit"
+        # res = res + ",(line.cost * line.quantity) as total_cost, (line.price_subtotal - line.total_cost) as profit"
+        res = res + ",line.total_cost as total_cost, line.profit as profit"
         return res
 
 
