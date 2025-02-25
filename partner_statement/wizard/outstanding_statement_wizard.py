@@ -20,7 +20,10 @@ class OutstandingStatementWizard(models.TransientModel):
         else:
             report_name = "partner_statement.outstanding_statement"
         partner = self.env['res.partner'].browse(data['partner_ids'])
-        partner_name = partner.name
+        if self.salesperson_wise and self.salesperson_id:
+            partner_name = self.salesperson_id.name
+        else:
+         partner_name = partner.name
         # return (
         #     self.env["ir.actions.report"]
         #     .search(
@@ -29,16 +32,16 @@ class OutstandingStatementWizard(models.TransientModel):
         #     )
         #     .report_action(self, data=data)
         # )
-        rec= self.env["ir.actions.report"].search(
+         rec= self.env["ir.actions.report"].search(
                 [("report_name", "=", report_name), ("report_type", "=", report_type)],
                 limit=1,
             )
         # customer_name = self.partner_id.name  # Assuming 'partner_id' is the related customer field
-        date = self.date_end
+         date = self.date_end
 
-        rec.name = f" Outstanding Statement -{partner_name}-{date}"
+         rec.name = f" Outstanding Statement -{partner_name}-{date}"
 
-        return rec.with_context(print_report_name=rec.name).report_action(self, data=data)
+         return rec.with_context(print_report_name=rec.name).report_action(self, data=data)
 
         # return rec_name
 
