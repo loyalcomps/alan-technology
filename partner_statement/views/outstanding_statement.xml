@@ -263,13 +263,11 @@
                                         <span t-esc="'{0:,.2f}'.format(line['amount'])"
                                         />
                                     </td>
-<!--                                  <td class="amount">-->
-<!--                                        <t t-set="payment_received" t-value="line['amount'] - line['open_amount']"/>-->
-<!--                                        <span t-esc="'{0:,.2f}'.format(payment_received)"/>-->
-<!--                                    </td>-->
-                                    <td>
-
+                                  <td class="amount">
+                                        <t t-set="payment_received" t-value="line['amount'] - line['open_amount']"/>
+                                        <span t-esc="'{0:,.2f}'.format(payment_received)"/>
                                     </td>
+
                                     <td class="amount">
                                         <span t-esc="'{0:,.2f}'.format(line['open_amount'])"/>
                                         <!--                                              t-options="{'widget': 'monetary', 'display_currency': display_currency}"-->
@@ -297,6 +295,7 @@
                                     <!--                                    </td>-->
                                 </tr>
                                 <tr>
+                                    <td></td>
                                     <td>
                                         <span t-esc="d['end']"/>
                                     </td>
@@ -306,10 +305,14 @@
                                     </td>
                                     <td/>
                                     <td/>
+                                    <td>
+
+                                    </td>
                                     <td class="amount">
                                         <span t-esc="'{0:,.2f}'.format(currency['amount_due'])"/>
                                         <!--                                                t-options="{'widget': 'monetary', 'display_currency': display_currency}"/>-->
                                     </td>
+
                                     <td class="amount"/>
                                     <!--                                    <td/>-->
                                     <!--                                    <td/>-->
