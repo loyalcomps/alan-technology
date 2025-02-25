@@ -22,6 +22,15 @@ class OutstandingStatementWizard(models.TransientModel):
         partner = self.env['res.partner'].browse(data['partner_ids'])
         if self.salesperson_wise and self.salesperson_id:
             partner_name = self.salesperson_id.name
+            print("partner name",partner_name)
+            return (
+                self.env["ir.actions.report"]
+                .search(
+                    [("report_name", "=", report_name), ("report_type", "=", report_type)],
+                    limit=1,
+                )
+                .report_action(self, data=data)
+            )
         else:
          partner_name = partner.name
         # return (
