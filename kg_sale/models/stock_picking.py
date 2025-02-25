@@ -131,7 +131,10 @@ class Picking(models.Model):
                         'tax_ids': line.tax_id.ids,
                         'quantity': line.product_uom_qty,
                     })
-                    invoice_line_list.append(vals)                
+                    invoice_line_list.append(vals)
+                bank_rec = None
+                if self.sale_id and self.sale_id.bank_id:
+                    bank_rec = self.env['res.partner.bank'].sudo().search([('bank_id', '=', self.sale_id.bank_id.id)], limit=1)
                 invoice = picking_id.env['account.move'].create({
                     'move_type': 'out_invoice',
                     'invoice_origin': picking_id.name,
@@ -143,7 +146,7 @@ class Picking(models.Model):
                     'currency_id': picking_id.env.user.company_id.currency_id.id,
                     'kg_so_id': picking_id.kg_sale_order_id.id,
                     'kg_bank_id': self.sale_id.bank_id.id,
-                    'partner_bank_id': self.sale_id.bank_id.id,
+                    'partner_bank_id': bank_rec.id if bank_rec else None,
                     'payment_reference': picking_id.name,
                     'picking_id': picking_id.id,
                     'invoice_line_ids': invoice_line_list,
