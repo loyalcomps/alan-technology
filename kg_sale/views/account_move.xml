@@ -17,7 +17,8 @@
                     </field>
 
                     <field name="partner_id" position="after">
-                        <field name="kg_bank_id"/>
+                        <field name="kg_bank_id" invisible="1"/>
+                        <field name="partner_bank_id" invisible="0"/>
                     </field>
                     <xpath expr="//button[@name='preview_invoice']" position="attributes">
                         <attribute name="class">btn-info</attribute>

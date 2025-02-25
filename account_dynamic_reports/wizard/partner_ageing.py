@@ -110,6 +110,7 @@ class InsPartnerAgeing(models.TransientModel):
         return True
 
     def get_filters(self, default_filters={}):
+        print("get filters")
 
         partner_company_domain = [('parent_id','=', False),
                                   '|',
@@ -144,6 +145,7 @@ class InsPartnerAgeing(models.TransientModel):
         return filter_dict
 
     def process_filters(self):
+        print("process filters")
         ''' To show on report headers'''
 
         data = self.get_filters(default_filters={})
@@ -192,6 +194,7 @@ class InsPartnerAgeing(models.TransientModel):
         return filters
 
     def prepare_bucket_list(self):
+        print("prepare bucket listtttttt")
         periods = {}
         date_from = self.as_on_date
         date_from = fields.Date.from_string(date_from)
@@ -239,6 +242,7 @@ class InsPartnerAgeing(models.TransientModel):
         return periods
 
     def process_detailed_data(self, offset=0, partner=0, fetch_range=FETCH_RANGE):
+        print("-----------process_detailed_data")
         '''
 
         It is used for showing detailed move lines as sub lines. It is defered loading compatable
@@ -422,6 +426,7 @@ class InsPartnerAgeing(models.TransientModel):
                 return 0, 0, [], []
 
     def process_data(self):
+        print("process data")
         ''' Query Start Here
         ['partner_id':
             {'0-30':0.0,
@@ -458,11 +463,11 @@ class InsPartnerAgeing(models.TransientModel):
         for partner in partner_ids:
             partner_dict.update({partner.id:{}})
 
-        partner_dict.update({'Total': {}})
-        for period in period_dict:
-            partner_dict['Total'].update({period_dict[period]['name']: 0.0})
-        partner_dict['Total'].update({'total': 0.0, 'partner_name': 'ZZZZZZZZZ'})
-        partner_dict['Total'].update({'company_currency_id': company_currency_id})
+        # partner_dict.update({'Total': {}})
+        # for period in period_dict:
+        #     partner_dict['Total'].update({period_dict[period]['name']: 0.0})
+        # partner_dict['Total'].update({'total': 0.0, 'partner_name': 'ZZZZZZZZZ'})
+        # partner_dict['Total'].update({'company_currency_id': company_currency_id})
 
         for partner in partner_ids:
             partner_dict[partner.id].update({'partner_name':partner.name})
@@ -550,15 +555,16 @@ class InsPartnerAgeing(models.TransientModel):
 
 
                     partner_dict[partner.id].update({period_dict[period]['name']:amount})
-                    partner_dict['Total'][period_dict[period]['name']] += amount
+                    # partner_dict['Total'][period_dict[period]['name']] += amount
                 partner_dict[partner.id].update({'count': count})
                 partner_dict[partner.id].update({'pages': self.get_page_list(count)})
                 partner_dict[partner.id].update({'single_page': True if count <= FETCH_RANGE else False})
                 partner_dict[partner.id].update({'total': total_balance})
 
-                partner_dict['Total']['total'] += total_balance
+                # partner_dict['Total']['total'] += total_balance
+                # print("total",partner_dict['Total']['total'])
                 partner_dict[partner.id].update({'company_currency_id': company_currency_id})
-                partner_dict['Total'].update({'company_currency_id': company_currency_id})
+                # partner_dict['Total'].update({'company_currency_id': company_currency_id})
 
                 if partner_dict[partner.id]['total']==0.0:
                     partner_dict.pop(partner.id, None)
@@ -566,6 +572,18 @@ class InsPartnerAgeing(models.TransientModel):
 
             else:
                 partner_dict.pop(partner.id, None)
+
+        partner_dict.update({'Total': {}})
+        partner_dict['Total'].update({'total': 0.0, 'partner_name': 'TOTAL'})
+        partner_dict['Total'].update({'company_currency_id': company_currency_id})
+        partner_dict['Total']['total'] = sum(partner_dict[pid]['total'] for pid in partner_dict if pid != 'Total')
+        for period in period_dict:
+            partner_dict['Total'].update({period_dict[period]['name']: 0.0})
+            period_name = period_dict[period]['name']
+            partner_dict['Total'][period_name] = sum(
+                partner_dict[pid].get(period_name, 0) for pid in partner_dict if pid != 'Total')
+
+
 
 
 
@@ -592,10 +610,15 @@ class InsPartnerAgeing(models.TransientModel):
             filters = self.process_filters()
             period_dict, ageing_lines = self.process_data()
             period_list = [period_dict[a]['name'] for a in period_dict]
+            print("filters", filters)
+            print("age lines", ageing_lines)
+            print("period_dict", period_dict)
+            print("period_list", period_list)
             return filters, ageing_lines, period_dict, period_list
 
     def action_pdf(self):
         filters, ageing_lines, period_dict, period_list = self.get_report_datas()
+
         return self.env.ref(
             'account_dynamic_reports'
             '.action_print_partner_ageing').with_context(landscape=True).report_action(

@@ -105,7 +105,7 @@
 
  <br/>
 
- <table class="table table-condensed" style="border-right:1px solid black;border-left:1px solid black;border-top:1px solid black;border-bottom:1px solid black">
+ <table class="table table-condensed" style="border-right:1px solid black;border-left:1px solid black;border-top:1px solid black;border-bottom:1px solid black; font-size:10px;font-color:red;">
             <thead>
                <tr>
                    <th class="text-center" style="border-right:1px solid black">Sl#</th>
@@ -124,7 +124,7 @@
             <tbody>
                <t t-set="count" t-value="0" />
 
-               <tr t-foreach="o.statement_lines" t-as="line">
+               <tr style="page-break-inside:avoid;border:1px solid black;" t-foreach="o.statement_lines" t-as="line">
 
                      <t t-set="count" t-value="count + 1" />
 

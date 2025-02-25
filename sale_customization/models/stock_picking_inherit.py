@@ -56,6 +56,7 @@ class StockPickingInherit(models.Model):
                     'currency_id': picking_id.env.user.company_id.currency_id.id,
                     'kg_so_id': picking_id.kg_sale_order_id.id,
                     'kg_bank_id': self.sale_id.bank_id.id,
+                    'partner_bank_id': self.sale_id.bank_id.id,
                     'payment_reference': picking_id.name,
                     'picking_id': picking_id.id,
                     'invoice_line_ids': invoice_line_list

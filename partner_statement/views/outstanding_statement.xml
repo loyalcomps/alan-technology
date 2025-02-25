@@ -4,7 +4,7 @@
 <odoo>
 
 
-     <template id="external_layout_standard_stmnt">
+    <template id="external_layout_standard_stmnt">
         <div t-attf-class="header o_company_#{company.id}_layout" t-att-style="report_header_style">
             <div class="row">
                 <div class="col-3 mb4">
@@ -86,8 +86,10 @@
             </t>
         </t>
 
-<!--        <t t-if="company.external_report_layout_id" t-call="{{company.external_report_layout_id.sudo().key}}"><t t-out="0"/></t>-->
-        <t t-call="partner_statement.external_layout_standard_stmnt"><t t-out="0"/></t>
+        <!--        <t t-if="company.external_report_layout_id" t-call="{{company.external_report_layout_id.sudo().key}}"><t t-out="0"/></t>-->
+        <t t-call="partner_statement.external_layout_standard_stmnt">
+            <t t-out="0"/>
+        </t>
 
     </template>
 
@@ -96,19 +98,23 @@
             <t t-set="o" t-value="o.with_context({'lang': lang})"/>
             <div class="page" style="margin-top:-4%">
                 <!-- <t t-set="address"> -->
-                     <table  align="right" class="table-borderless"><tr><td>
-                <t
-                        t-esc="get_inv_addr(o)"
-                        t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'
-                />
-                <div t-if="o.vat" class="mt16"><t
-                        t-esc="company.country_id.vat_label or 'Tax ID'"
-                />:
-                    <span t-field="o.vat"/>
-                </div>
-            </td></tr></table>
-            <!-- </t> -->
-<!--                <div class="oe_structure"/>-->
+                <table align="right" class="table-borderless">
+                    <tr>
+                        <td>
+                            <t
+                                    t-esc="get_inv_addr(o)"
+                                    t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'
+                            />
+                            <div t-if="o.vat" class="mt16"><t
+                                    t-esc="company.country_id.vat_label or 'Tax ID'"
+                            />:
+                                <span t-field="o.vat"/>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <!-- </t> -->
+                <!--                <div class="oe_structure"/>-->
                 <h1 class="text-center" style="font-size:16px">
                     <strong>STATEMENT OF A/C</strong>
                 </h1>
@@ -122,37 +128,37 @@
                     <br/>
                 </t>
 
-<!--                <div id="informations" class="row mt32 mb32">-->
+                <!--                <div id="informations" class="row mt32 mb32">-->
 
-<!--&lt;!&ndash;                    <div class="col-12 bm-2">&ndash;&gt;-->
-<!--&lt;!&ndash;                        <strong>To,</strong>&ndash;&gt;-->
-<!--&lt;!&ndash;                        <p>&ndash;&gt;-->
-<!--&lt;!&ndash;                            <b>&ndash;&gt;-->
-<!--&lt;!&ndash;                                &lt;!&ndash;                                &#160;&#160;<span t-esc="o.customer_code" class="m-0"/>&#160;&#160;&#160;&ndash;&gt;&ndash;&gt;-->
-<!--&lt;!&ndash;                                <span t-field="o.name"/>&ndash;&gt;-->
-<!--&lt;!&ndash;                            </b>&ndash;&gt;-->
-<!--&lt;!&ndash;                            <br/>&ndash;&gt;-->
-<!--&lt;!&ndash;                            &#160;&#160;&#160;<span t-esc="o.street"/>&ndash;&gt;-->
-<!--&lt;!&ndash;                        </p>&ndash;&gt;-->
-<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
-<!--                </div>-->
-<!--                <br/>-->
-<!--                <br/>-->
-<!--                <div id="partner_info" class="row mt32 mb32">-->
-<!--                    <div class="col-4 bm-2">-->
-<!--                        <strong>Date :</strong>-->
-<!--                        <b>-->
-<!--                            &#160;&#160;<span t-esc="date_end" t-options='{"widget": "date","format": "dd/MM/yyyy"}' class="m-0"/>-->
-<!--                        </b>-->
-<!--                    </div>-->
-<!--                    <div class="col-9 bm-2">-->
-<!--                        <strong>Fax :</strong>-->
-<!--                        <b>-->
-<!--                            &#160;&#160;<span t-esc="o.email" class="m-0"/>-->
-<!--                        </b>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                <br/>-->
+                <!--&lt;!&ndash;                    <div class="col-12 bm-2">&ndash;&gt;-->
+                <!--&lt;!&ndash;                        <strong>To,</strong>&ndash;&gt;-->
+                <!--&lt;!&ndash;                        <p>&ndash;&gt;-->
+                <!--&lt;!&ndash;                            <b>&ndash;&gt;-->
+                <!--&lt;!&ndash;                                &lt;!&ndash;                                &#160;&#160;<span t-esc="o.customer_code" class="m-0"/>&#160;&#160;&#160;&ndash;&gt;&ndash;&gt;-->
+                <!--&lt;!&ndash;                                <span t-field="o.name"/>&ndash;&gt;-->
+                <!--&lt;!&ndash;                            </b>&ndash;&gt;-->
+                <!--&lt;!&ndash;                            <br/>&ndash;&gt;-->
+                <!--&lt;!&ndash;                            &#160;&#160;&#160;<span t-esc="o.street"/>&ndash;&gt;-->
+                <!--&lt;!&ndash;                        </p>&ndash;&gt;-->
+                <!--&lt;!&ndash;                    </div>&ndash;&gt;-->
+                <!--                </div>-->
+                <!--                <br/>-->
+                <!--                <br/>-->
+                <!--                <div id="partner_info" class="row mt32 mb32">-->
+                <!--                    <div class="col-4 bm-2">-->
+                <!--                        <strong>Date :</strong>-->
+                <!--                        <b>-->
+                <!--                            &#160;&#160;<span t-esc="date_end" t-options='{"widget": "date","format": "dd/MM/yyyy"}' class="m-0"/>-->
+                <!--                        </b>-->
+                <!--                    </div>-->
+                <!--                    <div class="col-9 bm-2">-->
+                <!--                        <strong>Fax :</strong>-->
+                <!--                        <b>-->
+                <!--                            &#160;&#160;<span t-esc="o.email" class="m-0"/>-->
+                <!--                        </b>-->
+                <!--                    </div>-->
+                <!--                </div>-->
+                <!--                <br/>-->
                 <t t-if="d['currencies']">
                     <br/>
                     <t t-foreach="d['currencies'].items()" t-as="currency">
@@ -169,10 +175,14 @@
                             <span t-esc="o.env.company.currency_id.name"/>
                         </p>
                         <br/>
-                        <table width="100%" class="table table-condensed table-statement" style="font-size:14px;border-bottom: 1px solid black;border-top: 1px solid black;border-left: 1px solid black;border-right: 1px solid black;">
+                        <table width="100%" class="table table-condensed table-statement"
+                               style="font-size:14px;border-bottom: 1px solid black;border-top: 1px solid black;border-left: 1px solid black;border-right: 1px solid black;">
                             <thead>
                                 <tr>
                                     <strong>
+                                        <th width="8%">
+                                            <b>Sl No</b>
+                                        </th>
                                         <th width="8%">
                                             <b>Inv Date</b>
                                         </th>
@@ -186,13 +196,16 @@
                                         <th style="text-align:right">
                                             <b>Opening Amount</b>
                                         </th>
-                                        <th  style="text-align:right" >
+                                        <th style="text-align:right">
+                                            <b>Payment Received</b>
+                                        </th>
+                                        <th style="text-align:right">
                                             <b>Pending Amount</b>
                                         </th>
-                                        <th  style="text-align:right">
+                                        <th style="text-align:right">
                                             <b>Balance Amount</b>
                                         </th>
-                                         <th   style="text-align:center"  align="left">
+                                        <th style="text-align:center" align="left">
                                             <b>Due Days</b>
                                         </th>
                                         <!--                                        <th class="amount">-->
@@ -202,16 +215,22 @@
                                 </tr>
                             </thead>
                             <tbody style="border-top: 1px solid black;border-left: 1px solid black;border-right: 1px;border-bottom: 1px solid black;">
+                                <t t-set="sl_no" t-value="1"/>
                                 <tr
                                         t-foreach="currency['lines']"
                                         t-as="line"
                                         t-att-class="'statement-blocked' if line['blocked'] else ''">
                                     <td>
+                                        <span t-esc="sl_no"/>
+                                    </td>
+
+                                    <t t-set="sl_no" t-value="sl_no+1"/>
+                                    <td>
                                         <span t-esc="line['date']"/>
                                     </td>
-<!--                                    <td>-->
-<!--                                        <span t-esc="line['journal']"/>-->
-<!--                                    </td>-->
+                                    <!--                                    <td>-->
+                                    <!--                                        <span t-esc="line['journal']"/>-->
+                                    <!--                                    </td>-->
                                     <td>
                                         <span t-esc="line['move_id']"/>
                                     </td>
@@ -219,40 +238,47 @@
                                         <span t-esc="line['ref']"/>
                                     </td>
 
-<!--                                    <td>-->
-<!--                                        <t t-if="line['name'] != '/'">-->
-<!--                                            <t t-if="not line['ref']">-->
-<!--                                                <span t-esc="line['name']"/>-->
-<!--                                            </t>-->
-<!--                                            <t t-if="line['ref'] and not line['name']">-->
-<!--                                                <span t-esc="line['ref']"/>-->
-<!--                                            </t>-->
-<!--                                            <t t-if="line['ref'] and line['name']">-->
-<!--                                                <t t-if="line['name'] not in line['ref'] or line['name'] == line['ref']">-->
-<!--                                                    <span t-esc="line['name']"/>-->
-<!--                                                </t>-->
-<!--                                                <t t-if="line['ref'] not in line['name']">-->
-<!--                                                    <span t-esc="line['ref']"/>-->
-<!--                                                </t>-->
-<!--                                            </t>-->
-<!--                                        </t>-->
-<!--                                        <t t-if="line['name'] == '/'">-->
-<!--                                            <span t-esc="line['ref']"/>-->
-<!--                                        </t>-->
-<!--                                    </td>-->
+                                    <!--                                    <td>-->
+                                    <!--                                        <t t-if="line['name'] != '/'">-->
+                                    <!--                                            <t t-if="not line['ref']">-->
+                                    <!--                                                <span t-esc="line['name']"/>-->
+                                    <!--                                            </t>-->
+                                    <!--                                            <t t-if="line['ref'] and not line['name']">-->
+                                    <!--                                                <span t-esc="line['ref']"/>-->
+                                    <!--                                            </t>-->
+                                    <!--                                            <t t-if="line['ref'] and line['name']">-->
+                                    <!--                                                <t t-if="line['name'] not in line['ref'] or line['name'] == line['ref']">-->
+                                    <!--                                                    <span t-esc="line['name']"/>-->
+                                    <!--                                                </t>-->
+                                    <!--                                                <t t-if="line['ref'] not in line['name']">-->
+                                    <!--                                                    <span t-esc="line['ref']"/>-->
+                                    <!--                                                </t>-->
+                                    <!--                                            </t>-->
+                                    <!--                                        </t>-->
+                                    <!--                                        <t t-if="line['name'] == '/'">-->
+                                    <!--                                            <span t-esc="line['ref']"/>-->
+                                    <!--                                        </t>-->
+                                    <!--                                    </td>-->
                                     <td class="amount">
                                         <span t-esc="'{0:,.2f}'.format(line['amount'])"
-                                              />
+                                        />
+                                    </td>
+<!--                                  <td class="amount">-->
+<!--                                        <t t-set="payment_received" t-value="line['amount'] - line['open_amount']"/>-->
+<!--                                        <span t-esc="'{0:,.2f}'.format(payment_received)"/>-->
+<!--                                    </td>-->
+                                    <td>
+
                                     </td>
                                     <td class="amount">
                                         <span t-esc="'{0:,.2f}'.format(line['open_amount'])"/>
-<!--                                              t-options="{'widget': 'monetary', 'display_currency': display_currency}"-->
-<!--                                        />-->
+                                        <!--                                              t-options="{'widget': 'monetary', 'display_currency': display_currency}"-->
+                                        <!--                                        />-->
                                     </td>
                                     <td class="amount">
                                         <span
-                                                t-esc="'{0:,.2f}'.format(line['balance'])" />
-<!--                                                t-options="{'widget': 'monetary', 'display_currency': display_currency}"-->
+                                                t-esc="'{0:,.2f}'.format(line['balance'])"/>
+                                        <!--                                                t-options="{'widget': 'monetary', 'display_currency': display_currency}"-->
 
                                     </td>
                                     <t t-set="today" t-value="datetime.datetime.now(datetime.timezone.utc)"/>
@@ -282,11 +308,11 @@
                                     <td/>
                                     <td class="amount">
                                         <span t-esc="'{0:,.2f}'.format(currency['amount_due'])"/>
-<!--                                                t-options="{'widget': 'monetary', 'display_currency': display_currency}"/>-->
+                                        <!--                                                t-options="{'widget': 'monetary', 'display_currency': display_currency}"/>-->
                                     </td>
-                                     <td  class="amount"/>
-<!--                                    <td/>-->
-<!--                                    <td/>-->
+                                    <td class="amount"/>
+                                    <!--                                    <td/>-->
+                                    <!--                                    <td/>-->
 
                                 </tr>
                             </tbody>
@@ -354,7 +380,7 @@
                 <!--                    </table>-->
                 <!--                </t>-->
 
-                
+
                 <div style="float:bottom;bottom:90;">
                     <p>
                         This is a computer generated document and does not need any signatures. Your immediate payment
@@ -395,7 +421,7 @@
             </t>
         </t>
     </template>
-     <record id="outstanding_paper_format_alan" model="report.paperformat">
+    <record id="outstanding_paper_format_alan" model="report.paperformat">
         <field name="name">Outstanding Paper Format Alan</field>
         <field name="default" eval="True"/>
         <field name="format">A4</field>
@@ -412,9 +438,16 @@
     </record>
 
     <record id="action_print_outstanding_statement" model="ir.actions.report">
-        <field name="name">Outstanding Statement</field>
+<!--        <field name="name">Outstanding Statement</field>-->
         <field name="model">res.partner</field>
         <field name="report_name">partner_statement.outstanding_statement</field>
+<!--        <field name="print_report_name">-->
+<!--            'Outstandingeeeeeeeeeeeeeeeeeeee statement - %s' % (object.name)-->
+<!--        </field>-->
+        <!--        <field name="print_report_name">(object.state in ('draft', 'sent') and 'Quotation - %s' % (object.name)) or-->
+        <!--            'Order - %s' % (object.name)-->
+        <!--        </field>-->
+
         <field name="report_type">qweb-pdf</field>
         <field name="report_file">partner_statement.outstanding_statement</field>
         <field name="paperformat_id" ref="partner_statement.outstanding_paper_format_alan"></field>

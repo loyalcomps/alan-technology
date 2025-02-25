@@ -348,7 +348,7 @@
                                             :
                                     </td>
                                      <td width="60%">
-                                         <span t-esc="bank_name"/>
+                                         <span t-esc="o.partner_bank_id.bank_id.name"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -359,7 +359,7 @@
                                             :
                                     </td>
                                      <td width="60%">
-                                         <span t-esc="acc_number"/>
+                                         <span t-esc="o.partner_bank_id.acc_number"/>
                                     </td>
                                 </tr>
                                 <tr>

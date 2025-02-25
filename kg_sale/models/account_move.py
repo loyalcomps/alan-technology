@@ -61,25 +61,27 @@ class AccountInvoice(models.Model):
     def get_capital(self, text):
         return text.title()
 
-    @api.model
-    def _get_view(self, view_id=None, view_type='form', **options):
-        """hide report based on company"""
-        arch, view = super()._get_view(view_id, view_type, **options)
-        if not self.env.company.country_id.name == "Saudi Arabia":
-            reports = self.env['ir.actions.report'].search([('company_type', '=', 'saudi')])
-            for rp in reports:
-                rp.unlink_action()
-            reports = self.env['ir.actions.report'].search([('company_type', '=', 'non_saudi')])
-            for nrp in reports:
-                nrp.create_action()
-        else:
-            reports = self.env['ir.actions.report'].search([('company_type', '=', 'saudi')])
-            for rp in reports:
-                rp.create_action()
-            reports = self.env['ir.actions.report'].search([('company_type', '=', 'non_saudi')])
-            for nrp in reports:
-                nrp.unlink_action()
-        return arch, view
+    # @api.model
+    # def _get_view(self, view_id=None, view_type='form', **options):
+    #     """hide report based on company"""
+    #     arch, view = super()._get_view(view_id, view_type, **options)
+    #     if not self.env.company.country_id.name == "Saudi Arabia":
+    #         print("reportttttttt")
+    #         reports = self.env['ir.actions.report'].search([('company_type', '=', 'saudi')])
+    #         for rp in reports:
+    #             rp.unlink_action()
+    #         reports = self.env['ir.actions.report'].search([('company_type', '=', 'non_saudi')])
+    #         for nrp in reports:
+    #             nrp.create_action()
+    #     else:
+    #         print("deleteeeee")
+    #         reports = self.env['ir.actions.report'].search([('company_type', '=', 'saudi')])
+    #         for rp in reports:
+    #             rp.create_action()
+    #         reports = self.env['ir.actions.report'].search([('company_type', '=', 'non_saudi')])
+    #         for nrp in reports:
+    #             nrp.unlink_action()
+    #     return arch, view
 
     # @api.depends(
     #     'state', 'currency_id', 'invoice_line_ids.price_subtotal',

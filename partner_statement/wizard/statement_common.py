@@ -82,6 +82,7 @@ class StatementCommon(models.AbstractModel):
         }
 
     def button_export_html(self):
+        print("html")
         self.ensure_one()
         report_type = "qweb-html"
         return self._export(report_type)

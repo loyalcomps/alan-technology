@@ -47,7 +47,7 @@
             <field name="paperformat_id" ref="kg_sale.paper_format_alan"/>
             <field name="binding_model_id" ref="account.model_account_move"/>
             <field name="binding_type">report</field>
-            <field name="company_type">saudi</field>
+<!--            <field name="company_type">saudi</field>-->
         </record>
         
         <record id="report_quotation_template_alan" model="ir.actions.report">
