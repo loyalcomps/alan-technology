@@ -389,18 +389,15 @@ class AccountInvoiceLine(models.Model):
                 if invoice_rec and invoice_rec.kg_do_id:
                       delivery_rec = invoice_rec.kg_do_id
                       if delivery_rec and delivery_rec.state == 'done':
-                          
-                              
-                        valuation_recs = self.env['stock.valuation.layer'].sudo().search(
-                            [('reference', '=', delivery_rec.name), ('product_id', '=', rec.product_id.id)])
+                          valuation_recs = self.env['stock.valuation.layer'].sudo().search(
+                                [('reference', '=', delivery_rec.name), ('product_id', '=', rec.product_id.id)])
+                          if valuation_recs:
+                              for v_rec in valuation_recs:
+                                  if v_rec.unit_cost:
+                                      cost += v_rec.unit_cost
+                                  else:
+                                      cost += rec.product_id.standard_price
                 
-                        if valuation_recs:
-                            # cost = sum(valuation_recs.mapped('unit_cost'))
-                            for v_rec in valuation_recs:
-                                if v_rec.unit_cost:
-                                    cost += v_rec.unit_cost
-                                else:
-                                    cost += rec.product_id.standard_price
                 rec.sudo().write(
                       {
                           'cost': cost,
