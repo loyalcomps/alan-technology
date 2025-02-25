@@ -11,17 +11,19 @@
                         <button name="register_pdc_cheque" string="Register PDC Cheque" type="object"
                                 class="oe_highlight" states="draft"/>
                         <button name="deposit_pdc_cheque" string="Deposit" type="object"
-                                class="oe_highlight"  states="registered,returned,bounced"/>
+                                class="oe_highlight" states="registered,returned,bounced"/>
                         <button name="register_bounced_pdc_cheque" string="Register" type="object"
-                                class="oe_highlight"  states="bounced"/>
+                                class="oe_highlight" states="bounced"/>
                         <button name="return_pdc_cheque" string="Return" type="object"
                                 class="oe_highlight" states="registered"/>
                         <button name="cancel_pdc_cheque" string="Cancel" type="object"
                                 states="registered,draft,returned,bounced"/>
                         <button name="bounce_pdc_cheque" string="Bounce" type="object"
-                                class="oe_highlight" states="deposited" groups="loyal_pdc_management_community.group_account_treasury_user"/>
+                                class="oe_highlight" states="deposited"
+                                groups="loyal_pdc_management_community.group_account_treasury_user"/>
                         <button name="%(action_view_account_pdc_date)d" string="Done" type="action"
-                                class="oe_highlight" states="deposited" groups="loyal_pdc_management_community.group_account_treasury_user"/>
+                                class="oe_highlight" states="deposited"
+                                groups="loyal_pdc_management_community.group_account_treasury_user"/>
                         <field name="state" widget="statusbar"
                                statusbar_visible="draft,registered,returned,deposited,bounced,done,cancel"
                                statusbar_colors='{"cancel":"red", "done":"green"}'/>
@@ -41,7 +43,8 @@
                                 <span attrs="{'invisible': [('payment_type','=','inbound')]}">Bill</span>
                             </button>
                             <!-- Journal Entry  button -->
-                            <button name="button_open_journal_entry" type="object" class="oe_stat_button" icon="fa-bars">
+                            <button name="button_open_journal_entry" type="object" class="oe_stat_button"
+                                    icon="fa-bars">
                                 <div class="o_stat_info">
                                     <span class="o_stat_text">Journal Entry</span>
                                 </div>
@@ -56,7 +59,7 @@
                         <group>
                             <group>
                                 <field name="payment_type" widget="radio" options="{'horizontal': True}"
-                                        attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                                       attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                                 <field name="partner_id" context="{'default_is_company': True}" string="Customer"
                                        attrs="{'readonly':[('state', '!=', 'draft')],
                                              'invisible':[('partner_type','!=','customer')]}"/>
@@ -67,28 +70,34 @@
                                 <div name="amount_div" class="o_row">
                                     <field name="amount" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                                     <field name="currency_id"
-                                               options="{'no_create': True, 'no_open': True}"
-                                               required="1"
-                                               attrs="{'readonly': [('state', '!=', 'draft')]}"
-                                               groups="base.group_multi_currency"/>
+                                           options="{'no_create': True, 'no_open': True}"
+                                           required="1"
+                                           attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                           groups="base.group_multi_currency"/>
                                 </div>
                                 <field name="cheque_reference" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                                <field name="journal_id" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                                <field name="payment_method_line_id" required="1" options="{'no_create': True, 'no_open': True}"
+                                <field name="available_payment_method_line_ids" invisible="1"/>
+                                <field name="journal_id" options="{'no_create': True}"
+                                       attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="payment_method_line_id" required="1"
+                                       options="{'no_create': True, 'no_open': True}"
                                        attrs="{'readonly': [('state', '!=', 'draft')]}"/>
 
                             </group>
                             <group>
                                 <field name="date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                                 <field name="pdc_date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                                <field name="accounting_date" readonly="1" force_save="1" attrs="{'invisible': [('state', '!=', 'done')]}"/>
-                                <field name="agent_bank" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="accounting_date" readonly="1" force_save="1"
+                                       attrs="{'invisible': [('state', '!=', 'done')]}"/>
+                                <field name="agent_bank" options="{'no_create': True}"
+                                       attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                                 <field name="ref" string="Memo" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                                 <field name="attachment_count" invisible="1"/>
                             </group>
                         </group>
                         <group>
-                            <field name="pdc_attachment_ids" widget="many2many_binary" string="Attach a file" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="pdc_attachment_ids" widget="many2many_binary" string="Attach a file"
+                                   attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
                     </sheet>
                     <div class="oe_chatter">
@@ -114,8 +123,9 @@
                     <field name="journal_id"/>
                     <field name="payment_method_line_id" invisible="1"/>
                     <field name="partner_id" string="Partner"/>
-                    <field name="amount" string="Amount" groups="base.group_multi_currency" />
-                    <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state == 'done'"/>
+                    <field name="amount" string="Amount" groups="base.group_multi_currency"/>
+                    <field name="state" widget="badge" decoration-info="state == 'draft'"
+                           decoration-success="state == 'done'"/>
                 </tree>
             </field>
         </record>
@@ -126,7 +136,7 @@
             <field name="arch" type="xml">
                 <search string="PDC Payments">
                     <field name="name" string="Payment"
-                        filter_domain="['|', '|', ('name', 'ilike', self), ('partner_id', 'ilike', self), ('ref', 'ilike', self)]"/>
+                           filter_domain="['|', '|', ('name', 'ilike', self), ('partner_id', 'ilike', self), ('ref', 'ilike', self)]"/>
                     <field name="partner_id" string="Customer/Vendor"/>
                     <separator/>
                     <filter string="Customer Payments"
@@ -147,8 +157,10 @@
                     <filter string="Customer/Vendor" name="partner" domain="[]" context="{'group_by': 'partner_id'}"/>
                     <filter string="Status" name="state" domain="[]" context="{'group_by': 'state'}"/>
                     <filter string="Payment Date" name="groupby_date" domain="[]" context="{'group_by': 'date'}"/>
-                    <filter string="Currency" name="currency" domain="[]" context="{'group_by': 'currency_id'}" groups="base.group_multi_currency"/>
-                    <filter string="Company" name="company" domain="[]" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+                    <filter string="Currency" name="currency" domain="[]" context="{'group_by': 'currency_id'}"
+                            groups="base.group_multi_currency"/>
+                    <filter string="Company" name="company" domain="[]" context="{'group_by': 'company_id'}"
+                            groups="base.group_multi_company"/>
                 </search>
             </field>
         </record>
@@ -161,11 +173,12 @@
             <field name="context">{
                 'default_payment_type': 'inbound',
                 'default_partner_type': 'customer',
-            }</field>
+                }
+            </field>
             <field name="view_id" ref="pdc_payment_tree_view"/>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
-                  Register a PDC payment
+                    Register a PDC payment
                 </p>
             </field>
         </record>
@@ -182,7 +195,7 @@
             <field name="state">code</field>
             <field name="code">
                 if records:
-                    action = records.action_register_pdc_payment()
+                action = records.action_register_pdc_payment()
             </field>
         </record>
     </data>

@@ -10,6 +10,7 @@
         </record>
 
         <!-- Payment methods -->
+<!--        Commented as it was already there in base_accounting_kit module-->
 <!--        <record id="account_payment_method_pdc_in" model="account.payment.method">-->
 <!--            <field name="name">Post Dated Cheque</field>-->
 <!--            <field name="code">pdc</field>-->
