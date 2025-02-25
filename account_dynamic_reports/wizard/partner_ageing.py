@@ -426,7 +426,6 @@ class InsPartnerAgeing(models.TransientModel):
                 return 0, 0, [], []
 
     def process_data(self):
-        print("process data")
         ''' Query Start Here
         ['partner_id':
             {'0-30':0.0,
