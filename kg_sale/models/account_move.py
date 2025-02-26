@@ -397,7 +397,8 @@ class AccountInvoiceLine(models.Model):
                                       cost += v_rec.unit_cost
                                   else:
                                       cost += rec.product_id.standard_price
-                
+                if cost and cost > 0:
+                    cost = -(cost)
                 rec.sudo().write(
                       {
                           'cost': cost,
