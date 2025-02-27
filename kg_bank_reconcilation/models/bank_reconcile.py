@@ -85,10 +85,8 @@ class BankReconcilation(models.Model):
         bank_balance = sum([line.debit - line.credit for line in bank_balance_id])
 
         self.gl_balance = gl_balance
-        print("gl balance",self.gl_balance)
         self.closing_balance = gl_balance
         self.bank_balance = bank_balance
-        print("bank balance",self.bank_balance)
 
         self.balance_difference = gl_balance - current_update
         self.unbalance_credit = credits
