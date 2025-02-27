@@ -158,49 +158,69 @@
 
                     <br/>
 
-                    <table
-                           style="border-right:1px solid black;border-left:1px solid black;border-top:1px solid black;border-bottom:1px solid black; font-size:13px;font-color:red;">
+                    <!-- <table class="table table-condensed" style="border-right:1px solid black;border-left:1px solid black;border-top:1px solid black;border-bottom:1px solid black; font-size:12px;font-color:red;">-->
+                    <table class="table table-condensed"
+                           style="table-layout: fixed; width: 100%; border-right:1px solid black; border-left:1px solid black; border-top:1px solid black; border-bottom:1px solid black; font-size:12px;">
+
                         <thead>
-                            <col style="width: 10%;"/>
-                            <col style="width: 10%;"/>
-                            <col style="width: 20%;"/>
-                            <col style="width: 40%;"/>
-                            <col style="width: 10%;"/>
-                            <col style="width: 10%;"/>
+                            <!--               <tr>-->
+                            <!--                   <th class="text-center" style="border-right:1px solid black">Sl#</th>-->
+
+
+                            <!--                  <th class="text-center" style="border-right:1px solid black">Date</th>-->
+                            <!--                  <th class="text-center" style="border-right:1px solid black">Reference</th>-->
+                            <!--                  <th class="text-center" style="border-right:1px solid black">Partner</th>-->
+                            <!--                                    <th class="text-center" style="border-right:1px solid black">Debit</th>-->
+                            <!--                                                      <th class="text-center" style="border-right:1px solid black">Credit</th>-->
+
+
+                            <!--               </tr>-->
                             <tr>
-                                <th class="text-center" style="border-right:1px solid black">Sl#</th>
-
-
-                                <th class="text-center" style="border-right:1px solid black">Date</th>
-                                <th class="text-center" style="border-right:1px solid black">Reference</th>
-                                <th class="text-center" style="border-right:1px solid black">Partner</th>
-                                <th class="text-center" style="border-right:1px solid black">Debit</th>
-                                <th class="text-center" style="border-right:1px solid black">Credit</th>
-
-
+                                <th class="text-center"
+                                    style="border-right:1px solid black; width:5%; white-space: nowrap;">Sl#
+                                </th>
+                                <th class="text-center"
+                                    style="border-right:1px solid black; width:10%; white-space: nowrap;">Date
+                                </th>
+                                <th class="text-center"
+                                    style="border-right:1px solid black; width:20%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    Reference
+                                </th>
+                                <th class="text-center"
+                                    style="border-right:1px solid black; width:20%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    Partner
+                                </th>
+                                <th class="text-center"
+                                    style="border-right:1px solid black; width:10%; white-space: nowrap;">Debit
+                                </th>
+                                <th class="text-center"
+                                    style="border-right:1px solid black; width:10%; white-space: nowrap;">Credit
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                             <t t-set="count" t-value="0"/>
 
+                            <!--               <tr style="page-break-inside:avoid;border:1px solid black;" t-foreach="o.statement_lines"   t-if="not line.statement_date" t-as="line">-->
                             <tr style="page-break-inside:avoid;border:1px solid black;"
-                                t-foreach="o.statement_lines.filtered(lambda l: not l.statement_date)" t-as="line">
+                                t-foreach="o.statement_lines.filtered(lambda line: not line.statement_date)"
+                                t-as="line">
 
                                 <t t-set="count" t-value="count + 1"/>
 
                                 <td class="text-center"
-                                    style="border-right:1px solid black;border-bottom:1px solid black">
+                                    style="border-right:1px solid black;border-bottom:1px solid black;white-space: nowrap;">
                                     <span t-esc="count"/>
                                 </td>
 
 
                                 <td class="text-left"
-                                    style="border-right:1px solid black;border-bottom:1px solid black">
+                                    style="border-right:1px solid black;border-bottom:1px solid black;white-space: nowrap;">
                                     <span t-field="line.date"/>
                                 </td>
 
                                 <td class="text-left"
-                                    style="border-right:1px solid black;border-bottom:1px solid black">
+                                    style="border-right:1px solid black;border-bottom:1px solid black;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
 
                                     <span t-field="line.ref"/>
                                     <!--						    <t t-if="line.od_short_ref">-->
@@ -211,19 +231,19 @@
                                 </td>
 
                                 <td class="text-left"
-                                    style="border-right:1px solid black;border-bottom:1px solid black">
+                                    style="border-right:1px solid black;border-bottom:1px solid black;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                     <span t-field="line.partner_id"/>
                                 </td>
 
                                 <td align="center" class="text-right"
-                                    style="border-right:1px solid black;border-bottom:1px solid black">
+                                    style="border-right:1px solid black;border-bottom:1px solid black;white-space: nowrap;">
                                     <t t-if="line.debit">
                                         <span t-esc="'{:,.2f}'.format(line.debit)"/>
                                     </t>
                                 </td>
 
                                 <td align="center" class="text-right"
-                                    style="border-right:1px solid black;border-bottom:1px solid black">
+                                    style="border-right:1px solid black;border-bottom:1px solid black;white-space: nowrap;">
                                     <t t-if="line.credit">
                                         <span t-esc="'{:,.2f}'.format(line.credit)"/>
                                         <!-- <span t-field="line.credit" /> -->
