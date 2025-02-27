@@ -89,6 +89,8 @@ class InsPartnerAgeing(models.TransientModel):
         'res.company', string='Company',
         default=lambda self: self.env.company
     )
+    salesperson_wise = fields.Boolean("Salesperson Wise Report", default=False)
+    salesperson_id = fields.Many2one('res.users')
 
     def write(self, vals):
         if not vals.get('partner_ids'):
@@ -177,6 +179,15 @@ class InsPartnerAgeing(models.TransientModel):
         if data.get('partner_type'):
             filters['partner_type'] = data.get('partner_type')
 
+        if data.get('salesperson_wise'):
+            filters['salesperson_wise'] = True
+        else:
+            filters['salesperson_wise'] = False
+
+
+        if data.get('salesperson_id'):
+            filters['salesperson_id'] = data.get('salesperson_id')
+
         if data.get('partner_category_ids', []):
             filters['categories'] = self.env['res.partner.category'].browse(data.get('partner_category_ids', [])).mapped('name')
         else:
@@ -262,34 +273,42 @@ class InsPartnerAgeing(models.TransientModel):
         )
         if self.type:
             type = tuple([self.type,'none'])
+        print("--type",type)
 
         offset = offset * fetch_range
         count = 0
+        print("salesperson_wise",self.salesperson_wise)
 
         if partner:
 
-
             sql = """
-                    SELECT COUNT(*)
-                    FROM
-                        account_move_line AS l
-                    LEFT JOIN
-                        account_move AS m ON m.id = l.move_id
-                    LEFT JOIN
-                        account_account AS a ON a.id = l.account_id
-                    --LEFT JOIN
-                    --    account_account_type AS ty ON a.user_type_id = ty.id
-                    LEFT JOIN
-                        account_journal AS j ON l.journal_id = j.id
-                    WHERE
-                        l.balance <> 0
-                        AND m.state = 'posted'
-                        AND a.account_type IN %s
-                        AND l.partner_id = %s
-                        AND l.date <= '%s'
-                        AND l.company_id = %s
-                """ % (type, partner, as_on_date, company_id.id)
-            self.env.cr.execute(sql)
+                SELECT COUNT(*)
+                FROM
+                    account_move_line AS l
+                LEFT JOIN
+                    account_move AS m ON m.id = l.move_id
+                LEFT JOIN
+                    account_account AS a ON a.id = l.account_id
+                LEFT JOIN
+                    account_journal AS j ON l.journal_id = j.id
+                WHERE
+                    l.balance <> 0
+                    AND m.state = 'posted'
+                    AND a.account_type IN %s
+                    AND l.partner_id = %s
+                    AND l.date <= %s
+                    AND l.company_id = %s
+            """
+
+            params = [type, partner, as_on_date, company_id.id]
+
+            # Add salesperson condition dynamically
+            if self.salesperson_id:
+                sql += " AND m.invoice_user_id = %s"
+                params.append(self.salesperson_id.id)
+
+            # Execute the query with parameters
+            self.env.cr.execute(sql, tuple(params))
             count = self.env.cr.fetchone()[0]
 
             SELECT = """SELECT m.name AS move_name,
@@ -388,39 +407,63 @@ class InsPartnerAgeing(models.TransientModel):
                                     END AS %s """%(period_dict[period].get('start'), as_on_date, as_on_date ,'range_'+str(period))
 
             sql = """
-                    FROM
-                        account_move_line AS l
-                    LEFT JOIN
-                        account_move AS m ON m.id = l.move_id
-                    LEFT JOIN
-                        account_account AS a ON a.id = l.account_id
-                    --LEFT JOIN
-                    --    account_account_type AS ty ON a.user_type_id = ty.id
-                    LEFT JOIN
-                        account_journal AS j ON l.journal_id = j.id
-                    LEFT JOIN 
-                        res_currency AS cc ON l.company_currency_id = cc.id
-                    WHERE
-                        l.balance <> 0
-                        AND m.state = 'posted'
-                        AND a.account_type IN %s
-                        AND l.partner_id = %s
-                        AND l.date <= '%s'
-                        AND l.company_id = %s
-                    GROUP BY
-                        l.date, l.date_maturity, m.id, m.name, j.name, a.name, cc.id
-                    OFFSET %s ROWS
-                    FETCH FIRST %s ROWS ONLY
-                """ % (type, partner, as_on_date, company_id.id, offset, fetch_range)
-            self.env.cr.execute(SELECT + sql)
+                FROM
+                    account_move_line AS l
+                LEFT JOIN
+                    account_move AS m ON m.id = l.move_id
+                LEFT JOIN
+                    account_account AS a ON a.id = l.account_id
+                LEFT JOIN
+                    account_journal AS j ON l.journal_id = j.id
+                LEFT JOIN 
+                    res_currency AS cc ON l.company_currency_id = cc.id
+                WHERE
+                    l.balance <> 0
+                    AND m.state = 'posted'
+                    AND a.account_type IN %s
+                    AND l.partner_id = %s
+                    AND l.date <= %s
+                    AND l.company_id = %s
+            """
+
+            params = [type, partner, as_on_date, company_id.id]
+
+            # **Adding Salesperson Filter (if applicable)**
+            if self.salesperson_wise and self.salesperson_id:
+                sql += " AND m.invoice_user_id = %s"
+                params.append(self.salesperson_id.id)
+
+            # Append GROUP BY, OFFSET, and FETCH
+            sql += """
+                GROUP BY
+                    l.date, l.date_maturity, m.id, m.name, j.name, a.name, cc.id
+                OFFSET %s ROWS
+                FETCH FIRST %s ROWS ONLY
+            """
+
+            params.extend([offset, fetch_range])
+
+            # Execute query safely with parameters
+            self.env.cr.execute(SELECT + sql, tuple(params))
             final_list = self.env.cr.dictfetchall() or []
+            print("------final list",final_list)
+
             move_lines = []
             for m in final_list:
+
 
                 if (m.get('range_0') or m.get('range_1') or m.get('range_2') or m.get('range_3') or m.get('range_4') or m.get('range_5')):
                     move_lines.append(m)
 
+
             if move_lines:
+                move_lines = [
+                    {**line,
+                     'journal_name': line['journal_name'].get('en_US', ''),
+                     'account_name': line['account_name'].get('en_US', '')}
+                    for line in move_lines
+                ]
+
                 return count, offset, move_lines, period_list
             else:
                 return 0, 0, [], []
@@ -439,15 +482,16 @@ class InsPartnerAgeing(models.TransientModel):
         2. Fetch partner_ids and loop through bucket range for values
         '''
         period_dict = self.prepare_bucket_list()
+        print("salesperson_wise", self.salesperson_wise, self.salesperson_id.name)
 
-        domain = ['|',('company_id','=',self.env.company.id),('company_id','=',False)]
+        domain = ['|', ('company_id', '=', self.env.company.id), ('company_id', '=', False)]
         if self.partner_type == 'customer':
-            domain.append(('customer_rank','>',0))
+            domain.append(('customer_rank', '>', 0))
         if self.partner_type == 'supplier':
-            domain.append(('supplier_rank','>',0))
+            domain.append(('supplier_rank', '>', 0))
 
         if self.partner_category_ids:
-            domain.append(('category_id','in',self.partner_category_ids.ids))
+            domain.append(('category_id', 'in', self.partner_category_ids.ids))
 
         partner_ids = self.partner_ids or self.env['res.partner'].search(domain)
         as_on_date = self.as_on_date
@@ -456,22 +500,17 @@ class InsPartnerAgeing(models.TransientModel):
 
         type = ('asset_receivable', 'liability_payable')
         if self.type:
-            type = tuple([self.type,'none'])
+            type = tuple([self.type, 'none'])
 
         partner_dict = {}
         for partner in partner_ids:
-            partner_dict.update({partner.id:{}})
-
-        # partner_dict.update({'Total': {}})
-        # for period in period_dict:
-        #     partner_dict['Total'].update({period_dict[period]['name']: 0.0})
-        # partner_dict['Total'].update({'total': 0.0, 'partner_name': 'ZZZZZZZZZ'})
-        # partner_dict['Total'].update({'company_currency_id': company_currency_id})
+            partner_dict.update({partner.id: {}})
 
         for partner in partner_ids:
-            partner_dict[partner.id].update({'partner_name':partner.name})
+            partner_dict[partner.id].update({'partner_name': partner.name})
             total_balance = 0.0
 
+            # Count query with parameters
             sql = """
                 SELECT
                     COUNT(*) AS count
@@ -481,50 +520,55 @@ class InsPartnerAgeing(models.TransientModel):
                     account_move AS m ON m.id = l.move_id
                 LEFT JOIN
                     account_account AS a ON a.id = l.account_id
-                --LEFT JOIN
-                --    account_account_type AS ty ON a.user_type_id = ty.id
                 WHERE
                     l.balance <> 0
                     AND m.state = 'posted'
                     AND a.account_type IN %s
                     AND l.partner_id = %s
-                    AND l.date <= '%s'
+                    AND l.date <= %s
                     AND l.company_id = %s
-            """%(type, partner.id, as_on_date, company_id.id)
-            self.env.cr.execute(sql)
-            fetch_dict = self.env.cr.dictfetchone() or 0.0
+            """
+            params = [type, partner.id, as_on_date, company_id.id]
+            if self.salesperson_id:
+                sql += " AND m.invoice_user_id = %s"
+                params.append(self.salesperson_id.id)
+
+            self.env.cr.execute(sql, params)
+            fetch_dict = self.env.cr.dictfetchone() or {'count': 0}
             count = fetch_dict.get('count') or 0.0
 
             if count:
                 for period in period_dict:
+                    # Create where clause using parameters
+                    where_sql = " AND l.partner_id = %s AND COALESCE(l.date_maturity, l.date) "
+                    where_params = [partner.id]
 
-                    where = " AND l.date <= '%s' AND l.partner_id = %s AND COALESCE(l.date_maturity,l.date) "%(as_on_date, partner.id)
                     if period_dict[period].get('start') and period_dict[period].get('stop'):
-                        where += " BETWEEN '%s' AND '%s'" % (period_dict[period].get('stop'), period_dict[period].get('start'))
-                    elif not period_dict[period].get('start'): # ie just
-                        where += " >= '%s'" % (period_dict[period].get('stop'))
+                        where_sql += " BETWEEN %s AND %s"
+                        where_params.extend([period_dict[period].get('stop'), period_dict[period].get('start')])
+                    elif not period_dict[period].get('start'):  # ie just
+                        where_sql += " >= %s"
+                        where_params.append(period_dict[period].get('stop'))
                     else:
-                        where += " <= '%s'" % (period_dict[period].get('start'))
+                        where_sql += " <= %s"
+                        where_params.append(period_dict[period].get('start'))
 
-                    sql = """
+                    # Balance query with parameters
+                    balance_sql = """
                         SELECT
-                            sum(
-                                l.balance
-                                ) AS balance,
+                            sum(l.balance) AS balance,
                             sum(
                                 COALESCE(
-                                    (SELECT 
-                                        SUM(amount)
+                                    (SELECT SUM(amount)
                                     FROM account_partial_reconcile
-                                    WHERE credit_move_id = l.id AND max_date <= '%s'), 0
+                                    WHERE credit_move_id = l.id AND max_date <= %s), 0
                                     )
                                 ) AS sum_debit,
                             sum(
                                 COALESCE(
-                                    (SELECT 
-                                        SUM(amount) 
+                                    (SELECT SUM(amount) 
                                     FROM account_partial_reconcile 
-                                    WHERE debit_move_id = l.id AND max_date <= '%s'), 0
+                                    WHERE debit_move_id = l.id AND max_date <= %s), 0
                                     )
                                 ) AS sum_credit
                         FROM
@@ -533,60 +577,251 @@ class InsPartnerAgeing(models.TransientModel):
                             account_move AS m ON m.id = l.move_id
                         LEFT JOIN
                             account_account AS a ON a.id = l.account_id
-                        --LEFT JOIN
-                        --    account_account_type AS ty ON a.user_type_id = ty.id
                         WHERE
                             l.balance <> 0
                             AND m.state = 'posted'
                             AND a.account_type IN %s
                             AND l.company_id = %s
-                    """%(as_on_date, as_on_date, type, company_id.id)
-                    amount = 0.0
-                    self.env.cr.execute(sql + where)
-                    fetch_dict = self.env.cr.dictfetchall() or 0.0
+                            AND l.date <= %s
+                    """
+                    balance_params = [as_on_date, as_on_date, type, company_id.id, as_on_date]
 
-                    if not fetch_dict[0].get('balance'):
-                        amount = 0.0
-                    else:
+                    if self.salesperson_id:
+                        balance_sql += " AND m.invoice_user_id = %s"
+                        balance_params.append(self.salesperson_id.id)
+
+                    # Combine SQL and parameters
+                    final_sql = balance_sql + where_sql
+                    final_params = balance_params + where_params
+
+                    self.env.cr.execute(final_sql, final_params)
+                    fetch_dict = self.env.cr.dictfetchall() or [
+                        {'balance': None, 'sum_debit': None, 'sum_credit': None}]
+
+                    amount = 0.0
+                    if fetch_dict[0].get('balance'):
                         amount = fetch_dict[0]['balance'] + fetch_dict[0]['sum_debit'] - fetch_dict[0]['sum_credit']
                         total_balance += amount
 
+                    partner_dict[partner.id].update({period_dict[period]['name']: amount})
 
+                partner_dict[partner.id].update({
+                    'count': count,
+                    'pages': self.get_page_list(count),
+                    'single_page': True if count <= FETCH_RANGE else False,
+                    'total': total_balance,
+                    'company_currency_id': company_currency_id
+                })
 
-                    partner_dict[partner.id].update({period_dict[period]['name']:amount})
-                    # partner_dict['Total'][period_dict[period]['name']] += amount
-                partner_dict[partner.id].update({'count': count})
-                partner_dict[partner.id].update({'pages': self.get_page_list(count)})
-                partner_dict[partner.id].update({'single_page': True if count <= FETCH_RANGE else False})
-                partner_dict[partner.id].update({'total': total_balance})
-
-                # partner_dict['Total']['total'] += total_balance
-                # print("total",partner_dict['Total']['total'])
-                partner_dict[partner.id].update({'company_currency_id': company_currency_id})
-                # partner_dict['Total'].update({'company_currency_id': company_currency_id})
-
-                if partner_dict[partner.id]['total']==0.0:
+                if partner_dict[partner.id]['total'] == 0.0:
                     partner_dict.pop(partner.id, None)
-
-
             else:
                 partner_dict.pop(partner.id, None)
 
-        partner_dict.update({'Total': {}})
-        partner_dict['Total'].update({'total': 0.0, 'partner_name': 'TOTAL'})
-        partner_dict['Total'].update({'company_currency_id': company_currency_id})
-        partner_dict['Total']['total'] = sum(partner_dict[pid]['total'] for pid in partner_dict if pid != 'Total')
+        # Create Total entry
+        partner_dict.update({'Total': {
+            'total': 0.0,
+            'partner_name': 'TOTAL',
+            'company_currency_id': company_currency_id
+        }})
+
+        # Calculate period totals
         for period in period_dict:
-            partner_dict['Total'].update({period_dict[period]['name']: 0.0})
             period_name = period_dict[period]['name']
             partner_dict['Total'][period_name] = sum(
                 partner_dict[pid].get(period_name, 0) for pid in partner_dict if pid != 'Total')
 
+        # Calculate grand total
+        partner_dict['Total']['total'] = sum(
+            partner_dict[pid]['total'] for pid in partner_dict if pid != 'Total')
 
-
-
-
+        print("-partner_dict", partner_dict)
         return period_dict, partner_dict
+
+    # def process_data(self):
+    #     ''' Query Start Here
+    #     ['partner_id':
+    #         {'0-30':0.0,
+    #         '30-60':0.0,
+    #         '60-90':0.0,
+    #         '90-120':0.0,
+    #         '>120':0.0,
+    #         'as_on_date_amount': 0.0,
+    #         'total': 0.0}]
+    #     1. Prepare bucket range list from bucket values
+    #     2. Fetch partner_ids and loop through bucket range for values
+    #     '''
+    #     period_dict = self.prepare_bucket_list()
+    #     print("salesperson_wise", self.salesperson_wise,self.salesperson_id.name)
+    #
+    #
+    #     domain = ['|',('company_id','=',self.env.company.id),('company_id','=',False)]
+    #     if self.partner_type == 'customer':
+    #         domain.append(('customer_rank','>',0))
+    #     if self.partner_type == 'supplier':
+    #         domain.append(('supplier_rank','>',0))
+    #
+    #     if self.partner_category_ids:
+    #         domain.append(('category_id','in',self.partner_category_ids.ids))
+    #
+    #     partner_ids = self.partner_ids or self.env['res.partner'].search(domain)
+    #     as_on_date = self.as_on_date
+    #     company_currency_id = self.env.company.currency_id.id
+    #     company_id = self.env.company
+    #
+    #     type = ('asset_receivable', 'liability_payable')
+    #     if self.type:
+    #         type = tuple([self.type,'none'])
+    #
+    #     partner_dict = {}
+    #     for partner in partner_ids:
+    #         partner_dict.update({partner.id:{}})
+    #
+    #     # partner_dict.update({'Total': {}})
+    #     # for period in period_dict:
+    #     #     partner_dict['Total'].update({period_dict[period]['name']: 0.0})
+    #     # partner_dict['Total'].update({'total': 0.0, 'partner_name': 'ZZZZZZZZZ'})
+    #     # partner_dict['Total'].update({'company_currency_id': company_currency_id})
+    #
+    #     salesperson_filter = ""
+    #
+    #
+    #     for partner in partner_ids:
+    #         partner_dict[partner.id].update({'partner_name':partner.name})
+    #         total_balance = 0.0
+    #
+    #         sql = """
+    #             SELECT
+    #                 COUNT(*) AS count
+    #             FROM
+    #                 account_move_line AS l
+    #             LEFT JOIN
+    #                 account_move AS m ON m.id = l.move_id
+    #             LEFT JOIN
+    #                 account_account AS a ON a.id = l.account_id
+    #             --LEFT JOIN
+    #             --    account_account_type AS ty ON a.user_type_id = ty.id
+    #             WHERE
+    #                 l.balance <> 0
+    #                 AND m.state = 'posted'
+    #                 AND a.account_type IN %s
+    #                 AND l.partner_id = %s
+    #                 AND l.date <= '%s'
+    #                 AND l.company_id = %s
+    #
+    #         """
+    #         params = [type, partner.id, as_on_date, company_id.id]
+    #         if self.salesperson_id:
+    #             sql += " AND m.invoice_user_id = %s"
+    #             params.append(self.salesperson_id.id)
+    #
+    #         self.env.cr.execute(sql,params)
+    #         fetch_dict = self.env.cr.dictfetchone() or 0.0
+    #
+    #         count = fetch_dict.get('count') or 0.0
+    #
+    #         if count:
+    #             for period in period_dict:
+    #
+    #                 where = " AND l.date <= '%s' AND l.partner_id = %s AND COALESCE(l.date_maturity,l.date) "%(as_on_date, partner.id)
+    #                 if period_dict[period].get('start') and period_dict[period].get('stop'):
+    #                     where += " BETWEEN '%s' AND '%s'" % (period_dict[period].get('stop'), period_dict[period].get('start'))
+    #                 elif not period_dict[period].get('start'): # ie just
+    #                     where += " >= '%s'" % (period_dict[period].get('stop'))
+    #                 else:
+    #                     where += " <= '%s'" % (period_dict[period].get('start'))
+    #
+    #                 sql = """
+    #                     SELECT
+    #                         sum(
+    #                             l.balance
+    #                             ) AS balance,
+    #                         sum(
+    #                             COALESCE(
+    #                                 (SELECT
+    #                                     SUM(amount)
+    #                                 FROM account_partial_reconcile
+    #                                 WHERE credit_move_id = l.id AND max_date <= '%s'), 0
+    #                                 )
+    #                             ) AS sum_debit,
+    #                         sum(
+    #                             COALESCE(
+    #                                 (SELECT
+    #                                     SUM(amount)
+    #                                 FROM account_partial_reconcile
+    #                                 WHERE debit_move_id = l.id AND max_date <= '%s'), 0
+    #                                 )
+    #                             ) AS sum_credit
+    #                     FROM
+    #                         account_move_line AS l
+    #                     LEFT JOIN
+    #                         account_move AS m ON m.id = l.move_id
+    #                     LEFT JOIN
+    #                         account_account AS a ON a.id = l.account_id
+    #                     --LEFT JOIN
+    #                     --    account_account_type AS ty ON a.user_type_id = ty.id
+    #                     WHERE
+    #                         l.balance <> 0
+    #                         AND m.state = 'posted'
+    #
+    #                         AND a.account_type IN %s
+    #                         AND l.company_id = %s
+    #
+    #                 """%(as_on_date, as_on_date, type, company_id.id)
+    #
+    #                 params = [as_on_date, as_on_date, type, company_id.id]
+    #                 amount = 0.0
+    #                 if self.salesperson_id:
+    #                     sql += " AND m.invoice_user_id = %s"
+    #                     params.append(self.salesperson_id.id)
+    #                 final_sql = sql + where
+    #                 self.env.cr.execute(final_sql ,params)
+    #                 fetch_dict = self.env.cr.dictfetchall() or 0.0
+    #                 print("------fetch_dict 2222222222222",fetch_dict)
+    #
+    #                 if not fetch_dict[0].get('balance'):
+    #                     amount = 0.0
+    #                 else:
+    #                     amount = fetch_dict[0]['balance'] + fetch_dict[0]['sum_debit'] - fetch_dict[0]['sum_credit']
+    #                     total_balance += amount
+    #
+    #
+    #
+    #                 partner_dict[partner.id].update({period_dict[period]['name']:amount})
+    #                 # partner_dict['Total'][period_dict[period]['name']] += amount
+    #             partner_dict[partner.id].update({'count': count})
+    #             partner_dict[partner.id].update({'pages': self.get_page_list(count)})
+    #             partner_dict[partner.id].update({'single_page': True if count <= FETCH_RANGE else False})
+    #             partner_dict[partner.id].update({'total': total_balance})
+    #
+    #             # partner_dict['Total']['total'] += total_balance
+    #             # print("total",partner_dict['Total']['total'])
+    #             partner_dict[partner.id].update({'company_currency_id': company_currency_id})
+    #             # partner_dict['Total'].update({'company_currency_id': company_currency_id})
+    #
+    #             if partner_dict[partner.id]['total']==0.0:
+    #                 partner_dict.pop(partner.id, None)
+    #
+    #
+    #         else:
+    #             partner_dict.pop(partner.id, None)
+    #
+    #     partner_dict.update({'Total': {}})
+    #     partner_dict['Total'].update({'total': 0.0, 'partner_name': 'TOTAL'})
+    #     partner_dict['Total'].update({'company_currency_id': company_currency_id})
+    #     partner_dict['Total']['total'] = sum(partner_dict[pid]['total'] for pid in partner_dict if pid != 'Total')
+    #     for period in period_dict:
+    #         partner_dict['Total'].update({period_dict[period]['name']: 0.0})
+    #         period_name = period_dict[period]['name']
+    #         partner_dict['Total'][period_name] = sum(
+    #             partner_dict[pid].get(period_name, 0) for pid in partner_dict if pid != 'Total')
+    #     print("-partner_dict",partner_dict)
+    #
+    #
+    #
+    #
+    #
+    #     return period_dict, partner_dict
 
     def get_page_list(self, total_count):
         '''
@@ -841,8 +1076,8 @@ class InsPartnerAgeing(models.TransientModel):
                                 lang_id.date_format)
                             sheet.write(row_pos, 1, datestring, line_header_light_date)
 
-                            journal_name = sub_line.get('journal_name', {}).get('en_US', '')
-                            account_name = sub_line.get('account_name', {}).get('en_US', '')
+                            journal_name = sub_line.get('journal_name')
+                            account_name = sub_line.get('account_name')
                             sheet.write(row_pos, 2, journal_name, line_header_light)
                             sheet.write(row_pos, 3, account_name or '', line_header_light)
                             sheet.write(row_pos, 4, (sub_line.get('range_0')), line_header_light_period)

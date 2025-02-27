@@ -96,6 +96,24 @@ class OutstandingStatementXslx(models.AbstractModel):
         sheet.write(
             row_pos, 6, currency_data.get("amount_due"), FORMATS["current_money_format"]
         )
+        row_pos += 1
+        sheet.merge_range(
+            row_pos, 0, row_pos, 1, 'Total Outstanding Amount:' )
+        sheet.write(
+            row_pos, 2, currency_data.get("amount_due"))
+
+        row_pos += 1
+        sheet.merge_range(
+            row_pos, 0, row_pos, 1, 'PDC Received :')
+        sheet.write(
+            row_pos, 2, currency_data.get("amount_due"))
+
+        row_pos += 1
+        sheet.merge_range(
+            row_pos, 0, row_pos, 1, 'Net Balance After PDC :')
+        sheet.write(
+            row_pos, 2, currency_data.get("amount_due"))
+
         return row_pos
 
     def _write_currency_buckets(self, row_pos, sheet, partner, currency, data):

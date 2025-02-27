@@ -36,11 +36,11 @@ class AccountPdcRegister(models.TransientModel):
     payment_method_line_id = fields.Many2one('account.payment.method.line', string='Payment Method',
                                              readonly=False, store=True,
                                              compute='_compute_payment_method_line_id',
-                                             domain="[('code', '=', 'pdc')]",
+                                             domain="[('code', '=', 'pdc')]"
                                              )
     pdc_register_attachment_ids = fields.Many2many(comodel_name="ir.attachment", relation="pdc_register_ir_attachment_relation",
                                           column1="pdc_register_id", column2="attachment_id", string="Attachments",
-                                          required=True)
+                                         )
 
     @api.depends('payment_type', 'journal_id')
     def _compute_payment_method_line_id(self):
@@ -48,12 +48,16 @@ class AccountPdcRegister(models.TransientModel):
         '''
         for pay in self:
             available_payment_method_line_ids = pay.journal_id._get_available_payment_method_lines(pay.payment_type)
+            print("-available_payment_method_line_ids",available_payment_method_line_ids)
 
             if available_payment_method_line_ids:
                 payment_method_lines = available_payment_method_line_ids.filtered(lambda l: l.code == 'pdc')
+
                 pay.payment_method_line_id = payment_method_lines[0]._origin if payment_method_lines else False
             else:
                 pay.payment_method_line_id = False
+
+
 
     @api.depends('journal_id')
     def _compute_currency_id(self):
@@ -162,6 +166,7 @@ class AccountPdcRegister(models.TransientModel):
             'cheque_reference': self.cheque_reference,
             'pdc_attachment_ids': values,
         }
+        print("----------",payment_vals)
         return payment_vals
 
     def _init_payments(self, to_process):

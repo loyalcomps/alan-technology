@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 
 from odoo import _, api, fields, models
 from odoo.tools.misc import DEFAULT_SERVER_DATE_FORMAT
+from dateutil.relativedelta import relativedelta
+FETCH_RANGE = 2500
 
 
 class ReportStatementCommon(models.AbstractModel):
@@ -12,6 +14,238 @@ class ReportStatementCommon(models.AbstractModel):
 
     _name = "statement.common"
     _description = "Statement Reports Common"
+
+    def prepare_bucket_list(self,date_end):
+        print("prepare bucket listtttttt",self.env.context)
+        periods = {}
+
+        date_from = fields.Date.from_string(date_end)
+
+        lang = self.env.user.lang
+        language_id = self.env['res.lang'].search([('code', '=', lang)])[0]
+
+        bucket_list = [self.env.company.bucket_1, self.env.company.bucket_2, self.env.company.bucket_3, self.env.company.bucket_4]
+
+        start = False
+        stop = date_from
+        name = 'Not Due'
+        periods[0] = {
+            'bucket': 'As on',
+            'name': name,
+            'start': '',
+            'stop': stop.strftime('%Y-%m-%d'),
+        }
+
+        stop = date_from
+        final_date = False
+        for i in range(4):
+            ref_date = date_from - relativedelta(days=1)
+            start = stop - relativedelta(days=1)
+            stop = ref_date - relativedelta(days=bucket_list[i])
+            name = '0 - ' + str(bucket_list[0]) if i == 0 else str(str(bucket_list[i - 1] + 1)) + ' - ' + str(
+                bucket_list[i])
+            final_date = stop
+            periods[i + 1] = {
+                'bucket': bucket_list[i],
+                'name': name,
+                'start': start.strftime('%Y-%m-%d'),
+                'stop': stop.strftime('%Y-%m-%d'),
+            }
+
+        start = final_date - relativedelta(days=1)
+        stop = ''
+        name = str(self.env.company.bucket_4) + ' +'
+
+        periods[6] = {
+            'bucket': 'Above',
+            'name': name,
+            'start': start.strftime('%Y-%m-%d'),
+            'stop': '',
+        }
+        return periods
+
+    def process_data(self,period_dict,partner_ids,account_type,date_end):
+        ''' Query Start Here
+        ['partner_id':
+            {'0-30':0.0,
+            '30-60':0.0,
+            '60-90':0.0,
+            '90-120':0.0,
+            '>120':0.0,
+            'as_on_date_amount': 0.0,
+            'total': 0.0}]
+        1. Prepare bucket range list from bucket values
+        2. Fetch partner_ids and loop through bucket range for values
+        '''
+        # period_dict = self.prepare_bucket_list()
+
+        # domain = ['|',('company_id','=',self.env.company.id),('company_id','=',False)]
+        # if self.partner_type == 'customer':
+        #     domain.append(('customer_rank','>',0))
+        # if self.partner_type == 'supplier':
+        #     domain.append(('supplier_rank','>',0))
+        #
+        # if self.partner_category_ids:
+        #     domain.append(('category_id','in',self.partner_category_ids.ids))
+        #
+        # partner_ids = self.partner_ids or self.env['res.partner'].search(domain)
+        as_on_date = date_end
+        company_currency_id = self.env.company.currency_id.id
+        company_id = self.env.company
+
+
+
+        type = ('asset_receivable', 'liability_payable')
+        if account_type:
+            type = tuple([account_type,'none'])
+
+        partner_dict = {}
+        for partner in partner_ids:
+            partner_dict.update({partner.id:{}})
+
+        # partner_dict.update({'Total': {}})
+        # for period in period_dict:
+        #     partner_dict['Total'].update({period_dict[period]['name']: 0.0})
+        # partner_dict['Total'].update({'total': 0.0, 'partner_name': 'ZZZZZZZZZ'})
+        # partner_dict['Total'].update({'company_currency_id': company_currency_id})
+
+        for partner in partner_ids:
+            partner_dict[partner.id].update({'partner_name':partner.name})
+            total_balance = 0.0
+
+            sql = """
+                SELECT
+                    COUNT(*) AS count
+                FROM
+                    account_move_line AS l
+                LEFT JOIN
+                    account_move AS m ON m.id = l.move_id
+                LEFT JOIN
+                    account_account AS a ON a.id = l.account_id
+                --LEFT JOIN
+                --    account_account_type AS ty ON a.user_type_id = ty.id
+                WHERE
+                    l.balance <> 0
+                    AND m.state = 'posted'
+                    AND a.account_type IN %s
+                    AND l.partner_id = %s
+                    AND l.date <= '%s'
+                    AND l.company_id = %s
+            """%(type, partner.id, as_on_date, company_id.id)
+            self.env.cr.execute(sql)
+            fetch_dict = self.env.cr.dictfetchone() or 0.0
+            count = fetch_dict.get('count') or 0.0
+
+            if count:
+                for period in period_dict:
+
+                    where = " AND l.date <= '%s' AND l.partner_id = %s AND COALESCE(l.date_maturity,l.date) "%(as_on_date, partner.id)
+                    if period_dict[period].get('start') and period_dict[period].get('stop'):
+                        where += " BETWEEN '%s' AND '%s'" % (period_dict[period].get('stop'), period_dict[period].get('start'))
+                    elif not period_dict[period].get('start'): # ie just
+                        where += " >= '%s'" % (period_dict[period].get('stop'))
+                    else:
+                        where += " <= '%s'" % (period_dict[period].get('start'))
+
+                    sql = """
+                        SELECT
+                            sum(
+                                l.balance
+                                ) AS balance,
+                            sum(
+                                COALESCE(
+                                    (SELECT 
+                                        SUM(amount)
+                                    FROM account_partial_reconcile
+                                    WHERE credit_move_id = l.id AND max_date <= '%s'), 0
+                                    )
+                                ) AS sum_debit,
+                            sum(
+                                COALESCE(
+                                    (SELECT 
+                                        SUM(amount) 
+                                    FROM account_partial_reconcile 
+                                    WHERE debit_move_id = l.id AND max_date <= '%s'), 0
+                                    )
+                                ) AS sum_credit
+                        FROM
+                            account_move_line AS l
+                        LEFT JOIN
+                            account_move AS m ON m.id = l.move_id
+                        LEFT JOIN
+                            account_account AS a ON a.id = l.account_id
+                        --LEFT JOIN
+                        --    account_account_type AS ty ON a.user_type_id = ty.id
+                        WHERE
+                            l.balance <> 0
+                            AND m.state = 'posted'
+                            AND a.account_type IN %s
+                            AND l.company_id = %s
+                    """%(as_on_date, as_on_date, type, company_id.id)
+                    amount = 0.0
+                    self.env.cr.execute(sql + where)
+                    fetch_dict = self.env.cr.dictfetchall() or 0.0
+
+                    if not fetch_dict[0].get('balance'):
+                        amount = 0.0
+                    else:
+                        amount = fetch_dict[0]['balance'] + fetch_dict[0]['sum_debit'] - fetch_dict[0]['sum_credit']
+                        total_balance += amount
+
+
+
+                    partner_dict[partner.id].update({period_dict[period]['name']:amount})
+                    # partner_dict['Total'][period_dict[period]['name']] += amount
+                partner_dict[partner.id].update({'count': count})
+                # partner_dict[partner.id].update({'pages': self.get_page_list(count)})
+                # partner_dict[partner.id].update({'single_page': True if count <= FETCH_RANGE else False})
+                partner_dict[partner.id].update({'total': total_balance})
+
+                # partner_dict['Total']['total'] += total_balance
+                # print("total",partner_dict['Total']['total'])
+                partner_dict[partner.id].update({'company_currency_id': company_currency_id})
+                # partner_dict['Total'].update({'company_currency_id': company_currency_id})
+
+                if partner_dict[partner.id]['total']==0.0:
+                    partner_dict.pop(partner.id, None)
+
+
+            else:
+                partner_dict.pop(partner.id, None)
+
+        partner_dict.update({'Total': {}})
+        partner_dict['Total'].update({'Total': 0.0,})
+        # partner_dict['Total'].update({'company_currency_id': company_currency_id})
+        partner_dict['Total']['Total'] = sum(partner_dict[pid]['total'] for pid in partner_dict if pid != 'Total')
+        for period in period_dict:
+            partner_dict['Total'].update({period_dict[period]['name']: 0.0})
+            period_name = period_dict[period]['name']
+            partner_dict['Total'][period_name] = sum(
+                partner_dict[pid].get(period_name, 0) for pid in partner_dict if pid != 'Total')
+
+        partner_dict = {'Total': partner_dict['Total']}
+
+
+
+
+
+
+        return partner_dict
+
+
+    def get_currency(self, currency):
+        print("-currency",currency)
+        currency_rec=self.env["res.currency"].browse(currency)
+        print("-currency",currency_rec)
+
+        return currency_rec.name
+
+    def _get_pdc_covered(self, part):
+
+
+        pdc_records=self.env['pdc.payment'].search([('partner_id','=',part.id),('state','in',['registered','deposited'])])
+        pdc_amount=sum(pdc_records.mapped('amount')) if pdc_records else 0
+        return pdc_amount
 
     def _get_invoice_address(self, part):
         inv_addr_id = part.address_get(["invoice"]).get("invoice", part.id)
@@ -211,8 +445,10 @@ class ReportStatementCommon(models.AbstractModel):
             self, company_id, partner_ids, date_end, account_type, aging_type
     ):
         buckets = dict(map(lambda x: (x, []), partner_ids))
+        print("-bucketssssssss",buckets)
         partners = tuple(partner_ids)
         full_dates = self._get_bucket_dates(date_end, aging_type)
+        print("---FULL DATES",full_dates)
         # pylint: disable=E8103
         # All input queries are properly escaped - false positive
         self.env.cr.execute(
@@ -310,6 +546,7 @@ class ReportStatementCommon(models.AbstractModel):
           }
         }
         """
+        print("-------DATA",data)
         salesperson_wise = data["salesperson_wise"]
         salesperson_id = data["salesperson_id"]
         company_id = data["company_id"]
@@ -440,7 +677,14 @@ class ReportStatementCommon(models.AbstractModel):
         #                              'ref': k.reference,
         #                              'state':dict(k._fields['state']._description_selection(self.env))[
         #                                  k.state]})
-        print(res,'ashdgsagi')
+
+        period_dict=self.prepare_bucket_list(date_end)
+
+        aging_bucket_summary=self.process_data(period_dict,partner_ids,account_type,date_end)
+
+        print("-------------res",res)
+
+
         return {
             "doc_ids": partner_ids,
             "doc_model": "res.partner",
@@ -454,4 +698,8 @@ class ReportStatementCommon(models.AbstractModel):
             "account_type": account_type,
             "bucket_labels": bucket_labels,
             "get_inv_addr": self._get_invoice_address,
+            "get_pdc_covered": self._get_pdc_covered,
+            "get_currency": self.get_currency,
+
+            "aging_bucket_summary":aging_bucket_summary,
         }

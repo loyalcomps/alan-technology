@@ -101,6 +101,8 @@
                 <table align="right" class="table-borderless">
                     <tr>
                         <td>
+
+
                             <t
                                     t-esc="get_inv_addr(o)"
                                     t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'
@@ -128,40 +130,18 @@
                     <br/>
                 </t>
 
-                <!--                <div id="informations" class="row mt32 mb32">-->
+                <t t-set="amount_due" t-value="0"/>
 
-                <!--&lt;!&ndash;                    <div class="col-12 bm-2">&ndash;&gt;-->
-                <!--&lt;!&ndash;                        <strong>To,</strong>&ndash;&gt;-->
-                <!--&lt;!&ndash;                        <p>&ndash;&gt;-->
-                <!--&lt;!&ndash;                            <b>&ndash;&gt;-->
-                <!--&lt;!&ndash;                                &lt;!&ndash;                                &#160;&#160;<span t-esc="o.customer_code" class="m-0"/>&#160;&#160;&#160;&ndash;&gt;&ndash;&gt;-->
-                <!--&lt;!&ndash;                                <span t-field="o.name"/>&ndash;&gt;-->
-                <!--&lt;!&ndash;                            </b>&ndash;&gt;-->
-                <!--&lt;!&ndash;                            <br/>&ndash;&gt;-->
-                <!--&lt;!&ndash;                            &#160;&#160;&#160;<span t-esc="o.street"/>&ndash;&gt;-->
-                <!--&lt;!&ndash;                        </p>&ndash;&gt;-->
-                <!--&lt;!&ndash;                    </div>&ndash;&gt;-->
-                <!--                </div>-->
-                <!--                <br/>-->
-                <!--                <br/>-->
-                <!--                <div id="partner_info" class="row mt32 mb32">-->
-                <!--                    <div class="col-4 bm-2">-->
-                <!--                        <strong>Date :</strong>-->
-                <!--                        <b>-->
-                <!--                            &#160;&#160;<span t-esc="date_end" t-options='{"widget": "date","format": "dd/MM/yyyy"}' class="m-0"/>-->
-                <!--                        </b>-->
-                <!--                    </div>-->
-                <!--                    <div class="col-9 bm-2">-->
-                <!--                        <strong>Fax :</strong>-->
-                <!--                        <b>-->
-                <!--                            &#160;&#160;<span t-esc="o.email" class="m-0"/>-->
-                <!--                        </b>-->
-                <!--                    </div>-->
-                <!--                </div>-->
-                <!--                <br/>-->
+
                 <t t-if="d['currencies']">
-                    <br/>
+
+
                     <t t-foreach="d['currencies'].items()" t-as="currency">
+
+                        <t t-set="currency_id" t-value="currency[0]"/>
+
+
+
                         <t t-set="display_currency" t-value="Currencies[currency[0]]"/>
                         <t t-set="currency" t-value="currency[1]"/>
                         <p>
@@ -171,50 +151,63 @@
                             <!--                            />-->
                             As on
                             <span t-esc="d['end']"/>
+
+
                             in
-                            <span t-esc="o.env.company.currency_id.name"/>
+
+
+
+                              <span t-esc="get_currency(currency_id)"/>
                         </p>
                         <br/>
-                        <table width="100%" class="table table-condensed table-statement"
-                               style="font-size:14px;border-bottom: 1px solid black;border-top: 1px solid black;border-left: 1px solid black;border-right: 1px solid black;">
-                            <thead>
-                                <tr>
-                                    <strong>
-                                        <th width="8%">
-                                            <b>Sl No</b>
-                                        </th>
-                                        <th width="8%">
-                                            <b>Inv Date</b>
-                                        </th>
-                                        <th width="20%">
-                                            <b>Invoice / Reference</b>
-                                        </th>
-                                        <th width="25%">
-                                            <b>LPO / Description</b>
-                                        </th>
+                        <table class="table table-bordered" style="width: 100%;font-size:14px;">
 
-                                        <th style="text-align:right">
+                            <col style="width: 8%;"/>
+                            <col style="width: 10%;"/>
+                            <col style="width: 12%;"/>
+                            <col style="width: 25%;"/>
+                            <col style="width: 8%;"/>
+                            <col style="width: 8%;"/>
+                            <col style="width: 8%;"/>
+                            <col style="width: 8%;"/>
+                            <col style="width: 14%;"/>
+                            <thead>
+                                <tr style="background-color: #f2f2f2;">
+                                    <td style="flex: 1; border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px; font-family: Arial, sans-serif;">
+                                            <b>Sl No</b>
+                                        </td>
+                                         <td style="flex: 1; border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px; font-family: Arial, sans-serif;">
+                                            <b>Inv Date</b>
+                                        </td>
+                                        <td style="flex: 1; border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px;  font-family: Arial, sans-serif;">
+                                            <b>Invoice / Reference</b>
+                                        </td>
+                                         <td style="flex: 1; border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px; 10px; font-family: Arial, sans-serif;">
+                                            <b>LPO / Description</b>
+                                        </td>
+
+                                        <td style="flex: 1;text-align:right;border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px; font-family: Arial, sans-serif;">
                                             <b>Opening Amount</b>
-                                        </th>
-                                        <th style="text-align:right">
+                                        </td>
+                                        <td style="flex: 1;text-align:right;border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px;  font-family: Arial, sans-serif;">
+
                                             <b>Payment Received</b>
-                                        </th>
-                                        <th style="text-align:right">
+                                        </td>
+                                        <td style="flex: 1;text-align:right;border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px;  font-family: Arial, sans-serif;">
+
                                             <b>Pending Amount</b>
-                                        </th>
-                                        <th style="text-align:right">
+                                        </td>
+                                        <td style="flex: 1;text-align:right;border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px; font-family: Arial, sans-serif;">
+
                                             <b>Balance Amount</b>
-                                        </th>
-                                        <th style="text-align:center" align="left">
-                                            <b>Due Days</b>
-                                        </th>
-                                        <!--                                        <th class="amount">-->
-                                        <!--                                            <b>PDC Amt</b>-->
-                                        <!--                                        </th>-->
-                                    </strong>
+                                        </td>
+                                        <td style="flex: 1;border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px; border-radius: 10px; font-family: Arial, sans-serif;">
+
+                                            <b><center>Due Days</center></b>
+                                        </td>
                                 </tr>
                             </thead>
-                            <tbody style="border-top: 1px solid black;border-left: 1px solid black;border-right: 1px;border-bottom: 1px solid black;">
+                            <tbody style="border: 1px solid black;">
                                 <t t-set="sl_no" t-value="1"/>
                                 <tr
                                         t-foreach="currency['lines']"
@@ -259,21 +252,21 @@
                                     <!--                                            <span t-esc="line['ref']"/>-->
                                     <!--                                        </t>-->
                                     <!--                                    </td>-->
-                                    <td class="amount">
+                                        <td style="text-align:right;">
                                         <span t-esc="'{0:,.2f}'.format(line['amount'])"
                                         />
                                     </td>
-                                    <td class="amount">
+                                       <td style="text-align:right;">
                                         <t t-set="payment_received" t-value="line['amount'] - line['open_amount']"/>
                                         <span t-esc="'{0:,.2f}'.format(payment_received)"/>
                                     </td>
 
-                                    <td class="amount">
+                                    <td style="text-align:right;">
                                         <span t-esc="'{0:,.2f}'.format(line['open_amount'])"/>
                                         <!--                                              t-options="{'widget': 'monetary', 'display_currency': display_currency}"-->
                                         <!--                                        />-->
                                     </td>
-                                    <td class="amount">
+                                        <td style="text-align:right;">
                                         <span
                                                 t-esc="'{0:,.2f}'.format(line['balance'])"/>
                                         <!--                                                t-options="{'widget': 'monetary', 'display_currency': display_currency}"-->
@@ -294,7 +287,7 @@
                                     <!--                                        />-->
                                     <!--                                    </td>-->
                                 </tr>
-                                <tr>
+                                <tr style="border-bottom:1px solid black;">
                                     <td></td>
                                     <td>
                                         <span t-esc="d['end']"/>
@@ -309,7 +302,10 @@
 
                                     </td>
                                     <td class="amount">
-                                        <span t-esc="'{0:,.2f}'.format(currency['amount_due'])"/>
+                                        <t t-if="currency['amount_due']">
+                                            <t t-set="amount_due" t-value="amount_due +currency['amount_due'] "/>
+                                            <span t-esc="'{0:,.2f}'.format(currency['amount_due'])"/>
+                                        </t>
                                         <!--                                                t-options="{'widget': 'monetary', 'display_currency': display_currency}"/>-->
                                     </td>
 
@@ -318,13 +314,67 @@
                                     <!--                                    <td/>-->
 
                                 </tr>
+                                <tr>
+
+                                </tr>
+
+
+                                <!--                                <tr>-->
+                                <!--                                    <td colspan="6"></td>-->
+                                <!--                                    <td> Net Balance After PDC </td>-->
+                                <!--                                     <td>:</td>-->
+                                <!--                                    <td>  <span t-esc="'{0:,.2f}'.format(currency['amount_due'])"/></td>-->
+                                <!--                                </tr>-->
                             </tbody>
                         </table>
-                        <t
-                                t-call="partner_statement.aging_buckets"
-                                t-if="currency['buckets']"/>
+
+                        <br/>
+
+                        <!--                         <tr style="border-top:1px solid black;">-->
+                        <!--                                    <td style="border-left:hidden;border-right:1px solid black;" colspan="5"></td>-->
+                        <!--                                    <td style="border-left:1px solid black;" colspan="2">Outstanding :</td>-->
+
+                        <!--                                    <td style="border-right:1px solid black;">-->
+                        <!--                                        <span t-esc="'{0:,.2f}'.format(currency['amount_due'])"/>-->
+                        <!--                                    </td>-->
+                        <!--                                     <td style="border-right:hidden;">-->
+
+                        <!--                                    </td>-->
+                        <!--                                </tr>-->
+
+
+                        <!--                                  <t t-set="pdc" t-value="aging_bucket_summary"/>-->
+
+
+                        <!--                                <tr>-->
+                        <!--                                    <td style="border-top:hidden;border-left:hidden;" colspan="5"></td>-->
+                        <!--                                    <td style="border-left:1px solid black;" colspan="2">PDC Received :</td>-->
+
+                        <!--                                    <td style="border-right:1px solid black;">-->
+                        <!--                                        <span t-esc="'{0:,.2f}'.format(pdc)"/>-->
+                        <!--                                    </td>-->
+                        <!--                                     <td style="border-top:hidden;border-right:hidden;">-->
+
+                        <!--                                    </td>-->
+                        <!--                                </tr>-->
+
+                        <!--                                <tr>-->
+                        <!--                                    <td style="border-top:hidden;border-left:hidden;border-bottom:hidden;" colspan="5"></td>-->
+                        <!--                                    <td style="border-left:1px solid black;" colspan="2">Net Balance After PDC :</td>-->
+                        <!--                                     <td style="border-right:1px solid black;">-->
+                        <!--                                         <span t-esc="'{0:,.2f}'.format(net_balance)"/>-->
+                        <!--                                     </td>-->
+                        <!--                                       <td style="border-top:hidden;border-bottom:hidden;border-right:hidden;">-->
+
+                        <!--                                    </td>-->
+
+
+                        <!--                                </tr>-->
+
+
                     </t>
                 </t>
+
                 <p t-if="d.get('no_entries')">
                     <strong>The partner doesn't have due entries.</strong>
                 </p>
@@ -382,6 +432,26 @@
                 <!--                        </tbody>-->
                 <!--                    </table>-->
                 <!--                </t>-->
+
+                <br/>
+                <t t-set="pdc" t-value="get_pdc_covered(o)"/>
+                <t t-set="net_balance" t-value="pdc +amount_due "/>
+                <p style="page-break-inside:avoid;">
+                    <strong>Total Outstanding Amount :</strong>
+
+                    <span t-esc="'{0:,.2f}'.format(amount_due)"/>
+
+                    <br/>
+                    <strong>PDC Received :</strong>
+                    <span t-esc="'{0:,.2f}'.format(pdc)"/>
+
+                    <br/>
+                    <strong>Net Balance After PDC :</strong>
+                    <span t-esc="'{0:,.2f}'.format(pdc)"/>
+
+                </p>
+                <t
+                        t-call="partner_statement.aging_buckets"/>
 
 
                 <div style="float:bottom;bottom:90;">

@@ -13,12 +13,14 @@
                             <field name="type"/>
                             <field name="partner_type"/>
                             <field name="include_details"/>
+
                         </group>
                         <group class="oe_inline" col="5">
                             <field name="bucket_1" nolabel="0"/>
                             <field name="bucket_2" nolabel="0"/>
                             <field name="bucket_3" nolabel="0"/>
                             <field name="bucket_4" nolabel="0"/>
+
 <!--                            <field name="bucket_5" nolabel="0"/>-->
                         </group>
                         <group>
@@ -28,6 +30,10 @@
                                     options="{'no_create_edit': True,'no_create': True, 'no_quick_create': True}"/>
                             <field name="partner_category_ids" widget="many2many_tags"
                                     options="{'no_create_edit': True,'no_create': True, 'no_quick_create': True}"/>
+                           <field name="salesperson_wise"/>
+
+                            <field name="salesperson_id"
+                               attrs="{'invisible':[('salesperson_wise','=',False)], 'required':[('salesperson_wise','=',True)]}"/>
                         </group>
                     </group>
 

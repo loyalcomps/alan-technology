@@ -49,7 +49,7 @@
                         <label for="account_type" />
                         <field name="account_type" nolabel="1" widget="radio" />
                     </group>
-                    <group name="aging_report">
+                    <group name="aging_report" invisible="1">
                         <field name="show_aging_buckets" />
                         <field name="aging_type" />
                     </group>
