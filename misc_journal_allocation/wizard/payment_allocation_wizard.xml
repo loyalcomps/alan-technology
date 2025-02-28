@@ -9,6 +9,8 @@
                 <group>
                     <field name="partner_id" label="Partner" readonly="1"/>
                      <field name="show_parent_child" />
+                     <field name="journal_id" invisible="1" />
+                     <field name="balnc_paymnt_amnt"  readonly="1"/>
                 </group>
                 <group>
                     <field name="company_id" readonly="1"/>
