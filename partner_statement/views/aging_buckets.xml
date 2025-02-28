@@ -24,7 +24,7 @@
                         <tr>
 
                             <t t-foreach="headers" t-as="header">
-                                <td t-esc="partner[1].get(header, '')"/>
+                                <td t-esc="'{:,.2f}'.format(partner[1].get(header, ''))"/>
                             </t>
                         </tr>
                 </t>
