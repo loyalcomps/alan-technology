@@ -18,6 +18,7 @@ class AccountMoveInherit(models.Model):
         company = False
         inv_vals = []
         amount_bal = 0
+        val_1=False
 
 
         for data in self:
@@ -122,6 +123,8 @@ class AccountMoveInherit(models.Model):
                                              'inv_unallocated_amount':amnt-amt,
                                              })
             balance_amount=0
+            debit = self.env['account.partial.reconcile'].search([('credit_move_id', '=', val_1)])
+
             if not debit:
                 balance_amount=payment_amount
             else:
