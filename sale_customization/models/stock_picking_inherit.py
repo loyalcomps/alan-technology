@@ -47,7 +47,7 @@ class StockPickingInherit(models.Model):
                         'description':move_ids_without_package.description,
                     })
                     invoice_line_list.append(vals)
-                res_partner_bank=self.env['res.partner.bank'].search([[('bank_id','=',self.sale_id.bank_id.id)]])
+                res_partner_bank=self.env['res.partner.bank'].search([('bank_id','=',picking_id.sale_id.bank_id.id)])
                 invoice = picking_id.env['account.move'].create({
                     'move_type': 'out_invoice',
                     'invoice_origin': picking_id.name,
