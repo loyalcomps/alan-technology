@@ -47,6 +47,7 @@ class StockPickingInherit(models.Model):
                         'description':move_ids_without_package.description,
                     })
                     invoice_line_list.append(vals)
+                res_partner_bank=self.env['res.partner.bank'].search([[('bank_id','=',self.sale_id.bank_id.id)]])
                 invoice = picking_id.env['account.move'].create({
                     'move_type': 'out_invoice',
                     'invoice_origin': picking_id.name,
@@ -55,8 +56,8 @@ class StockPickingInherit(models.Model):
                     'partner_id': picking_id.partner_id.id,
                     'currency_id': picking_id.env.user.company_id.currency_id.id,
                     'kg_so_id': picking_id.kg_sale_order_id.id,
-                    'kg_bank_id': self.sale_id.bank_id.id,
-                    'partner_bank_id': self.sale_id.bank_id.id,
+                    'kg_bank_id': picking_id.sale_id.bank_id.id,
+                    'partner_bank_id': res_partner_bank.id if res_partner_bank else False,
                     'payment_reference': picking_id.name,
                     'picking_id': picking_id.id,
                     'invoice_line_ids': invoice_line_list
@@ -70,9 +71,9 @@ class StockPickingInherit(models.Model):
                     'move_line_ids_without_package').mapped('qty_done'))
                 sale_qty = sum(self.sale_id.order_line.mapped('product_uom_qty'))
                 if sale_qty == delivery_qty:
-                    self.sale_id.kg_invoice_status_1 = 'invoiced'
+                    picking_id.sale_id.kg_invoice_status_1 = 'invoiced'
                 else:
-                    self.sale_id.kg_invoice_status_1 = 'invoice_p'
-                if self.kg_po_ref:
-                    self.kg_invoice_id.kg_another_ref = self.kg_po_ref
+                    picking_id.sale_id.kg_invoice_status_1 = 'invoice_p'
+                if picking_id.kg_po_ref:
+                    picking_id.kg_invoice_id.kg_another_ref = picking_id.kg_po_ref
                 return invoice

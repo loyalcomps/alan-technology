@@ -306,7 +306,9 @@
                                             :
                                     </td>
                                      <td width="60%">
-                                         <span t-esc="request.env.company.name"/>
+                                          <span t-esc="o.company_id.name"/>
+
+<!--                                         <span t-esc="request.env.company.name"/>-->
                                     </td>
                                 </tr>
                                 <tr>
@@ -317,7 +319,9 @@
                                             :
                                     </td>
                                      <td width="60%">
-                                         <span t-esc="bank_name"/>
+                                         <span t-esc="o.partner_bank_id.bank_id.name"/>
+
+<!--                                         <span t-esc="bank_name"/>-->
                                     </td>
                                 </tr>
                                 <tr>
@@ -328,7 +332,9 @@
                                             :
                                     </td>
                                      <td width="60%">
-                                         <span t-esc="acc_number"/>
+                                         <span t-esc="o.partner_bank_id.acc_number"/>
+
+<!--                                         <span t-esc="acc_number"/>-->
                                     </td>
                                 </tr>
                                 <tr>
@@ -339,7 +345,8 @@
                                             :
                                     </td>
                                      <td width="60%">
-                                         <span t-esc="iban"/>
+                                            <span t-esc="o.partner_bank_id.bank_iban_number"/>
+<!--                                         <span t-esc="iban"/>-->
                                     </td>
                                 </tr>
                             </table>
@@ -352,7 +359,11 @@
                                             :
                                     </td>
                                      <td width="60%">
-                                         <span t-esc="swift"/>
+
+                                     <span t-esc="o.partner_bank_id.swift_code"/>
+
+
+<!--                                         <span t-esc="swift"/>-->
                                     </td>
                                 </tr>
                             </table>
@@ -365,7 +376,9 @@
                                             :
                                     </td>
                                      <td width="60%">
-                                         <span t-esc="branch"/>
+                                     <span t-esc="o.partner_bank_id.branch"/>
+
+<!--                                         <span t-esc="branch"/>-->
                                     </td>
                                 </tr>
                             </table>
