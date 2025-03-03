@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-        <report id="report_bank_statement_reconciliation_alan"
+    <report id="report_bank_statement_reconciliation_alan"
             model="kg.bank.reconcilation"
             report_type="qweb-pdf"
             string="Bank Statement Reconciliation"
             name="kg_bank_reconcilation.report_bank_stmnt_reconciliation_alan"
             file="kg_bank_reconcilation.report_bank_stmnt_reconciliation_alan"
     />
-    
-  <!--   <report id="report_bank_statement_reconciliation"
-            model="kg.bank.reconcilation"
-            report_type="qweb-pdf"
-            string="Bank Statement Reconciliation"
-            name="kg_bank_reconcilation.report_bank_stmnt_reconciliation"
-            file="kg_bank_reconcilation.report_bank_stmnt_reconciliation"
-    />
 
-        <report id="report_bank_statement_reconciliation_week"
-            model="kg.bank.reconcilation"
-            report_type="qweb-pdf"
-            string="Bank Statement Reconciliation Weekwise"
-            name="kg_bank_reconcilation.report_bank_stmnt_reconciliation_week"
-            file="kg_bank_reconcilation.report_bank_stmnt_reconciliation_week"
-    /> -->
+    <!--   <report id="report_bank_statement_reconciliation"
+              model="kg.bank.reconcilation"
+              report_type="qweb-pdf"
+              string="Bank Statement Reconciliation"
+              name="kg_bank_reconcilation.report_bank_stmnt_reconciliation"
+              file="kg_bank_reconcilation.report_bank_stmnt_reconciliation"
+      />
+
+          <report id="report_bank_statement_reconciliation_week"
+              model="kg.bank.reconcilation"
+              report_type="qweb-pdf"
+              string="Bank Statement Reconciliation Weekwise"
+              name="kg_bank_reconcilation.report_bank_stmnt_reconciliation_week"
+              file="kg_bank_reconcilation.report_bank_stmnt_reconciliation_week"
+      /> -->
 
     <record id="paper_format_reconcile" model="report.paperformat">
         <field name="name">Reconcile A4</field>
@@ -40,6 +40,20 @@
         <field name="header_spacing">35</field>
         <field name="dpi">90</field>
     </record>
+
+    <record id="action_bank_statement_report_xlsx" model="ir.actions.report">
+        <field name="name">Bank Statement Reconciliation XLsx</field>
+        <field name="model">kg.bank.reconcilation</field>
+        <field name="type">ir.actions.report</field>
+        <field name="report_name">kg_bank_reconcilation.report_bank_statement_xlsx</field>
+        <field name="report_file">kg_bank_reconcilation.report_bank_statement_xlsx</field>
+        <field name="report_type">xlsx</field>
+        <field name="print_report_name">'Bank Reconciliation Report - %s' % (object.journal_id.name)
+        </field>
+        <field name="binding_model_id" ref="kg_bank_reconcilation.model_kg_bank_reconcilation"/>
+        <field name="binding_type">report</field>
+    </record>
+
 
     <record id="report_bank_statement_reconciliation" model="ir.actions.report">
         <field name="paperformat_id" ref="kg_bank_reconcilation.paper_format_reconcile"/>

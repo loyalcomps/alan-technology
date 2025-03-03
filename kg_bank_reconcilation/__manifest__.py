@@ -5,10 +5,10 @@
     'author': "SHARMI SV",
     'website': 'https://www.klystronglobal.com',
 
-    'version': '16.0.3.1.0',
+    'version': '16.0.4.1.0',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','account'],
+    'depends': ['base','account','report_xlsx','report_xlsx_helper'],
 
     # always loaded
     'data': [

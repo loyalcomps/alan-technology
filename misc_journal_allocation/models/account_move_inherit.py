@@ -11,6 +11,7 @@ class AccountMoveInherit(models.Model):
     # self.write({'state': 'posted'})
 
     def action_open_journal_allocation_wizard(self):
+        self.ensure_one()
         payment_vals = []
         partner = False
         def_id = False
@@ -22,6 +23,10 @@ class AccountMoveInherit(models.Model):
 
 
         for data in self:
+            if data.journal_id.type not in ['general']:
+                raise ValidationError(_('Only Miscellaneous Journals Can Be Selected'))
+
+
             if partner != data.partner_id.id and partner != False:
                 raise ValidationError(_('Selected Journals are of different Partners'))
             allocatable_lines=data.line_ids.filtered(lambda account:account.account_id.account_type in ['asset_receivable','liability_payable'] and account.partner_id)
@@ -41,11 +46,12 @@ class AccountMoveInherit(models.Model):
                     debit = self.env['account.partial.reconcile'].search([('credit_move_id', '=', val_1)])
 
                     for val in debit:
+                        print("==debit ",val.credit_amount_currency)
 
                         amount_bal += val.credit_amount_currency
 
 
-                        amount_bal += val.debit_amount_currency
+
                 if line.account_id.account_type =='liability_payable' and line.credit==0:
                     payment_amount=line.debit
 
@@ -125,10 +131,13 @@ class AccountMoveInherit(models.Model):
             balance_amount=0
             debit = self.env['account.partial.reconcile'].search([('credit_move_id', '=', val_1)])
 
+            print("==amount_bal",amount_bal)
+
             if not debit:
                 balance_amount=payment_amount
             else:
                 balance_amount=payment_amount - amount_bal
+            print("--Balance amount",balance_amount)
 
             if balance_amount <=0:
                 raise ValidationError(_("Already Allocated "))

@@ -4,3 +4,4 @@ from . import outstanding_statement
 from . import activity_statement_xlsx
 from . import outstanting_statement_xlsx
 from . import res_partner
+
