@@ -38,7 +38,7 @@ class AccountMoveInherit(models.Model):
                     payment_type='inbound'
                     payment_amount = line.credit
                     val_1 = line.id
-                    payment_type=''
+
 
                     # partial = self.env['account.partial.reconcile'].search([('credit_move_id', '=', val_1)])
                     # for val in partial:
