@@ -16,6 +16,7 @@ class AccountMoveInherit(models.Model):
         partner = False
         def_id = False
         payment_amount=0
+        payment_type=False
         company = False
         inv_vals = []
         amount_bal = 0
@@ -34,8 +35,10 @@ class AccountMoveInherit(models.Model):
             for line in allocatable_lines:
                 partner = line.partner_id
                 if line.account_id.account_type =='asset_receivable' and line.debit==0:
+                    payment_type='inbound'
                     payment_amount = line.credit
                     val_1 = line.id
+                    payment_type=''
 
                     # partial = self.env['account.partial.reconcile'].search([('credit_move_id', '=', val_1)])
                     # for val in partial:
@@ -51,6 +54,7 @@ class AccountMoveInherit(models.Model):
 
 
                 if line.account_id.account_type =='liability_payable' and line.credit==0:
+                    payment_type = 'outbound'
                     payment_amount=line.debit
 
                     val_1 = line.id
@@ -147,7 +151,7 @@ class AccountMoveInherit(models.Model):
                 'context': {'default_partner_id': partner.id,
                 #             'default_show_reference': show_reference,
                             'default_journal_id': def_id,
-                #             'default_payment_type':data.payment_type,
+                            'default_payment_type':payment_type,
                             'default_balnc_paymnt_amnt':balance_amount,
                             'default_journal_allocation_ids': payment_vals,
                             'default_invoice_allocation_ids': inv_vals,

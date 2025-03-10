@@ -25,6 +25,7 @@ class PaymentAllocation(models.TransientModel):
 
     @api.onchange('show_parent_child')
     def onchange_show_parent_child(self):
+        print("-----onchange show parent childddddd")
         payment_type = self.payment_type
 
         move=self.env['account.move'].search([('partner_id', '=', self.partner_id.id),('state', 'in', ['posted']), ('move_type', 'in', ['entry'])])

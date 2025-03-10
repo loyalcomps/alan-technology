@@ -8,7 +8,8 @@
             <form string="Payment Allocation">
                 <group>
                     <field name="partner_id" label="Partner" readonly="1"/>
-                     <field name="show_parent_child" />
+                     <field name="show_parent_child" invisible="1" />
+                     <field name="show_reference" invisible="1" />
                 </group>
                 <group>
                     <field name="company_id" readonly="1"/>
