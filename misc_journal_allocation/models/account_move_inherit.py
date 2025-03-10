@@ -150,7 +150,7 @@ class AccountMoveInherit(models.Model):
                 'type': 'ir.actions.act_window',
                 'context': {'default_partner_id': partner.id,
                 #             'default_show_reference': show_reference,
-                            'default_journal_id': def_id,
+                            'default_journal_id': data.id,
                             'default_payment_type':payment_type,
                             'default_balnc_paymnt_amnt':balance_amount,
                             'default_journal_allocation_ids': payment_vals,

@@ -25,7 +25,7 @@
             <field name="arch" type="xml">
                 <field name="amount_total" position="after">
                     <field name="client_order_ref" attrs="{'readonly': [('state','not in',('draft','sent'))]}"/>
-                    <field name="kg_invoice_status_1"/>
+                    <field name="kg_invoice_status_1" readonly="0"/>
 
                     <!--                    <field name="kg_amount_localcurrency" sum="Total" string="Total(Local Currency)" invisible="1"/>-->
                 </field>
@@ -222,7 +222,7 @@
                     <xpath expr="/form/sheet/notebook/page[@name='other_information']/group/group[2]"
                            position="inside">
 
-                            <field name="kg_invoice_status_1" readonly="1"/>
+                            <field name="kg_invoice_status_1" readonly="0"/>
 
 
 

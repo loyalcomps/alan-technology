@@ -15,6 +15,7 @@ class JournalAllocation(models.TransientModel):
     account_id = fields.Many2one('account.account', string="Account")
     show_parent_child = fields.Boolean("Show parent/children")
     payment_id = fields.Many2one('account.payment', string="Payment")
+
     journal_id = fields.Many2one('account.move', string="Journal")
     balnc_paymnt_amnt = fields.Float(string="Balance Amount", store=True)
     invoice_allocation_ids = fields.One2many('journal.allocation.wizard.debit.lines', 'rec_id', "Invoices")
@@ -61,7 +62,7 @@ class JournalAllocation(models.TransientModel):
                             inv_vals.append((0, 0, vals))
                         journal_entry = self.env['account.move.line'].search([
                             ('account_id', 'in', pay_term_lines.account_id.ids),
-                            ('move_id', '!=', self.payment_id.move_id.id),
+                            ('move_id', '!=', self.journal_id.id),
 
                             ('parent_state', '=', 'posted'),
                             ('partner_id', '=', p.id),
@@ -135,7 +136,8 @@ class JournalAllocation(models.TransientModel):
                             inv_vals.append((0, 0, vals))
                         journal_entry = self.env['account.move.line'].search([
                             ('account_id', 'in', pay_term_lines.account_id.ids),
-                            ('move_id', '!=', self.payment_id.move_id.id),
+                            ('move_id', '!=', self.journal_id.id),
+                            # ('move_id', '!=', self.payment_id.move_id.id),
 
                             ('parent_state', '=', 'posted'),
                             ('partner_id', '=', p.id),
@@ -195,6 +197,7 @@ class JournalAllocation(models.TransientModel):
                     ['|', '|', ('id', 'in', data.partner_id.child_ids.ids), ('id', '=', data.partner_id.id),
                      ('id', '=', data.partner_id.parent_id.id)])
                 if data.payment_type == 'inbound':
+                    print("-----inbound")
                     for p in partner:
                         invoice = self.env['account.move'].search([('partner_id', '=', p.id), (
                             'amount_residual', '>', 0.0), ('state', 'in', ['posted']),
@@ -214,8 +217,9 @@ class JournalAllocation(models.TransientModel):
                             inv_vals.append((0, 0, vals))
                         journal_entry = self.env['account.move.line'].search([
                             ('account_id', 'in', pay_term_lines.account_id.ids),
+                            ('move_id', '!=', self.journal_id.id),
 
-                            ('move_id', '!=', self.payment_id.move_id.id),
+                            # ('move_id', '!=', self.payment_id.move_id.id),
 
                             ('parent_state', '=', 'posted'),
                             ('partner_id', '=', p.id),
@@ -270,7 +274,9 @@ class JournalAllocation(models.TransientModel):
                     #     pay_vals.append((0, 0, vals))
                     # data.payment_allocation_ids = pay_vals
                 else:
+                    print("---ountbounddddddd")
                     for p in partner:
+
                         invoice = self.env['account.move'].search([('partner_id', '=', p.id), (
                             'amount_residual', '>', 0.0), ('state', 'in', ['posted']),
                                                                    ('move_type', 'in', ['in_invoice'])])
@@ -289,8 +295,9 @@ class JournalAllocation(models.TransientModel):
                             inv_vals.append((0, 0, vals))
                         journal_entry = self.env['account.move.line'].search([
                             ('account_id', 'in', pay_term_lines.account_id.ids),
+                            ('move_id', '!=', self.journal_id.id),
                             # ('account_id.account_type', 'in',['asset_receivable', 'liability_payable']),
-                            ('move_id', '!=', self.payment_id.move_id.id),
+                            # ('move_id', '!=', self.payment_id.move_id.id),
 
                             ('parent_state', '=', 'posted'),
                             ('partner_id', '=', p.id),
