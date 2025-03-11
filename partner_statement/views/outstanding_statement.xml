@@ -435,11 +435,12 @@
 
                 <br/>
                 <t t-set="pdc" t-value="get_pdc_covered(o)"/>
-                <t t-set="net_balance" t-value="pdc +amount_due "/>
+                <t t-set="total_outstanding" t-value="amount_due+pdc"/>
+                <t t-set="net_balance" t-value="total_outstanding - pdc "/>
                 <p style="page-break-inside:avoid;">
                     <strong>Total Outstanding Amount :</strong>
 
-                    <span t-esc="'{0:,.2f}'.format(amount_due)"/>
+                    <span t-esc="'{0:,.2f}'.format(total_outstanding)"/>
 
                     <br/>
                     <strong>PDC Received :</strong>
@@ -447,7 +448,7 @@
 
                     <br/>
                     <strong>Net Balance After PDC :</strong>
-                    <span t-esc="'{0:,.2f}'.format(pdc)"/>
+                    <span t-esc="'{0:,.2f}'.format(net_balance)"/>
 
                 </p>
                 <t
