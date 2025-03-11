@@ -97,24 +97,24 @@ class JournalAllocation(models.TransientModel):
                             inv_vals.append((0, 0, jvals))
                     data.invoice_allocation_ids = inv_vals
 
-                    # cred_invoice = self.env['account.move'].search([('partner_id', '=', p.id), (
-                    #     'amount_residual', '>', 0.0), ('state', 'in', ['posted']),
-                    #                                                 ('move_type', 'in', ['out_refund'])])
-                    # pay_vals = []
-                    # for cred in cred_invoice:
-                    #     val = 0
-                    #     for line in cred.line_ids:
-                    #         if line.credit == 0:
-                    #             val = line.id
-                    #             vals = {
-                    #                 'name': cred.name,
-                    #                 'date': cred.invoice_date,
-                    #                 'memo': cred.ref,
-                    #                 'amount': cred.amount_residual
-                    #
-                    #             }
-                    #     pay_vals.append((0, 0, vals))
-                    # data.payment_allocation_ids = pay_vals
+                    cred_invoice = self.env['account.move'].search([('partner_id', '=', p.id), (
+                        'amount_residual', '>', 0.0), ('state', 'in', ['posted']),
+                                                                    ('move_type', 'in', ['out_refund'])])
+                    pay_vals = []
+                    for cred in cred_invoice:
+                        val = 0
+                        for line in cred.line_ids:
+                            if line.credit == 0:
+                                val = line.id
+                                vals = {
+                                    'name': cred.name,
+                                    'date': cred.invoice_date,
+                                    'memo': cred.ref,
+                                    'amount': cred.amount_residual
+
+                                }
+                        pay_vals.append((0, 0, vals))
+                    data.journal_allocation_ids = pay_vals
 
                 else:
                     for p in partner:
@@ -172,24 +172,24 @@ class JournalAllocation(models.TransientModel):
                             inv_vals.append((0, 0, j_vals))
                     data.invoice_allocation_ids = inv_vals
 
-                    # cred_invoice = self.env['account.move'].search([('partner_id', '=', p.id), (
-                    #     'amount_residual', '>', 0.0), ('state', 'in', ['posted']),
-                    #                                                 ('move_type', 'in', ['in_refund'])])
-                    # pay_vals = []
-                    # for cred in cred_invoice:
-                    #     val = 0
-                    #     for line in cred.line_ids:
-                    #         if line.credit == 0:
-                    #             val = line.id
-                    #             vals = {
-                    #                 'name': cred.name,
-                    #                 'date': cred.invoice_date,
-                    #                 'memo': cred.ref,
-                    #                 'amount': cred.amount_residual
-                    #
-                    #             }
-                    #     pay_vals.append((0, 0, vals))
-                    # data.payment_allocation_ids = pay_vals
+                    cred_invoice = self.env['account.move'].search([('partner_id', '=', p.id), (
+                        'amount_residual', '>', 0.0), ('state', 'in', ['posted']),
+                                                                    ('move_type', 'in', ['in_refund'])])
+                    pay_vals = []
+                    for cred in cred_invoice:
+                        val = 0
+                        for line in cred.line_ids:
+                            if line.credit == 0:
+                                val = line.id
+                                vals = {
+                                    'name': cred.name,
+                                    'date': cred.invoice_date,
+                                    'memo': cred.ref,
+                                    'amount': cred.amount_residual
+
+                                }
+                        pay_vals.append((0, 0, vals))
+                    data.journal_allocation_ids = pay_vals
 
             else:
                 inv_vals = [(5, 0, 0)]
@@ -197,7 +197,6 @@ class JournalAllocation(models.TransientModel):
                     ['|', '|', ('id', 'in', data.partner_id.child_ids.ids), ('id', '=', data.partner_id.id),
                      ('id', '=', data.partner_id.parent_id.id)])
                 if data.payment_type == 'inbound':
-                    print("-----inbound")
                     for p in partner:
                         invoice = self.env['account.move'].search([('partner_id', '=', p.id), (
                             'amount_residual', '>', 0.0), ('state', 'in', ['posted']),
@@ -255,26 +254,25 @@ class JournalAllocation(models.TransientModel):
 
                     data.invoice_allocation_ids = inv_vals
 
-                    # cred_invoice = self.env['account.move'].search([('partner_id', '=', p.id), (
-                    #     'amount_residual', '>', 0.0), ('state', 'in', ['posted']),
-                    #                                                 ('move_type', 'in', ['out_refund'])])
-                    # pay_vals = []
-                    # for cred in cred_invoice:
-                    #     val = 0
-                    #     for line in cred.line_ids:
-                    #         if line.credit == 0:
-                    #             val = line.id
-                    #             vals = {
-                    #                 'name': cred.name,
-                    #                 'date': cred.invoice_date,
-                    #                 'memo': cred.ref,
-                    #                 'amount': cred.amount_residual
-                    #
-                    #             }
-                    #     pay_vals.append((0, 0, vals))
-                    # data.payment_allocation_ids = pay_vals
+                    cred_invoice = self.env['account.move'].search([('partner_id', '=', p.id), (
+                        'amount_residual', '>', 0.0), ('state', 'in', ['posted']),
+                                                                    ('move_type', 'in', ['out_refund'])])
+                    pay_vals = []
+                    for cred in cred_invoice:
+                        val = 0
+                        for line in cred.line_ids:
+                            if line.credit == 0:
+                                val = line.id
+                                vals = {
+                                    'name': cred.name,
+                                    'date': cred.invoice_date,
+                                    'memo': cred.ref,
+                                    'amount': cred.amount_residual
+
+                                }
+                        pay_vals.append((0, 0, vals))
+                    data.journal_allocation_ids = pay_vals
                 else:
-                    print("---ountbounddddddd")
                     for p in partner:
 
                         invoice = self.env['account.move'].search([('partner_id', '=', p.id), (
@@ -333,30 +331,32 @@ class JournalAllocation(models.TransientModel):
 
                         data.invoice_allocation_ids = inv_vals
 
-                        # cred_invoice = self.env['account.move'].search([('partner_id', '=', p.id), (
-                        #     'amount_residual', '>', 0.0), ('state', 'in', ['posted']),
-                        #                                                 ('move_type', 'in', ['in_refund'])])
-                        # pay_vals = []
-                        # for cred in cred_invoice:
-                        #     val = 0
-                        #     for line in cred.line_ids:
-                        #         if line.credit == 0:
-                        #             val = line.id
-                        #             vals = {
-                        #                 'name': cred.name,
-                        #                 'date': cred.invoice_date,
-                        #                 'memo': cred.ref,
-                        #                 'amount': cred.amount_residual
-                        #
-                        #             }
-                        #     pay_vals.append((0, 0, vals))
-                        # data.payment_allocation_ids = pay_vals
+                        cred_invoice = self.env['account.move'].search([('partner_id', '=', p.id), (
+                            'amount_residual', '>', 0.0), ('state', 'in', ['posted']),
+                                                                        ('move_type', 'in', ['in_refund'])])
+                        pay_vals = []
+                        for cred in cred_invoice:
+                            val = 0
+                            for line in cred.line_ids:
+                                if line.credit == 0:
+                                    val = line.id
+                                    vals = {
+                                        'name': cred.name,
+                                        'date': cred.invoice_date,
+                                        'memo': cred.ref,
+                                        'amount': cred.amount_residual
 
-    def get_matching_dict(self,payment_type, debit_move_dict, credit_move_dict):
+                                    }
+                            pay_vals.append((0, 0, vals))
+                        data.journal_allocation_ids = pay_vals
+
+
+
+    def get_matching_dict(self, debit_move_dict, credit_move_dict):
         matching_list = []
         debit_dict = {}
         credit_dict = {}
-        # payment_type = self.payment_type
+        payment_type = self.payment_type
         if payment_type == 'inbound':
             debit_dict = debit_move_dict
             credit_dict = credit_move_dict
@@ -398,7 +398,6 @@ class JournalAllocation(models.TransientModel):
                             debit_dict[deb_move_id] = abs(balance)
                             credit_dict[cred_move_id] = 0.0
 
-
                         if balance == 0.0:
                             ful_rec = self.env['account.full.reconcile']
                             if is_full_reconcile == True:
@@ -414,12 +413,12 @@ class JournalAllocation(models.TransientModel):
                             credit_dict[cred_move_id] = 0.0
                             credamt = 0.0
                         credamt = balance
+
         return matching_list
 
     def validate_payment(self):
-
         payment_amount = 0
-        payment_type=False
+
         for rec in self.journal_allocation_ids:
             payment_amount += rec.amount
             if self.balnc_paymnt_amnt ==0:
@@ -434,25 +433,27 @@ class JournalAllocation(models.TransientModel):
 
         debit_move_dict = {}
         credit_move_dict = {}
-        for line in self.invoice_allocation_ids:
-            print("--invoive allocation")
+        for line in self.invoice_allocation_ids.filtered(lambda l:l.inv_allocate_amount ):
             # debit_move_dict[line.move_line_id.id] = line.inv_allocate_amount
-            val_2 = line.move_line_id.id
+            # val_2 = line.move_line_id.id
             if line.move_line_id.move_id.move_type == 'out_invoice':
-                if line.move_line_id.move_id.line_ids.filtered(lambda l: l.credit == 0):
-                    val_2 = line.move_line_id.move_id.line_ids.filtered(lambda l: l.credit == 0)[0].id
+                if line.move_line_id.move_id.line_ids.filtered(lambda l: l.credit == 0 and l.debit):
+
+                    val_2 = line.move_line_id.move_id.line_ids.filtered(lambda l: l.credit == 0 and l.debit)[0].id
+
+                    debit_move_dict[val_2] = line.inv_allocate_amount
+
             elif line.move_line_id.move_id.move_type == 'in_invoice':
-                if line.move_line_id.move_id.line_ids.filtered(lambda l: l.debit == 0):
-                    val_2 = line.move_line_id.move_id.line_ids.filtered(lambda l: l.debit == 0)[0].id
-            debit_move_dict[val_2] = line.inv_allocate_amount
+                if line.move_line_id.move_id.line_ids.filtered(lambda l: l.debit == 0 and l.credit):
+                    val_2 = line.move_line_id.move_id.line_ids.filtered(lambda l: l.debit == 0 and l.credit)[0].id
+                    debit_move_dict[val_2] = line.inv_allocate_amount
+            # print("val 2",val_2)
 
         for line in self.journal_allocation_ids:
-            print("jounal")
-            payment_type='inbound' if line.move_line_id.account_id.account_type=='asset_receivable' else 'outbound' if line.move_line_id.account_id.account_type=='liability_payable' else ''
             credit_move_dict[line.move_line_id.id] = self.balnc_paymnt_amnt
-        print("000000")
+
         for line in self.invoice_allocation_ids:
-            if payment_type == "inbound":
+            if self.payment_type == "inbound":
                 if line.inv_unallocated_amount == line.inv_allocate_amount:
                     debit_move_dict['is_full_reconcile'] = True
                 else:
@@ -463,12 +464,14 @@ class JournalAllocation(models.TransientModel):
                 else:
                     credit_move_dict['is_full_reconcile'] = False
 
-        print("payment type",payment_type)
-        matching_list = self.get_matching_dict(payment_type,debit_move_dict, credit_move_dict)
-        print("--matching list",matching_list)
+
+        matching_list = self.get_matching_dict(debit_move_dict, credit_move_dict)
+
         for rec_val in matching_list:
             rec = self.env['account.partial.reconcile'].create(rec_val)
-            print("----rec",rec)
+
+
+
 
 class JournalDebitLines(models.TransientModel):
     _name = "journal.allocation.wizard.debit.lines"
@@ -492,26 +495,18 @@ class JournalDebitLines(models.TransientModel):
 
     @api.onchange('is_invoice_allocate')
     def onchange_is_invoice_allocate(self):
-        print("----------is invoice allocate")
 
-        total_payment = []
-        for vals in self.rec_id.journal_allocation_ids:
-            total_payment.append(vals.amount)
+        total =0
 
-
-        payment_amount = sum(total_payment)
+        for vals in self.rec_id.invoice_allocation_ids:
+            total +=vals.inv_allocate_amount
 
         if self.is_invoice_allocate:
             for rec in self:
-                if rec.inv_unallocated_amount >= self.rec_id.balnc_paymnt_amnt:
-                    rec.inv_allocate_amount = self.rec_id.balnc_paymnt_amnt
-
-
-
+                if rec.inv_unallocated_amount >= (self.rec_id.balnc_paymnt_amnt-total):
+                    rec.inv_allocate_amount =(self.rec_id.balnc_paymnt_amnt-total)
                 else:
-                    print("elseee",rec.inv_unallocated_amount)
                     rec.inv_allocate_amount = rec.inv_unallocated_amount
-                    print("inv_allocate_amount",rec.inv_allocate_amount)
 
         else:
             self.inv_allocate_amount = 0.0

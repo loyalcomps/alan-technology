@@ -414,9 +414,11 @@ class PaymentAllocation(models.TransientModel):
                             credit_dict[cred_move_id] = 0.0
                             credamt = 0.0
                         credamt = balance
+
         return matching_list
 
     def validate_payment(self):
+
         payment_amount = 0
         for rec in self.payment_allocation_ids:
             payment_amount += rec.amount
@@ -429,6 +431,7 @@ class PaymentAllocation(models.TransientModel):
         debit_move_dict = {}
         credit_move_dict = {}
         for line in self.invoice_allocation_ids:
+
             # debit_move_dict[line.move_line_id.id] = line.inv_allocate_amount
             val_2 = line.move_line_id.id
             if line.move_line_id.move_id.move_type == 'out_invoice':
@@ -437,6 +440,7 @@ class PaymentAllocation(models.TransientModel):
             elif line.move_line_id.move_id.move_type == 'in_invoice':
                 if line.move_line_id.move_id.line_ids.filtered(lambda l: l.debit == 0):
                     val_2 = line.move_line_id.move_id.line_ids.filtered(lambda l: l.debit == 0)[0].id
+
             debit_move_dict[val_2] = line.inv_allocate_amount
 
         for line in self.payment_allocation_ids:
@@ -453,9 +457,11 @@ class PaymentAllocation(models.TransientModel):
                     credit_move_dict['is_full_reconcile'] = True
                 else:
                     credit_move_dict['is_full_reconcile'] = False
+
         matching_list = self.get_matching_dict(debit_move_dict, credit_move_dict)
         for rec_val in matching_list:
             rec = self.env['account.partial.reconcile'].create(rec_val)
+
 
 class DebitLines(models.TransientModel):
     _name = "payment.allocation.wizard.debit.lines"
