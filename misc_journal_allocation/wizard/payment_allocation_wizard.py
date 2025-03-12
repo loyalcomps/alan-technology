@@ -447,6 +447,19 @@ class JournalAllocation(models.TransientModel):
                 if line.move_line_id.move_id.line_ids.filtered(lambda l: l.debit == 0 and l.credit):
                     val_2 = line.move_line_id.move_id.line_ids.filtered(lambda l: l.debit == 0 and l.credit)[0].id
                     debit_move_dict[val_2] = line.inv_allocate_amount
+
+            elif line.move_line_id.move_id.line_ids.filtered(
+                        lambda l: l.account_id.account_type in ['asset_receivable','liability_payable'] and l.partner_id and  l.partner_id == self.partner_id):
+                    val_2 = line.move_line_id.move_id.line_ids.filtered(
+                        lambda l: l.account_id.account_type  in ['asset_receivable','liability_payable'] and l.partner_id and l.partner_id == self.partner_id)[0].id
+                    debit_move_dict[val_2] = line.inv_allocate_amount
+
+
+
+
+
+
+
             # print("val 2",val_2)
 
         for line in self.journal_allocation_ids:

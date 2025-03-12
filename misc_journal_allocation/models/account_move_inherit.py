@@ -173,36 +173,46 @@ class AccountMoveInherit(models.Model):
 
             for line in allocatable_lines:
                 partner = line.partner_id
-                if line.account_id.account_type =='asset_receivable' and line.debit==0:
+                # payment_amount = line.credit if line.credit else line.debit
+
+                if line.debit==0:
                     payment_type='inbound'
                     payment_amount = line.credit
                     val_1 = line.id
-
-
-                    # partial = self.env['account.partial.reconcile'].search([('credit_move_id', '=', val_1)])
-                    # for val in partial:
-                    #
-                    #     amount_bal += val.debit_amount_currency
-                    debit = self.env['account.partial.reconcile'].search([('credit_move_id', '=', val_1)])
-
-                    for val in debit:
-                        print("==debit ",val.credit_amount_currency)
-
-                        amount_bal += val.credit_amount_currency
-
-
-
-                if line.account_id.account_type =='liability_payable' and line.credit==0:
+                else:
                     payment_type = 'outbound'
-                    payment_amount=line.debit
-
+                    payment_amount = line.debit
                     val_1 = line.id
-                    debit = self.env['account.partial.reconcile'].search([('debit_move_id', '=', val_1)])
 
-                    for val in debit:
-
-
-                        amount_bal += val.debit_amount_currency
+                #
+                #
+                # partial = self.env['account.partial.reconcile'].search([('credit_move_id', '=', val_1)])
+                # for val in partial:
+                # #     #
+                #         amount_bal += val.debit_amount_currency
+                debit = self.env['account.partial.reconcile'].search(['|',('credit_move_id', '=', val_1),('debit_move_id','=',val_1)])
+                #
+                for val in debit:
+                    if val_1.credit_amount_currency:
+                #         print("==debit ",val.credit_amount_currency)
+                #
+                        amount_bal += val.credit_amount_currency
+                    else:
+                        amount_bal +=val.debit_amount_currency
+                #
+                #
+                #
+                # if line.account_id.account_type =='liability_payable' and line.credit==0:
+                #     payment_type = 'outbound'
+                #     payment_amount=line.debit
+                #
+                #     val_1 = line.id
+                #     debit = self.env['account.partial.reconcile'].search([('debit_move_id', '=', val_1)])
+                #
+                #     for val in debit:
+                #
+                #
+                #         amount_bal += val.debit_amount_currency
                 payment_vals.append({
                                      'name': data.name,
                                      'date': data.date,
