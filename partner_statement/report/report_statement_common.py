@@ -240,11 +240,22 @@ class ReportStatementCommon(models.AbstractModel):
 
         return currency_rec.name
 
-    def _get_pdc_covered(self, part):
-
-
+    def _get_pdc_total(self, part):
         pdc_records=self.env['pdc.payment'].search([('partner_id','=',part.id),('state','in',['registered','deposited'])])
         pdc_amount=sum(pdc_records.mapped('amount')) if pdc_records else 0
+        return pdc_amount
+
+    def _get_pdc_covered(self, part):
+        pdc_amount=0
+        journal=self.env['account.move'].search([('name','=',part)])
+        for record in journal:
+            reconciled_lines = record.line_ids.filtered(
+                lambda line: line.account_id.account_type in ('asset_receivable', 'liability_payable'))
+            reconciled_amls = reconciled_lines.mapped('matched_debit_ids.debit_move_id') + \
+                              reconciled_lines.mapped('matched_credit_ids.credit_move_id')
+            for rec in reconciled_amls.move_id.pdc_payment_id.filtered(lambda l: l.state in ['registered', 'deposited']):
+                pdc_amount +=rec.amount
+
         return pdc_amount
 
     def _get_invoice_address(self, part):
@@ -699,6 +710,7 @@ class ReportStatementCommon(models.AbstractModel):
             "bucket_labels": bucket_labels,
             "get_inv_addr": self._get_invoice_address,
             "get_pdc_covered": self._get_pdc_covered,
+            "get_pdc_total": self._get_pdc_total,
             "get_currency": self.get_currency,
 
             "aging_bucket_summary":aging_bucket_summary,

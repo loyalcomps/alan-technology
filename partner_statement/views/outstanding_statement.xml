@@ -120,6 +120,7 @@
                 <h1 class="text-center" style="font-size:16px">
                     <strong>STATEMENT OF A/C</strong>
                 </h1>
+                 <t t-set="pdc" t-value="0"/>
                 <t t-if="salesperson_wise">
                     <div class="col-12">
                         <strong>Salesperson:</strong>
@@ -160,17 +161,17 @@
                               <span t-esc="get_currency(currency_id)"/>
                         </p>
                         <br/>
-                        <table class="table table-bordered" style="width: 100%;font-size:14px;">
+                           <table class="table table-bordered" style="width: 100%;font-size:14px;">
 
-                            <col style="width: 8%;"/>
+                            <col style="width: 4%;"/>
                             <col style="width: 10%;"/>
                             <col style="width: 12%;"/>
-                            <col style="width: 25%;"/>
+                            <col style="width: 30%;"/>
                             <col style="width: 8%;"/>
                             <col style="width: 8%;"/>
                             <col style="width: 8%;"/>
                             <col style="width: 8%;"/>
-                            <col style="width: 14%;"/>
+                            <col style="width: 8%;"/>
                             <thead>
                                 <tr style="background-color: #f2f2f2;">
                                     <td style="flex: 1; border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px; font-family: Arial, sans-serif;">
@@ -207,6 +208,9 @@
                                         </td>
                                 </tr>
                             </thead>
+
+
+
                             <tbody style="border: 1px solid black;">
                                 <t t-set="sl_no" t-value="1"/>
                                 <tr
@@ -258,7 +262,10 @@
                                     </td>
                                        <td style="text-align:right;">
                                         <t t-set="payment_received" t-value="line['amount'] - line['open_amount']"/>
-                                        <span t-esc="'{0:,.2f}'.format(payment_received)"/>
+                                            <t t-set="pdc_in_journal" t-value="get_pdc_covered(line['move_id'])"/>
+                                           <t t-set="pdc" t-value="pdc+pdc_in_journal"/>
+
+                                        <span t-esc="'{0:,.2f}'.format(payment_received + pdc_in_journal)"/>
                                     </td>
 
                                     <td style="text-align:right;">
@@ -301,7 +308,7 @@
                                     <td>
 
                                     </td>
-                                    <td class="amount">
+                                    <td style="text-align:right;">
                                         <t t-if="currency['amount_due']">
                                             <t t-set="amount_due" t-value="amount_due +currency['amount_due'] "/>
                                             <span t-esc="'{0:,.2f}'.format(currency['amount_due'])"/>
@@ -434,8 +441,13 @@
                 <!--                </t>-->
 
                 <br/>
-                <t t-set="pdc" t-value="get_pdc_covered(o)"/>
-                <t t-set="total_outstanding" t-value="amount_due+pdc"/>
+
+<!--                <t t-set="pdc" t-value="get_pdc_covered(o)"/>-->
+
+
+                 <t t-set="pdc_total" t-value="get_pdc_total(o)"/>
+                <t t-set="total_outstanding" t-value="amount_due+pdc_total"/>
+
                 <t t-set="net_balance" t-value="total_outstanding - pdc "/>
                 <p style="page-break-inside:avoid;">
                     <strong>Total Outstanding Amount :</strong>
@@ -444,7 +456,7 @@
 
                     <br/>
                     <strong>PDC Received :</strong>
-                    <span t-esc="'{0:,.2f}'.format(pdc)"/>
+                    <span t-esc="'{0:,.2f}'.format(pdc_total)"/>
 
                     <br/>
                     <strong>Net Balance After PDC :</strong>

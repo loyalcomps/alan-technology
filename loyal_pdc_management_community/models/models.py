@@ -317,6 +317,7 @@ class PdcPayment(models.Model):
         for record in self:
             if record.state == 'draft':
                 if record.payment_type == 'inbound':
+                    print("--inbounddd")
                     line_ids = [
                         (
                             0,
@@ -340,6 +341,7 @@ class PdcPayment(models.Model):
                         ),
                     ]
                 else:
+                    print("---elsee")
                     line_ids = [
                         (
                             0,
@@ -362,6 +364,7 @@ class PdcPayment(models.Model):
                             },
                         ),
                     ]
+
                 move_vals = {
                     "journal_id": record.journal_id.id,
                     "date": record.date,
@@ -369,7 +372,9 @@ class PdcPayment(models.Model):
                     "pdc_payment_id": record.id,
                     "line_ids": line_ids,
                 }
+
                 move = self.env["account.move"].create(move_vals)
+
                 move.action_post()
                 record.move_ids = [(4, move.id)]
                 record.state = 'registered'
