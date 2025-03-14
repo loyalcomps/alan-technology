@@ -10,12 +10,12 @@ In Invoice/Bill, a post-dated cheque is a cheque written by the customer/vendor 
     'author': "Loyal IT Solutions Pvt Ltd",
     'website': "https://www.loyalitsolutions.com/",
     'category': 'account',
-    'version': '16.0.2.0.2',
+    'version': '16.0.2.0.3',
     'license': 'AGPL-3',
     'price': '20.00',
     'currency': 'EUR',    
     'support': "support@loyalitsolutions.com",
-    'depends': ['base', 'account',],
+    'depends': ['base', 'account','stock_account'],
     # always loaded
     'data': [
         'security/ir.model.access.csv',
