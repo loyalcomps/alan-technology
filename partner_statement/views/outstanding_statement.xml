@@ -262,10 +262,10 @@
                                     </td>
                                        <td style="text-align:right;">
                                         <t t-set="payment_received" t-value="line['amount'] - line['open_amount']"/>
-                                            <t t-set="pdc_in_journal" t-value="get_pdc_covered(line['move_id'])"/>
-                                           <t t-set="pdc" t-value="pdc+pdc_in_journal"/>
+<!--                                            <t t-set="pdc_in_journal" t-value="get_pdc_covered(line['move_id'])"/>-->
+<!--                                           <t t-set="pdc" t-value="pdc+pdc_in_journal"/>-->
 
-                                        <span t-esc="'{0:,.2f}'.format(payment_received + pdc_in_journal)"/>
+                                        <span t-esc="'{0:,.2f}'.format(payment_received)"/>
                                     </td>
 
                                     <td style="text-align:right;">
