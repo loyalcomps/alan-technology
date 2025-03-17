@@ -36,6 +36,7 @@ class ActivityStatementWizard(models.TransientModel):
         return res
 
     def _print_report(self, report_type):
+
         self.ensure_one()
         data = self._prepare_statement()
         if report_type == "xlsx":

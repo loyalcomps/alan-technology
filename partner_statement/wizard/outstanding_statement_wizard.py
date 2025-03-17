@@ -48,7 +48,7 @@ class OutstandingStatementWizard(models.TransientModel):
         # customer_name = self.partner_id.name  # Assuming 'partner_id' is the related customer field
          date = self.date_end
 
-         rec.name = f" Outstanding Statement -{partner_name}-{date}"
+         rec.name = f" SOA -{partner_name}-{date}"
 
          return rec.with_context(print_report_name=rec.name).report_action(self, data=data)
 
