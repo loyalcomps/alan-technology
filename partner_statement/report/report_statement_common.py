@@ -241,7 +241,7 @@ class ReportStatementCommon(models.AbstractModel):
 
     def _get_pdc_covered(self, partner,journal):
         journal = self.env['account.move'].search([('name', '=',journal),('partner_id','=',partner.id),('move_type','!=','entry')])
-        if journal:
+        if journal and journal.invoice_payments_widget:
             pdc_amount= sum(
                 payment['amount'] for payment in journal.invoice_payments_widget['content']
                 if 'ref' in payment and payment['ref'] and 'PDC' in payment['ref']
@@ -249,6 +249,18 @@ class ReportStatementCommon(models.AbstractModel):
         else:
             pdc_amount = 0
         return pdc_amount
+
+    def get_payment_received(self,partner,journal):
+        journal = self.env['account.move'].search(
+            [('name', '=', journal), ('partner_id', '=', partner.id), ('move_type', '!=', 'entry')])
+        if journal and journal.invoice_payments_widget:
+            paid_amount = sum(
+                payment['amount'] for payment in journal.invoice_payments_widget['content'])
+        else:
+            paid_amount=0
+
+        return paid_amount
+
 
 
 
@@ -706,6 +718,7 @@ class ReportStatementCommon(models.AbstractModel):
             "get_pdc_covered": self._get_pdc_covered,
             "get_pdc_total": self._get_pdc_total,
             "get_currency": self.get_currency,
+            "get_payment_received":self.get_payment_received,
 
             "aging_bucket_summary":aging_bucket_summary,
         }

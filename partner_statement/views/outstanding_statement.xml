@@ -120,7 +120,7 @@
                 <h1 class="text-center" style="font-size:16px">
                     <strong>STATEMENT OF A/C</strong>
                 </h1>
-                 <t t-set="pdc" t-value="0"/>
+                <t t-set="pdc" t-value="0"/>
                 <t t-if="salesperson_wise">
                     <div class="col-12">
                         <strong>Salesperson:</strong>
@@ -133,8 +133,7 @@
 
                 <t t-set="amount_due" t-value="0"/>
                 <t t-set="pdc_unallocated" t-value="0"/>
-                  <t t-set="pdc_in_journal" t-value="0"/>
-
+                <t t-set="pdc_in_journal" t-value="0"/>
 
 
                 <t t-if="d['currencies']">
@@ -143,7 +142,6 @@
                     <t t-foreach="d['currencies'].items()" t-as="currency">
 
                         <t t-set="currency_id" t-value="currency[0]"/>
-
 
 
                         <t t-set="display_currency" t-value="Currencies[currency[0]]"/>
@@ -160,11 +158,10 @@
                             in
 
 
-
-                              <span t-esc="get_currency(currency_id)"/>
+                            <span t-esc="get_currency(currency_id)"/>
                         </p>
                         <br/>
-                           <table class="table table-bordered" style="width: 100%;font-size:14px;">
+                        <table class="table table-bordered" style="width: 100%;font-size:14px;">
 
                             <col style="width: 4%;"/>
                             <col style="width: 10%;"/>
@@ -178,40 +175,41 @@
                             <thead>
                                 <tr style="background-color: #f2f2f2;">
                                     <td style="flex: 1; border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px; font-family: Arial, sans-serif;">
-                                            <b>Sl No</b>
-                                        </td>
-                                         <td style="flex: 1; border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px; font-family: Arial, sans-serif;">
-                                            <b>Inv Date</b>
-                                        </td>
-                                        <td style="flex: 1; border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px;  font-family: Arial, sans-serif;">
-                                            <b>Invoice / Reference</b>
-                                        </td>
-                                         <td style="flex: 1; border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px; 10px; font-family: Arial, sans-serif;">
-                                            <b>LPO / Description</b>
-                                        </td>
+                                        <b>Sl No</b>
+                                    </td>
+                                    <td style="flex: 1; border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px; font-family: Arial, sans-serif;">
+                                        <b>Inv Date</b>
+                                    </td>
+                                    <td style="flex: 1; border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px;  font-family: Arial, sans-serif;">
+                                        <b>Invoice / Reference</b>
+                                    </td>
+                                    <td style="flex: 1; border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px; 10px; font-family: Arial, sans-serif;">
+                                        <b>LPO / Description</b>
+                                    </td>
 
-                                        <td style="flex: 1;text-align:right;border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px; font-family: Arial, sans-serif;">
-                                            <b>Opening Amount</b>
-                                        </td>
-                                        <td style="flex: 1;text-align:right;border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px;  font-family: Arial, sans-serif;">
+                                    <td style="flex: 1;text-align:right;border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px; font-family: Arial, sans-serif;">
+                                        <b>Opening Amount</b>
+                                    </td>
+                                    <td style="flex: 1;text-align:right;border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px;  font-family: Arial, sans-serif;">
 
-                                            <b>Payment Received</b>
-                                        </td>
-                                        <td style="flex: 1;text-align:right;border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px;  font-family: Arial, sans-serif;">
+                                        <b>Payment Received</b>
+                                    </td>
+                                    <td style="flex: 1;text-align:right;border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px;  font-family: Arial, sans-serif;">
 
-                                            <b>Pending Amount</b>
-                                        </td>
-                                        <td style="flex: 1;text-align:right;border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px; font-family: Arial, sans-serif;">
+                                        <b>Pending Amount</b>
+                                    </td>
+                                    <td style="flex: 1;text-align:right;border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px; font-family: Arial, sans-serif;">
 
-                                            <b>Balance Amount</b>
-                                        </td>
-                                        <td style="flex: 1;border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px; border-radius: 10px; font-family: Arial, sans-serif;">
+                                        <b>Balance Amount</b>
+                                    </td>
+                                    <td style="flex: 1;border-right: 1px solid black; border-bottom: 1px solid black; padding: 10px; border-radius: 10px; font-family: Arial, sans-serif;">
 
-                                            <b><center>Due Days</center></b>
-                                        </td>
+                                        <b>
+                                            <center>Due Days</center>
+                                        </b>
+                                    </td>
                                 </tr>
                             </thead>
-
 
 
                             <tbody style="border: 1px solid black;">
@@ -237,21 +235,34 @@
                                     <td>
                                         <span t-esc="line['ref']"/>
                                         <t t-if="'PDC' in line['ref']">
-                                            <t t-set="pdc_unallocated" t-value="pdc_unallocated +abs(line['open_amount']) "/>
+                                            <t t-set="pdc_unallocated"
+                                               t-value="pdc_unallocated +abs(line['open_amount']) "/>
                                         </t>
                                     </td>
-                                        <td style="text-align:right;">
+                                    <td style="text-align:right;">
                                         <span t-esc="'{0:,.2f}'.format(line['amount'])"
                                         />
                                     </td>
-                                       <td style="text-align:right;">
-                                        <t t-set="payment_received" t-value="line['amount'] - line['open_amount']"/>
-                                           <t t-set="pdc_in_journal" t-value="pdc_in_journal + get_pdc_covered(o,line['move_id'])"/>
-<!--                                           <t t-set="pdc" t-value="pdc+pdc_in_journal"/>-->
+                                    <td style="text-align:right;">
+<!--                                        <t t-set="payment_received" t-value="0"/>-->
+<!--                                        <t t-if="line['amount'] and line['open_amount'] ">-->
+<!--                                            <t t-set="payment_received" t-value="line['amount'] - line['open_amount']"/>-->
 
-                                        <span t-esc="'{0:,.2f}'.format(payment_received)"/>
-<!--                                           <br/>-->
-<!--                                           <span t-out="pdc_in_journal"/>-->
+<!--                                        </t>-->
+                                        <t t-set="pdc_in_journal"
+                                           t-value="pdc_in_journal + get_pdc_covered(o,line['move_id'])"/>
+
+                                          <t t-set="payment_received"
+                                           t-value="get_payment_received(o,line['move_id'])"/>
+
+
+<!--                                        <t t-if="payment_received is not None">-->
+                                            <span t-esc="'{0:,.2f}'.format(payment_received)"/>
+<!--                                        </t>-->
+
+
+                                        <!--                                           <br/>-->
+                                        <!--                                           <span t-out="pdc_in_journal"/>-->
                                     </td>
 
                                     <td style="text-align:right;">
@@ -259,7 +270,7 @@
                                         <!--                                              t-options="{'widget': 'monetary', 'display_currency': display_currency}"-->
                                         <!--                                        />-->
                                     </td>
-                                        <td style="text-align:right;">
+                                    <td style="text-align:right;">
                                         <span
                                                 t-esc="'{0:,.2f}'.format(line['balance'])"/>
                                         <!--                                                t-options="{'widget': 'monetary', 'display_currency': display_currency}"-->
@@ -335,9 +346,7 @@
                 <br/>
 
 
-
-
-                 <t t-set="pdc_total" t-value="pdc_in_journal + pdc_unallocated "/>
+                <t t-set="pdc_total" t-value="pdc_in_journal + pdc_unallocated "/>
                 <t t-set="total_outstanding" t-value="amount_due + pdc_total"/>
 
                 <t t-set="net_balance" t-value="total_outstanding - pdc_total "/>
