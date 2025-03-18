@@ -226,17 +226,11 @@ class ReportStatementCommon(models.AbstractModel):
         partner_dict = {'Total': partner_dict['Total']}
 
 
-
-
-
-
         return partner_dict
 
 
     def get_currency(self, currency):
-        print("-currency",currency)
         currency_rec=self.env["res.currency"].browse(currency)
-        print("-currency",currency_rec)
 
         return currency_rec.name
 
@@ -245,18 +239,18 @@ class ReportStatementCommon(models.AbstractModel):
         pdc_amount=sum(pdc_records.mapped('amount')) if pdc_records else 0
         return pdc_amount
 
-    def _get_pdc_covered(self, part):
-        pdc_amount=0
-        journal=self.env['account.move'].search([('name','=',part)])
-        for record in journal:
-            reconciled_lines = record.line_ids.filtered(
-                lambda line: line.account_id.account_type in ('asset_receivable', 'liability_payable'))
-            reconciled_amls = reconciled_lines.mapped('matched_debit_ids.debit_move_id') + \
-                              reconciled_lines.mapped('matched_credit_ids.credit_move_id')
-            for rec in reconciled_amls.move_id.pdc_payment_id.filtered(lambda l: l.state in ['registered', 'deposited']):
-                pdc_amount +=rec.amount
-
+    def _get_pdc_covered(self, partner,journal):
+        journal = self.env['account.move'].search([('name', '=',journal),('partner_id','=',partner.id),('move_type','!=','entry')])
+        if journal:
+            pdc_amount= sum(
+                payment['amount'] for payment in journal.invoice_payments_widget['content']
+                if 'ref' in payment and payment['ref'] and 'PDC' in payment['ref']
+            )
+        else:
+            pdc_amount = 0
         return pdc_amount
+
+
 
     def _get_invoice_address(self, part):
         inv_addr_id = part.address_get(["invoice"]).get("invoice", part.id)

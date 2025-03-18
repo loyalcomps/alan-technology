@@ -132,6 +132,9 @@
                 </t>
 
                 <t t-set="amount_due" t-value="0"/>
+                <t t-set="pdc_unallocated" t-value="0"/>
+                  <t t-set="pdc_in_journal" t-value="0"/>
+
 
 
                 <t t-if="d['currencies']">
@@ -233,39 +236,22 @@
                                     </td>
                                     <td>
                                         <span t-esc="line['ref']"/>
+                                        <t t-if="'PDC' in line['ref']">
+                                            <t t-set="pdc_unallocated" t-value="pdc_unallocated +abs(line['open_amount']) "/>
+                                        </t>
                                     </td>
-
-                                    <!--                                    <td>-->
-                                    <!--                                        <t t-if="line['name'] != '/'">-->
-                                    <!--                                            <t t-if="not line['ref']">-->
-                                    <!--                                                <span t-esc="line['name']"/>-->
-                                    <!--                                            </t>-->
-                                    <!--                                            <t t-if="line['ref'] and not line['name']">-->
-                                    <!--                                                <span t-esc="line['ref']"/>-->
-                                    <!--                                            </t>-->
-                                    <!--                                            <t t-if="line['ref'] and line['name']">-->
-                                    <!--                                                <t t-if="line['name'] not in line['ref'] or line['name'] == line['ref']">-->
-                                    <!--                                                    <span t-esc="line['name']"/>-->
-                                    <!--                                                </t>-->
-                                    <!--                                                <t t-if="line['ref'] not in line['name']">-->
-                                    <!--                                                    <span t-esc="line['ref']"/>-->
-                                    <!--                                                </t>-->
-                                    <!--                                            </t>-->
-                                    <!--                                        </t>-->
-                                    <!--                                        <t t-if="line['name'] == '/'">-->
-                                    <!--                                            <span t-esc="line['ref']"/>-->
-                                    <!--                                        </t>-->
-                                    <!--                                    </td>-->
                                         <td style="text-align:right;">
                                         <span t-esc="'{0:,.2f}'.format(line['amount'])"
                                         />
                                     </td>
                                        <td style="text-align:right;">
                                         <t t-set="payment_received" t-value="line['amount'] - line['open_amount']"/>
-<!--                                            <t t-set="pdc_in_journal" t-value="get_pdc_covered(line['move_id'])"/>-->
+                                           <t t-set="pdc_in_journal" t-value="pdc_in_journal + get_pdc_covered(o,line['move_id'])"/>
 <!--                                           <t t-set="pdc" t-value="pdc+pdc_in_journal"/>-->
 
                                         <span t-esc="'{0:,.2f}'.format(payment_received)"/>
+<!--                                           <br/>-->
+<!--                                           <span t-out="pdc_in_journal"/>-->
                                     </td>
 
                                     <td style="text-align:right;">
@@ -337,47 +323,6 @@
 
                         <br/>
 
-                        <!--                         <tr style="border-top:1px solid black;">-->
-                        <!--                                    <td style="border-left:hidden;border-right:1px solid black;" colspan="5"></td>-->
-                        <!--                                    <td style="border-left:1px solid black;" colspan="2">Outstanding :</td>-->
-
-                        <!--                                    <td style="border-right:1px solid black;">-->
-                        <!--                                        <span t-esc="'{0:,.2f}'.format(currency['amount_due'])"/>-->
-                        <!--                                    </td>-->
-                        <!--                                     <td style="border-right:hidden;">-->
-
-                        <!--                                    </td>-->
-                        <!--                                </tr>-->
-
-
-                        <!--                                  <t t-set="pdc" t-value="aging_bucket_summary"/>-->
-
-
-                        <!--                                <tr>-->
-                        <!--                                    <td style="border-top:hidden;border-left:hidden;" colspan="5"></td>-->
-                        <!--                                    <td style="border-left:1px solid black;" colspan="2">PDC Received :</td>-->
-
-                        <!--                                    <td style="border-right:1px solid black;">-->
-                        <!--                                        <span t-esc="'{0:,.2f}'.format(pdc)"/>-->
-                        <!--                                    </td>-->
-                        <!--                                     <td style="border-top:hidden;border-right:hidden;">-->
-
-                        <!--                                    </td>-->
-                        <!--                                </tr>-->
-
-                        <!--                                <tr>-->
-                        <!--                                    <td style="border-top:hidden;border-left:hidden;border-bottom:hidden;" colspan="5"></td>-->
-                        <!--                                    <td style="border-left:1px solid black;" colspan="2">Net Balance After PDC :</td>-->
-                        <!--                                     <td style="border-right:1px solid black;">-->
-                        <!--                                         <span t-esc="'{0:,.2f}'.format(net_balance)"/>-->
-                        <!--                                     </td>-->
-                        <!--                                       <td style="border-top:hidden;border-bottom:hidden;border-right:hidden;">-->
-
-                        <!--                                    </td>-->
-
-
-                        <!--                                </tr>-->
-
 
                     </t>
                 </t>
@@ -386,69 +331,16 @@
                     <strong>The partner doesn't have due entries.</strong>
                 </p>
 
-                <!--                <t t-if="pdc_data">-->
-                <!--                    <table class="table table-condensed table-statement">-->
-                <!--                        <thead style="border-bottom: 1px solid black;border-top: 1px solid black;border-left: 1px solid black;border-right: 1px solid black;">-->
-                <!--                            <tr>-->
-                <!--                                <strong>-->
-                <!--                                    <th>-->
-                <!--                                        <b>Name</b>-->
-                <!--                                    </th>-->
-                <!--                                    <th>-->
-                <!--                                        <b>Date</b>-->
-                <!--                                    </th>-->
-                <!--                                    <th>-->
-                <!--                                        <b>Type</b>-->
-                <!--                                    </th>-->
-                <!--                                    <th>-->
-                <!--                                        <b>Customer</b>-->
-                <!--                                    </th>-->
-                <!--                                    <th>-->
-                <!--                                        <b>Amount</b>-->
-                <!--                                    </th>-->
-                <!--                                    <th>-->
-                <!--                                        <b>Status</b>-->
-                <!--                                    </th>-->
-                <!--                                </strong>-->
-                <!--                            </tr>-->
-                <!--                        </thead>-->
-                <!--                        <tbody style="border-top: 1px solid black;border-left: 1px solid black;border-right: 1px solid black;">-->
-                <!--                            <tr-->
-                <!--                                    t-foreach="pdc_data"-->
-                <!--                                    t-as="pdc"-->
-                <!--                                    t-att-class="'statement-blocked' if line['blocked'] else ''">-->
-                <!--                                <td>-->
-                <!--                                    <span t-esc="pdc['name']"/>-->
-                <!--                                </td>-->
-                <!--                                <td>-->
-                <!--                                    <span t-esc="pdc['payment_date']"/>-->
-                <!--                                </td>-->
-                <!--                                <td>-->
-                <!--                                    <span t-esc="pdc['payment_type']"/>-->
-                <!--                                </td>-->
-                <!--                                <td>-->
-                <!--                                    <span t-esc="pdc['partner_id']"/>-->
-                <!--                                </td>-->
-                <!--                                <td>-->
-                <!--                                    <span t-esc="pdc['payment_amount']"/>-->
-                <!--                                </td>-->
-                <!--                                <td>-->
-                <!--                                    <span t-esc="pdc['state']"/>-->
-                <!--                                </td>-->
-                <!--                            </tr>-->
-                <!--                        </tbody>-->
-                <!--                    </table>-->
-                <!--                </t>-->
 
                 <br/>
 
-<!--                <t t-set="pdc" t-value="get_pdc_covered(o)"/>-->
 
 
-                 <t t-set="pdc_total" t-value="get_pdc_total(o)"/>
-                <t t-set="total_outstanding" t-value="amount_due+pdc_total"/>
 
-                <t t-set="net_balance" t-value="total_outstanding - pdc "/>
+                 <t t-set="pdc_total" t-value="pdc_in_journal + pdc_unallocated "/>
+                <t t-set="total_outstanding" t-value="amount_due + pdc_total"/>
+
+                <t t-set="net_balance" t-value="total_outstanding - pdc_total "/>
                 <p style="page-break-inside:avoid;">
                     <strong>Total Outstanding Amount :</strong>
 
