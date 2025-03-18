@@ -47,9 +47,14 @@
                                             <td colspan="6"
                                                 style="border: 0px solid black; padding-left: 50px;">
                                                 <span>
-                                                    <t t-esc="account['code']"/>
-                                                    -
-                                                    <t t-esc="account['name']"/>
+                                                     <t t-esc="a['name']"/>
+                                                    <br/>
+
+
+<!--                                                      <t t-esc="account['code']"/>-->
+<!--                                                    - -->
+<!--                                                    <t t-esc="account['name']"/>-->
+
                                                 </span>
                                                 <div class=""
                                                      style="display: inline-block;">

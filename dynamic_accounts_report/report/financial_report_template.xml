@@ -104,7 +104,11 @@
                                                 <tr>
                                                     <td>
                                                         <span style="color: white;" t-esc="'..' * a.get('level', 0) * 3"/>
-                                                        <span t-att-style="style" t-esc="line['name']"/>
+                                                        <span t-att-style="style" >
+                                                             <t t-esc="a['name']"/>
+                                                        </span>
+<!--                                                        <span t-att-style="style" t-esc="line['name']"/>-->
+
                                                     </td>
                                                     <td class="text-right">
                                                         <span t-esc="line['debit']"

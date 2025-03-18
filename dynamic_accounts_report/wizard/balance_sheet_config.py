@@ -6,7 +6,9 @@ class BalanceSheet(models.TransientModel):
     _inherit = "dynamic.balance.sheet.report"
 
     def view_report_pdf(self, acc, form):
+
         data = dict()
+
         report_lines = acc
         data['form'] = form
 
@@ -39,6 +41,7 @@ class BalanceSheet(models.TransientModel):
                 item['level'] = set_report_level(item)
         data['journal_items'] = journal_items
         data['report_lines'] = report_lines
+
         return data
 
     def _compute_account_balance(self, accounts):
@@ -147,6 +150,8 @@ class BalanceSheet(models.TransientModel):
         return res
 
     def get_account_lines(self, data):
+
+
         lines = []
         account_report = data['account_report_id']
         child_reports = account_report._get_children_by_order()
@@ -263,6 +268,7 @@ class BalanceSheet(models.TransientModel):
 
                 lines += sorted(sub_lines,
                                 key=lambda sub_line: sub_line['name'])
+
         return lines
 
     def find_journal_items(self, report_lines, form):
@@ -300,6 +306,7 @@ class BalanceSheet(models.TransientModel):
 
                 cr.execute(search_query, tuple(vals))
                 items = cr.dictfetchall()
+
 
                 for j in items:
                     temp = j['id']

@@ -112,6 +112,9 @@ class BalanceSheetView(models.TransientModel):
         account_lines = self.get_account_lines(new_data)
         report_lines = self.view_report_pdf(account_lines, new_data)[
             'report_lines']
+
+
+
         move_line_accounts = []
         move_lines_dict = {}
 
@@ -204,6 +207,7 @@ class BalanceSheetView(models.TransientModel):
         symbol = currency.symbol
         rounding = currency.rounding
         position = currency.position
+
 
         for rec in final_report_lines:
             rec['debit'] = round(rec['debit'], 2)

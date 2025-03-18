@@ -45,6 +45,7 @@ class GeneralView(models.TransientModel):
 
     @api.model
     def view_report(self, option, title):
+        eng_title=''
         r = self.env['account.general.ledger'].search([('id', '=', option[0])])
         self = r
         new_title = ''
