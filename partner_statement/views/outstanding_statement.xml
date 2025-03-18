@@ -226,39 +226,32 @@
                                     <td>
                                         <span t-esc="line['date']"/>
                                     </td>
-                                    <!--                                    <td>-->
-                                    <!--                                        <span t-esc="line['journal']"/>-->
-                                    <!--                                    </td>-->
+
                                     <td>
                                         <span t-esc="line['move_id']"/>
                                     </td>
                                     <td>
                                         <span t-esc="line['ref']"/>
-                                        <t t-if="'PDC' in line['ref']">
+                                        <t t-if="line['ref'] and line['ref'].startswith('PDC/')">
                                             <t t-set="pdc_unallocated"
-                                               t-value="pdc_unallocated +abs(line['open_amount']) "/>
-                                        </t>
+                                                   t-value="pdc_unallocated +abs(line['open_amount'])"/>
+                                             </t>
                                     </td>
                                     <td style="text-align:right;">
                                         <span t-esc="'{0:,.2f}'.format(line['amount'])"
                                         />
                                     </td>
                                     <td style="text-align:right;">
-<!--                                        <t t-set="payment_received" t-value="0"/>-->
-<!--                                        <t t-if="line['amount'] and line['open_amount'] ">-->
-<!--                                            <t t-set="payment_received" t-value="line['amount'] - line['open_amount']"/>-->
-
-<!--                                        </t>-->
                                         <t t-set="pdc_in_journal"
                                            t-value="pdc_in_journal + get_pdc_covered(o,line['move_id'])"/>
 
-                                          <t t-set="payment_received"
+                                        <t t-set="payment_received"
                                            t-value="get_payment_received(o,line['move_id'])"/>
 
 
-<!--                                        <t t-if="payment_received is not None">-->
-                                            <span t-esc="'{0:,.2f}'.format(payment_received)"/>
-<!--                                        </t>-->
+                                        <!--                                        <t t-if="payment_received is not None">-->
+                                        <span t-esc="'{0:,.2f}'.format(payment_received)"/>
+                                        <!--                                        </t>-->
 
 
                                         <!--                                           <br/>-->
@@ -267,6 +260,7 @@
 
                                     <td style="text-align:right;">
                                         <span t-esc="'{0:,.2f}'.format(line['open_amount'])"/>
+
                                         <!--                                              t-options="{'widget': 'monetary', 'display_currency': display_currency}"-->
                                         <!--                                        />-->
                                     </td>

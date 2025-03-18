@@ -261,6 +261,10 @@ class ReportStatementCommon(models.AbstractModel):
 
         return paid_amount
 
+    # def get_pdc_pending(self):
+    #     journal = self.env['account.move'].search(
+    #         [('name', '=', journal), ('partner_id', '=', partner.id), ('move_type', '!=', 'entry')])
+
 
 
 
@@ -719,6 +723,7 @@ class ReportStatementCommon(models.AbstractModel):
             "get_pdc_total": self._get_pdc_total,
             "get_currency": self.get_currency,
             "get_payment_received":self.get_payment_received,
+            # "get_pdc_pending":self.get_pdc_pending,
 
             "aging_bucket_summary":aging_bucket_summary,
         }
