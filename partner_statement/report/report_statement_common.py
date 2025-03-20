@@ -185,6 +185,7 @@ class ReportStatementCommon(models.AbstractModel):
                     amount = 0.0
                     self.env.cr.execute(sql + where)
                     fetch_dict = self.env.cr.dictfetchall() or 0.0
+                    print("--fetch_dict",fetch_dict)
 
                     if not fetch_dict[0].get('balance'):
                         amount = 0.0
@@ -250,16 +251,23 @@ class ReportStatementCommon(models.AbstractModel):
             pdc_amount = 0
         return pdc_amount
 
-    def get_payment_received(self,partner,journal):
-        journal = self.env['account.move'].search(
-            [('name', '=', journal), ('partner_id', '=', partner.id), ('move_type', '!=', 'entry')])
-        if journal and journal.invoice_payments_widget:
-            paid_amount = sum(
-                payment['amount'] for payment in journal.invoice_payments_widget['content'])
-        else:
-            paid_amount=0
+    def get_payment_received(self, partner, journal):
+        total = journal.get('amount') or 0.00
 
-        return paid_amount
+        balance = journal.get('open_amount') or 0.00
+        paid_amount = float(total) - float(balance)
+        return paid_amount or 0.00
+
+    # def get_payment_received(self,partner,journal):
+    #     journal = self.env['account.move'].search(
+    #         [('name', '=', journal), ('partner_id', '=', partner.id), ('move_type', '!=', 'entry')])
+    #     if journal and journal.invoice_payments_widget:
+    #         paid_amount = sum(
+    #             payment['amount'] for payment in journal.invoice_payments_widget['content'])
+    #     else:
+    #         paid_amount=0
+    #
+    #     return paid_amount
 
     # def get_pdc_pending(self):
     #     journal = self.env['account.move'].search(
@@ -282,6 +290,7 @@ class ReportStatementCommon(models.AbstractModel):
     def _get_account_display_lines(
             self, company_id, partner_ids, date_start, date_end, account_type
     ):
+        print("--get ")
         raise NotImplementedError
 
     def _get_account_initial_balance(
@@ -605,9 +614,11 @@ class ReportStatementCommon(models.AbstractModel):
         lines = self._get_account_display_lines(
             company_id, partner_ids, date_start, date_end, account_type
         )
+        print("--display lines----",lines)
         balances_forward = self._get_account_initial_balance(
             company_id, partner_ids, date_start, account_type
         )
+        print("--balancevforward",balances_forward)
 
         if data["show_aging_buckets"]:
             buckets = self._get_account_show_buckets(

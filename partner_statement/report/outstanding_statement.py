@@ -11,8 +11,11 @@ class OutstandingStatement(models.AbstractModel):
     _name = "report.partner_statement.outstanding_statement"
     _description = "Partner Outstanding Statement"
 
+
+
     def _display_lines_sql_q1(self, partners, date_end, account_type):
         partners = tuple(partners)
+
         return str(
             self._cr.mogrify(
                 """
@@ -78,6 +81,8 @@ class OutstandingStatement(models.AbstractModel):
             "utf-8",
         )
 
+
+
     def _display_lines_sql_q2(self):
         return str(
             self._cr.mogrify(
@@ -119,6 +124,7 @@ class OutstandingStatement(models.AbstractModel):
     ):
         res = dict(map(lambda x: (x, []), partner_ids))
         partners = tuple(partner_ids)
+
         # pylint: disable=E8103
         self.env.cr.execute(
             """
@@ -137,6 +143,50 @@ class OutstandingStatement(models.AbstractModel):
         )
         for row in self.env.cr.dictfetchall():
             res[row.pop("partner_id")].append(row)
+
+
+
+        move_ids = [entry['move_id'] for partner in res.values() for entry in partner]
+        print("--mover ids",move_ids)
+
+        # Find journal records that are missing from move_ids
+        journal_records = self.env['account.move'].search([
+            ("partner_id", "in", partners),
+            ("name", "not in", move_ids),
+            ("date", "<=", date_end),
+            ('amount_residual','=',0),
+            ("state", "=", "posted")
+        ])
+        processed_journals = set()
+
+        for journal in journal_records.filtered(lambda l: l.invoice_payments_widget):
+            for payment in journal.invoice_payments_widget['content']:
+                if 'ref' in payment and payment['ref'] and   'PDC' in payment['ref']:
+
+                    account_move_rec=self.env['account.move'].browse(payment['move_id'])
+
+                    if account_move_rec.pdc_payment_id and account_move_rec.pdc_payment_id.state  in ['registered','deposited']:
+                        if journal.name in processed_journals:  # If already processed, skip it
+                            continue
+                        journal_data = {
+                            'currency_id': journal.currency_id.id if journal.currency_id else None,
+                            'move_id': journal.name,
+                            'date': journal.date,
+                            'date_maturity': journal.invoice_date_due or journal.date,  # Default to move date
+                            'debit': journal.amount_total if journal.amount_total > 0 else 0.0,
+                            'credit': abs(journal.amount_total) if journal.amount_total < 0 else 0.0,
+                            'amount': journal.amount_total,
+                            'open_amount': journal.amount_residual,
+                            'name': journal.invoice_partner_display_name or None,
+                            'ref': journal.ref,
+                            'blocked': False,
+                            'journal': journal.journal_id.name if journal.journal_id else None,
+                        }
+
+                        res.setdefault(journal.partner_id.id, []).append(journal_data)
+                        processed_journals.add(journal.name)
+
+
         return res
 
     @api.model

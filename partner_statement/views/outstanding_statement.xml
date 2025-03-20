@@ -246,7 +246,7 @@
                                            t-value="pdc_in_journal + get_pdc_covered(o,line['move_id'])"/>
 
                                         <t t-set="payment_received"
-                                           t-value="get_payment_received(o,line['move_id'])"/>
+                                           t-value="get_payment_received(o,line)"/>
 
 
                                         <!--                                        <t t-if="payment_received is not None">-->
@@ -345,6 +345,7 @@
 
                 <t t-set="net_balance" t-value="total_outstanding - pdc_total "/>
                 <p style="page-break-inside:avoid;">
+
                     <strong>Total Outstanding Amount :</strong>
 
                     <span t-esc="'{0:,.2f}'.format(total_outstanding)"/>

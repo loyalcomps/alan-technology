@@ -535,7 +535,9 @@ class InsPartnerAgeing(models.TransientModel):
 
             self.env.cr.execute(sql, params)
             fetch_dict = self.env.cr.dictfetchone() or {'count': 0}
+            print("==fetch_dict",fetch_dict)
             count = fetch_dict.get('count') or 0.0
+
 
             if count:
                 for period in period_dict:
@@ -597,6 +599,7 @@ class InsPartnerAgeing(models.TransientModel):
                     self.env.cr.execute(final_sql, final_params)
                     fetch_dict = self.env.cr.dictfetchall() or [
                         {'balance': None, 'sum_debit': None, 'sum_credit': None}]
+                    print("--Fetch dict")
 
                     amount = 0.0
                     if fetch_dict[0].get('balance'):
