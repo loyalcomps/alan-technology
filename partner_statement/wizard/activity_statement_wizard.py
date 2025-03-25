@@ -53,5 +53,6 @@ class ActivityStatementWizard(models.TransientModel):
         )
 
     def _export(self, report_type):
+        print("--export activity")
         """Default export is PDF."""
         return self._print_report(report_type)

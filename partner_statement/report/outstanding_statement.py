@@ -147,7 +147,6 @@ class OutstandingStatement(models.AbstractModel):
 
 
         move_ids = [entry['move_id'] for partner in res.values() for entry in partner]
-        print("--mover ids",move_ids)
 
         # Find journal records that are missing from move_ids
         journal_records = self.env['account.move'].search([

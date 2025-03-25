@@ -16,7 +16,6 @@ class ReportStatementCommon(models.AbstractModel):
     _description = "Statement Reports Common"
 
     def prepare_bucket_list(self,date_end):
-        print("prepare bucket listtttttt",self.env.context)
         periods = {}
 
         date_from = fields.Date.from_string(date_end)
@@ -185,7 +184,6 @@ class ReportStatementCommon(models.AbstractModel):
                     amount = 0.0
                     self.env.cr.execute(sql + where)
                     fetch_dict = self.env.cr.dictfetchall() or 0.0
-                    print("--fetch_dict",fetch_dict)
 
                     if not fetch_dict[0].get('balance'):
                         amount = 0.0
@@ -475,10 +473,8 @@ class ReportStatementCommon(models.AbstractModel):
             self, company_id, partner_ids, date_end, account_type, aging_type
     ):
         buckets = dict(map(lambda x: (x, []), partner_ids))
-        print("-bucketssssssss",buckets)
         partners = tuple(partner_ids)
         full_dates = self._get_bucket_dates(date_end, aging_type)
-        print("---FULL DATES",full_dates)
         # pylint: disable=E8103
         # All input queries are properly escaped - false positive
         self.env.cr.execute(
@@ -576,7 +572,6 @@ class ReportStatementCommon(models.AbstractModel):
           }
         }
         """
-        print("-------DATA",data)
         salesperson_wise = data["salesperson_wise"]
         salesperson_id = data["salesperson_id"]
         company_id = data["company_id"]
@@ -614,11 +609,9 @@ class ReportStatementCommon(models.AbstractModel):
         lines = self._get_account_display_lines(
             company_id, partner_ids, date_start, date_end, account_type
         )
-        print("--display lines----",lines)
         balances_forward = self._get_account_initial_balance(
             company_id, partner_ids, date_start, account_type
         )
-        print("--balancevforward",balances_forward)
 
         if data["show_aging_buckets"]:
             buckets = self._get_account_show_buckets(
@@ -714,7 +707,6 @@ class ReportStatementCommon(models.AbstractModel):
 
         aging_bucket_summary=self.process_data(period_dict,partner_ids,account_type,date_end)
 
-        print("-------------res",res)
 
 
         return {

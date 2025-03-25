@@ -1,7 +1,7 @@
 # Copyright 2018 ForgeFlow, S.L. (http://www.forgeflow.com)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-from odoo import models
+from odoo import models,fields
 from datetime import datetime
 
 class OutstandingStatementWizard(models.TransientModel):
@@ -10,6 +10,8 @@ class OutstandingStatementWizard(models.TransientModel):
     _name = "outstanding.statement.wizard"
     _inherit = "statement.common.wizard"
     _description = "Outstanding Statement Wizard"
+
+
 
     def _print_report(self, report_type):
         self.ensure_one()
@@ -22,7 +24,6 @@ class OutstandingStatementWizard(models.TransientModel):
         partner = self.env['res.partner'].browse(data['partner_ids'])
         if self.salesperson_wise and self.salesperson_id:
             partner_name = self.salesperson_id.name
-            print("partner name",partner_name)
             return (
                 self.env["ir.actions.report"]
                 .search(
@@ -32,25 +33,28 @@ class OutstandingStatementWizard(models.TransientModel):
                 .report_action(self, data=data)
             )
         else:
-         partner_name = partner.name
-        # return (
-        #     self.env["ir.actions.report"]
-        #     .search(
-        #         [("report_name", "=", report_name), ("report_type", "=", report_type)],
-        #         limit=1,
-        #     )
-        #     .report_action(self, data=data)
-        # )
-         rec= self.env["ir.actions.report"].search(
-                [("report_name", "=", report_name), ("report_type", "=", report_type)],
-                limit=1,
-            )
-        # customer_name = self.partner_id.name  # Assuming 'partner_id' is the related customer field
-         date = self.date_end
+            partner_name = partner.name
+            date = self.date_end
 
-         rec.name = f" SOA -{partner_name}-{date}"
 
-         return rec.with_context(print_report_name=rec.name).report_action(self, data=data)
+            rec_pdf= self.env["ir.actions.report"].search(
+                    [("report_name", "=", report_name), ("report_type", "=", report_type)],
+                    limit=1,
+                )
+            if report_type !='PDF':
+                rec_html = self.env["ir.actions.report"].search(
+                    [("report_name", "=", report_name), ("report_type", "=", 'qweb-html')],
+                    limit=1,
+                )
+                rec_html.name = f"SOA -{partner_name}-{date}"
+
+
+            # customer_name = self.partner_id.name  # Assuming 'partner_id' is the related customer field
+
+
+            rec_pdf.name = f"SOA -{partner_name}-{date}"
+
+            return rec_pdf.with_context(print_report_name=rec_pdf.name).report_action(self, data=data)
 
         # return rec_name
 

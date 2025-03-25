@@ -178,7 +178,6 @@ class ActivityStatement(models.AbstractModel):
         )
         for row in self.env.cr.dictfetchall():
             res[row.pop("partner_id")].append(row)
-        print("---res 444",res)
         return res
 
     @api.model

@@ -19,4 +19,9 @@ class ResPartner(models.Model):
             'view_mode': 'form',
             'type': 'ir.actions.act_window',
             'target': 'new',
+            # 'context': {
+            #     'default_partner_id': self.id,
+            #
+            # }
+
         }

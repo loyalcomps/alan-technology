@@ -49,6 +49,7 @@ class StatementCommon(models.AbstractModel):
     )
     salesperson_wise = fields.Boolean("Salesperson Wise Report", default=False)
     salesperson_id = fields.Many2one('res.users')
+    # partner_id=fields.Many2one('res.partner',store=True)
 
     @api.onchange("aging_type")
     def onchange_aging_type(self):

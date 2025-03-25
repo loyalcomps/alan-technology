@@ -58,6 +58,7 @@
                     <group name="dates">
                         <field name="date_end" />
                         <field name="salesperson_wise"/>
+<!--                        <field name="partner_id"/>-->
                         <field name="salesperson_id"
                                attrs="{'invisible':[('salesperson_wise','=',False)], 'required':[('salesperson_wise','=',True)]}"/>
                     </group>
