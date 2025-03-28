@@ -23,11 +23,12 @@
                      <field name="journal_allocation_ids" >
                              <tree editable="bottom" create="false">
                                      <field name="name" />
-                                     <field name="move_line_id" invisible="1"  />
+                                     <field name="account_type"/>
+                                     <field name="move_line_id" invisible="1"/>
                                      <field name="date"/>
                                      <field name="memo"/>
-
                                      <field name="amount"  sum="Total"/>
+                                     <field name="is_allocated" widget="boolean_toggle"/>
 
                              </tree>
                          </field>

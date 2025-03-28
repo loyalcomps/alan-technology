@@ -45,6 +45,7 @@ class JournalAllocation(models.TransientModel):
                      ('id', '=', data.partner_id.parent_id.id)])
                 print("::::::", data.payment_type)
                 if data.payment_type == 'inbound':
+                    print("11111111111111")
                     for p in partner:
                         inv_lines = self.env['account.move.line'].sudo().search(
                             [('move_id.state', '=', 'posted'), ('move_id.move_type', '=', 'entry'),
@@ -113,13 +114,16 @@ class JournalAllocation(models.TransientModel):
                                     'name': cred.name,
                                     'date': cred.invoice_date,
                                     'memo': cred.ref,
-                                    'amount': cred.amount_residual
+                                    'amount': cred.amount_residual,
+                                    'account_type': line.account_id.account_type if line.account_id else None
+
 
                                 }
                         pay_vals.append((0, 0, vals))
                     data.journal_allocation_ids = pay_vals
 
                 else:
+                    print("222222222222222")
                     for p in partner:
                         inv_lines = self.env['account.move.line'].sudo().search(
                             [('move_id.state', '=', 'posted'), ('move_id.move_type', '=', 'entry'),
@@ -186,7 +190,8 @@ class JournalAllocation(models.TransientModel):
                                     'name': cred.name,
                                     'date': cred.invoice_date,
                                     'memo': cred.ref,
-                                    'amount': cred.amount_residual
+                                    'amount': cred.amount_residual,
+                                    'account_type': line.account_id.account_type if line.account_id else None
 
                                 }
                         pay_vals.append((0, 0, vals))
@@ -268,7 +273,8 @@ class JournalAllocation(models.TransientModel):
                                     'name': cred.name,
                                     'date': cred.invoice_date,
                                     'memo': cred.ref,
-                                    'amount': cred.amount_residual
+                                    'amount': cred.amount_residual,
+                                    'account_type': line.account_id.account_type if line.account_id else None
 
                                 }
                         pay_vals.append((0, 0, vals))
@@ -447,17 +453,18 @@ class JournalAllocation(models.TransientModel):
 
             elif line.move_line_id.move_id.line_ids.filtered(
                     lambda l: l.account_id.account_type in ['asset_receivable',
-                                                            'liability_payable'] and l.partner_id and l.partner_id == self.partner_id):
+                                                            'liability_payable','income_other'] and l.partner_id and l.partner_id == self.partner_id):
                 val_2 = line.move_line_id.move_id.line_ids.filtered(
                     lambda l: l.account_id.account_type in ['asset_receivable',
-                                                            'liability_payable'] and l.partner_id and l.partner_id == self.partner_id)[
+                                                            'liability_payable', 'income_other'] and l.partner_id and l.partner_id == self.partner_id)[
                     0].id
                 debit_move_dict[val_2] = line.inv_allocate_amount
 
             # print("val 2",val_2)
 
         for line in self.journal_allocation_ids:
-            credit_move_dict[line.move_line_id.id] = self.balnc_paymnt_amnt
+            if line.is_allocated:
+                credit_move_dict[line.move_line_id.id] = self.balnc_paymnt_amnt
 
         for line in self.invoice_allocation_ids:
             if self.payment_type == "inbound":
@@ -472,7 +479,8 @@ class JournalAllocation(models.TransientModel):
                     credit_move_dict['is_full_reconcile'] = False
 
         matching_list = self.get_matching_dict(debit_move_dict, credit_move_dict)
-
+        print("matching:::::::::::", matching_list)
+        # print(sdf)
         for rec_val in matching_list:
             rec = self.env['account.partial.reconcile'].create(rec_val)
 
@@ -525,3 +533,5 @@ class JournalCreditLines(models.TransientModel):
     date = fields.Date(" Date")
     amount = fields.Float(' Amount')
     memo = fields.Char('Description')
+    account_type = fields.Char(string="Account")
+    is_allocated = fields.Boolean(string="Allocate", default=False)
