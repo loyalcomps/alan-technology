@@ -130,6 +130,7 @@
                         <field name="kg_kindattention_partner_id" required="0"
                                attrs="{'readonly': [('state','not in',('draft','sent'))]}"/>
                         <field name="bank_id" options="{'no_create': True}"/>
+                        <field name="res_bank_ids" invisible="1"/>
                     </field>
                     <field name="payment_term_id" position="after">
                         <field name="kg_journal_id" domain="[('type','=','sale')]" string="Journal"

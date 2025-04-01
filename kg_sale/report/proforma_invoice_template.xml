@@ -245,7 +245,8 @@
                             </div>
                         </t>
                         <br/>
-                        <t t-if="o.res_bank_ids">
+
+<!--                        <t t-if="o.res_bank_ids">-->
 
                             <table class="table1 table-borderless" width="100%">
                                 <tr>
@@ -262,7 +263,7 @@
                                 </tr>
                             </table>
                             <table class="table1 table-borderless" width="100%" style="margin-top:1%">
-                                
+
                                 <tr>
                                     <td style="text-align:left;" width="30%"  height="10px">
                                         Beneficiary Name
@@ -296,7 +297,7 @@
                                     <td width="60%">
                                         <span t-esc="o.res_bank_ids.acc_number"/>
                                     </td>
-                                </tr> 
+                                </tr>
                                 <tr>
                                     <td style="text-align:left;" width="30%" height="10px">
                                         IBAN NO.
@@ -375,7 +376,7 @@
 <!--                                    </td>-->
 <!--                                </tr>-->
 <!--                            </table>-->
-                        </t>
+<!--                        </t>-->
                         <br/>
                         <div class="row">
                             <div class="col-xs-12 pull-right">
@@ -384,7 +385,7 @@
                                         <strong>Terms And Conditions</strong>
                                     </u>
                                     <br/>
-                                    
+
                                     <span>1. Goods once sold will not be replaced or exchanged</span>
                                     <br/>
                                     <span>2. This Signature confirms buyer's receipt and acceptance to above</span>
@@ -399,7 +400,7 @@
                             </div>
                         </div>
                         <br/>
-                        
+
                         <div class="row">
 
                             <div class="col-xs-12 pull-right">
@@ -418,7 +419,7 @@
                                                 <tr><td height="40px" width="20%"></td><td width="5%"></td><td width="50%"></td></tr>
                                             </table>
                                             </td>
-                                            
+
                                         </tr>
                                     </table>
                                 </div>

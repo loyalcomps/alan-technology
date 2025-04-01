@@ -136,8 +136,15 @@ class SaleOrder(models.Model):
         return self.currency_id.compute(amount, self.env.company.currency_id)
 
     pro_seq = fields.Char(string="Proforma Sequence", copy=False)
-    res_bank_ids = fields.Many2one('res.partner.bank', string='Bank', domain=_get_bank_domain)
+    res_bank_ids = fields.Many2one('res.partner.bank', string='Bank', compute="_fetch_bank_id")
     bank_id = fields.Many2one('res.bank', string='Bank')
+    @api.depends('bank_id')
+    def _fetch_bank_id(self):
+        if self.bank_id:
+            partner_banks = self.env['res.partner.bank'].search([('bank_id', '=', self.bank_id.id)],limit=1)
+            self.res_bank_ids = partner_banks.id
+        else:
+            self.res_bank_ids = None
     show_send_button = fields.Boolean(string="Show Send Button", compute='_compute_show_send_button')
 
     def _compute_show_send_button(self):
