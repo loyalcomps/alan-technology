@@ -17,7 +17,7 @@
     # Check https://github.com/odoo/odoo/blob/16.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
 
-    'version': '17.0.5.0.2',
+    'version': '16.0.1.0.2',
 
     # any module necessary for this one to work correctly
     'depends': ['base','account'],
@@ -25,7 +25,7 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-'wizard/payment_allocation_wizard.xml',
+        'wizard/payment_allocation_wizard.xml',
         'views/account_move_inherit.xml',
         # 'views/templates.xml',
     ],
